@@ -1,0 +1,112 @@
+// ============================================================
+// WORKSHOPS DATA
+// Calendly: Replace CALENDLY_URL with your actual Calendly link
+// e.g., "https://calendly.com/sapna-art-studio"
+// ============================================================
+export const CALENDLY_URL = "https://calendly.com/sapna-art-studio"
+
+export const workshops = [
+  {
+    id: 1,
+    title: "Macrame for Beginners",
+    subtitle: "Create your first wall hanging from scratch",
+    icon: "🪢",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
+    duration: "3 hours",
+    groupSize: "4–8 participants",
+    price: 1200,
+    mode: ["In-person (Ahmedabad)", "Online via Zoom"],
+    level: "Beginner",
+    color: "#C4714A",
+    tag: "Most Popular",
+    whatYouLearn: [
+      "Basic macrame knots: square knot, spiral, lark's head",
+      "How to plan a wall hanging composition",
+      "Working with different cord thicknesses",
+      "Adding natural elements like beads & dried flowers",
+      "Mounting & displaying your finished piece",
+    ],
+    includes: ["All materials provided", "Take home your finished piece", "Refreshments (in-person)", "Digital pattern PDF"],
+    upcoming: [
+      { date: "April 5, 2026", time: "11:00 AM – 2:00 PM", mode: "In-person", seats: 3 },
+      { date: "April 12, 2026", time: "4:00 PM – 7:00 PM", mode: "Online", seats: 6 },
+      { date: "April 20, 2026", time: "11:00 AM – 2:00 PM", mode: "In-person", seats: 5 },
+    ],
+  },
+  {
+    id: 2,
+    title: "Travel Watercolour Workshop",
+    subtitle: "Paint your favourite travel memory in loose watercolours",
+    icon: "🖌️",
+    image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&q=80",
+    duration: "2.5 hours",
+    groupSize: "4–10 participants",
+    price: 1000,
+    mode: ["In-person (Ahmedabad)", "Online via Zoom"],
+    level: "All Levels",
+    color: "#8A9E7B",
+    tag: "Travel Inspired",
+    whatYouLearn: [
+      "Wet-on-wet and wet-on-dry watercolour techniques",
+      "Painting loose travel landscapes (mountains, streets, seascapes)",
+      "Creating mood with limited colour palettes",
+      "Adding small details that tell a story",
+      "Preserving and framing your watercolour",
+    ],
+    includes: ["Fabriano watercolour paper", "Basic watercolour palette", "Brushes to use during class", "Take home your painting", "Reference photo pack"],
+    upcoming: [
+      { date: "April 8, 2026", time: "10:00 AM – 12:30 PM", mode: "Online", seats: 8 },
+      { date: "April 19, 2026", time: "3:00 PM – 5:30 PM", mode: "In-person", seats: 6 },
+    ],
+  },
+  {
+    id: 3,
+    title: "Embroidery Hoop Art",
+    subtitle: "Stitch a beautiful botanical piece in one session",
+    icon: "🧵",
+    image: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600&q=80",
+    duration: "2.5 hours",
+    groupSize: "4–8 participants",
+    price: 900,
+    mode: ["In-person (Ahmedabad)", "Online via Zoom"],
+    level: "Beginner",
+    color: "#D4A843",
+    tag: "Best for Gifts",
+    whatYouLearn: [
+      "Fundamental embroidery stitches: satin, stem, French knot, lazy daisy",
+      "How to transfer and use patterns on fabric",
+      "Choosing thread colours for natural aesthetics",
+      "Finishing and framing your hoop art",
+      "Tips for designing your own patterns",
+    ],
+    includes: ["15cm wooden hoop & linen", "Full DMC thread kit", "Needle & accessories", "Finished piece to take home", "Stitch guide booklet"],
+    upcoming: [
+      { date: "April 13, 2026", time: "2:00 PM – 4:30 PM", mode: "In-person", seats: 4 },
+      { date: "April 27, 2026", time: "11:00 AM – 1:30 PM", mode: "Online", seats: 9 },
+    ],
+  },
+  {
+    id: 4,
+    title: "DIY Kit Assembly & Craft Session",
+    subtitle: "Fun group craft day — make & take your creation home",
+    icon: "🎁",
+    image: "https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=600&q=80",
+    duration: "2 hours",
+    groupSize: "Up to 15 participants",
+    price: 750,
+    mode: ["In-person (Ahmedabad)", "Corporate / Private events"],
+    level: "All Ages",
+    color: "#E8C4B8",
+    tag: "Great for Groups",
+    whatYouLearn: [
+      "Choose your project: mini macrame, embroidery or painting",
+      "Guided assembly with Sapna's personal tips",
+      "Creative styling and personalisation tricks",
+      "How to continue crafting at home",
+    ],
+    includes: ["Full project kit", "Guidance from Sapna", "Chai & snacks (in-person)", "Take home your finished piece"],
+    upcoming: [
+      { date: "April 6, 2026", time: "4:00 PM – 6:00 PM", mode: "In-person", seats: 10 },
+    ],
+  },
+]
