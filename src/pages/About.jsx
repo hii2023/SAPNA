@@ -201,7 +201,7 @@ export default function About() {
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link to="/shop" className="btn btn-primary btn-lg">Explore the Shop</Link>
             <Link to="/workshops" className="btn btn-sage btn-lg">Book a Workshop</Link>
-            <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="btn btn-whatsapp btn-lg">
+            <a href="https://wa.me/918511341910" target="_blank" rel="noreferrer" className="btn btn-whatsapp btn-lg">
               <i className="fab fa-whatsapp" /> Say Hello
             </a>
           </div>

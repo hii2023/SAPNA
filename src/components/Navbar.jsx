@@ -73,7 +73,7 @@ export default function Navbar() {
           {/* CTA */}
           <div className="navbar-cta">
             <a
-              href="https://wa.me/919876543210"
+              href="https://wa.me/918511341910"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-whatsapp btn-sm navbar-whatsapp"
@@ -115,7 +115,7 @@ export default function Navbar() {
           </nav>
           <div className="mobile-cta">
             <a
-              href="https://wa.me/919876543210"
+              href="https://wa.me/918511341910"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-whatsapp"
@@ -123,10 +123,10 @@ export default function Navbar() {
               <i className="fab fa-whatsapp" /> Chat with Sapna on WhatsApp
             </a>
             <div className="mobile-social">
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram">
+              <a href="https://instagram.com/art_wt_sapna" target="_blank" rel="noreferrer" aria-label="Instagram">
                 <i className="fab fa-instagram" />
               </a>
-              <a href="mailto:hello@sapnaart.studio" aria-label="Email">
+              <a href="mailto:hello@art_wt_sapna" aria-label="Email">
                 <i className="fas fa-envelope" />
               </a>
             </div>

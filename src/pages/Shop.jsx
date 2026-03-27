@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { products, categories, themes, getWhatsAppLink } from '../data/products'
+import { categories, themes, getWhatsAppLink } from '../data/products'
+import { getProducts } from '../data/adminData'
 import './Shop.css'
 
 function ProductModal({ product, onClose }) {
@@ -71,7 +72,7 @@ function ProductModal({ product, onClose }) {
               <div className="modal-sold-out">
                 <i className="fas fa-clock" /> Currently Sold Out
                 <p>Want to be notified when it's back? Message Sapna on WhatsApp!</p>
-                <a href={`https://wa.me/919876543210?text=${encodeURIComponent(`Hi Sapna! I'm interested in "${product.name}" but it shows sold out. Please notify me when it's available again! 🙏`)}`} target="_blank" rel="noreferrer" className="btn btn-whatsapp">
+                <a href={`https://wa.me/918511341910?text=${encodeURIComponent(`Hi Sapna! I'm interested in "${product.name}" but it shows sold out. Please notify me when it's available again! 🙏`)}`} target="_blank" rel="noreferrer" className="btn btn-whatsapp">
                   <i className="fab fa-whatsapp" /> Notify Me
                 </a>
               </div>
@@ -96,6 +97,7 @@ function ProductModal({ product, onClose }) {
 }
 
 export default function Shop() {
+  const [products] = useState(() => getProducts())
   const [searchParams, setSearchParams] = useSearchParams()
   const [activeCat, setActiveCat] = useState(searchParams.get('cat') || 'all')
   const [activeTheme, setActiveTheme] = useState('all')

@@ -1,9 +1,9 @@
 // ============================================================
 // PRODUCTS DATA — Edit prices, descriptions, availability here
 // WhatsApp: Replace WHATSAPP_NUMBER with your actual number
-// e.g., "919876543210" (country code + number, no + or spaces)
+// e.g., "918511341910" (country code + number, no + or spaces)
 // ============================================================
-export const WHATSAPP_NUMBER = "919876543210"
+export const WHATSAPP_NUMBER = "918511341910"
 
 export const categories = [
   { id: "all",      label: "All Art",     icon: "🎨" },

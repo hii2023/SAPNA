@@ -419,8 +419,8 @@ export default function Home() {
       <section className="home-instagram" data-id="insta">
         <div className={`insta-header fade-up ${isVisible['insta'] ? 'visible' : ''}`}>
           <span className="section-label">Follow the Journey</span>
-          <h2 className="section-title">@sapnaart.studio</h2>
-          <a href="https://instagram.com" target="_blank" rel="noreferrer" className="btn btn-outline">
+          <h2 className="section-title">@art_wt_sapna</h2>
+          <a href="https://instagram.com/art_wt_sapna" target="_blank" rel="noreferrer" className="btn btn-outline">
             <i className="fab fa-instagram" /> Follow on Instagram
           </a>
         </div>
@@ -433,7 +433,7 @@ export default function Home() {
             "https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=400&q=80",
             "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&q=80",
           ].map((src, i) => (
-            <a key={i} href="https://instagram.com" target="_blank" rel="noreferrer" className="insta-item img-overlay">
+            <a key={i} href="https://instagram.com/art_wt_sapna" target="_blank" rel="noreferrer" className="insta-item img-overlay">
               <img src={src} alt={`Instagram ${i + 1}`} loading="lazy" />
               <div className="insta-overlay">
                 <i className="fab fa-instagram" />
@@ -453,7 +453,7 @@ export default function Home() {
               <p>Custom commissions, bulk orders, event installations, or workshop bookings — just say hello!</p>
             </div>
             <div className="cta-banner-actions">
-              <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="btn btn-whatsapp btn-lg">
+              <a href="https://wa.me/918511341910" target="_blank" rel="noreferrer" className="btn btn-whatsapp btn-lg">
                 <i className="fab fa-whatsapp" /> Chat on WhatsApp
               </a>
               <Link to="/custom-orders" className="btn btn-light btn-lg">

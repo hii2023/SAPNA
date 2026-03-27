@@ -65,7 +65,7 @@ export default function Workshops() {
                 </a>
                 <p className="calendly-note">Or message Sapna directly on WhatsApp to book:</p>
                 <a
-                  href={`https://wa.me/919876543210?text=${encodeURIComponent("Hi Sapna! I'd like to book a workshop. Could you share the available dates? 🙏")}`}
+                  href={`https://wa.me/918511341910?text=${encodeURIComponent("Hi Sapna! I'd like to book a workshop. Could you share the available dates? 🙏")}`}
                   target="_blank"
                   rel="noreferrer"
                   className="btn btn-whatsapp"
@@ -163,7 +163,7 @@ export default function Workshops() {
                       <i className="fas fa-calendar-alt" /> Book via Calendly
                     </a>
                     <a
-                      href={`https://wa.me/919876543210?text=${encodeURIComponent(`Hi Sapna! I'd like to book the "${w.title}" workshop. Can you share available dates? 🙏`)}`}
+                      href={`https://wa.me/918511341910?text=${encodeURIComponent(`Hi Sapna! I'd like to book the "${w.title}" workshop. Can you share available dates? 🙏`)}`}
                       target="_blank"
                       rel="noreferrer"
                       className="btn btn-whatsapp"
@@ -194,7 +194,7 @@ export default function Workshops() {
                 <li><i className="fas fa-check" /> Corporate invoice available</li>
               </ul>
               <a
-                href={`https://wa.me/919876543210?text=${encodeURIComponent("Hi Sapna! I'm interested in booking a private workshop for a group. Can we chat about the details? 🙏")}`}
+                href={`https://wa.me/918511341910?text=${encodeURIComponent("Hi Sapna! I'm interested in booking a private workshop for a group. Can we chat about the details? 🙏")}`}
                 target="_blank"
                 rel="noreferrer"
                 className="btn btn-whatsapp btn-lg"
@@ -229,7 +229,7 @@ export default function Workshops() {
           </div>
           <div className="faq-cta">
             <p>Still have a question? Just ask Sapna directly!</p>
-            <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="btn btn-whatsapp">
+            <a href="https://wa.me/918511341910" target="_blank" rel="noreferrer" className="btn btn-whatsapp">
               <i className="fab fa-whatsapp" /> Message on WhatsApp
             </a>
           </div>

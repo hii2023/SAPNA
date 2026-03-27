@@ -9,6 +9,7 @@ import Workshops from './pages/Workshops'
 import Gallery from './pages/Gallery'
 import CustomOrders from './pages/CustomOrders'
 import Blog from './pages/Blog'
+import Admin from './pages/Admin'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -18,25 +19,35 @@ function ScrollToTop() {
   return null
 }
 
+function SiteLayout() {
+  const { pathname } = useLocation()
+  const isAdmin = pathname === '/admin'
+
+  return (
+    <div className="app">
+      {!isAdmin && <Navbar />}
+      <main>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/workshops" element={<Workshops />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/custom-orders" element={<CustomOrders />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/admin" element={<Admin />} />
+        </Routes>
+      </main>
+      {!isAdmin && <Footer />}
+    </div>
+  )
+}
+
 export default function App() {
   return (
     <Router>
       <ScrollToTop />
-      <div className="app">
-        <Navbar />
-        <main>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/workshops" element={<Workshops />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/custom-orders" element={<CustomOrders />} />
-            <Route path="/blog" element={<Blog />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <SiteLayout />
     </Router>
   )
 }

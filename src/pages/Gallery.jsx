@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { galleryItems, galleryCategories } from '../data/gallery'
+import { galleryCategories } from '../data/gallery'
+import { getGallery } from '../data/adminData'
 import './Gallery.css'
 
 function Lightbox({ item, items, onClose, onPrev, onNext }) {
@@ -28,7 +29,7 @@ function Lightbox({ item, items, onClose, onPrev, onNext }) {
             <p className="lightbox-size"><i className="fas fa-ruler-combined" /> {item.size}</p>
           </div>
           <a
-            href={`https://wa.me/919876543210?text=${encodeURIComponent(`Hi Sapna! I love the piece "${item.title}" in your gallery. Is it available or can I commission something similar? 🌸`)}`}
+            href={`https://wa.me/918511341910?text=${encodeURIComponent(`Hi Sapna! I love the piece "${item.title}" in your gallery. Is it available or can I commission something similar? 🌸`)}`}
             target="_blank"
             rel="noreferrer"
             className="btn btn-whatsapp"
@@ -43,6 +44,7 @@ function Lightbox({ item, items, onClose, onPrev, onNext }) {
 }
 
 export default function Gallery() {
+  const [galleryItems] = useState(() => getGallery())
   const [activeFilter, setActiveFilter] = useState('all')
   const [lightboxIndex, setLightboxIndex] = useState(null)
   const [isVisible, setIsVisible] = useState({})
@@ -139,7 +141,7 @@ export default function Gallery() {
             <div className="commission-actions">
               <a href="/custom-orders" className="btn btn-primary btn-lg">Request Custom Order</a>
               <a
-                href="https://wa.me/919876543210"
+                href="https://wa.me/918511341910"
                 target="_blank"
                 rel="noreferrer"
                 className="btn btn-whatsapp btn-lg"

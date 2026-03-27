@@ -98,7 +98,7 @@ export default function CustomOrders() {
       `*Details:* ${form.description}\n\n` +
       `Please let me know the next steps! 🙏`
     )
-    window.open(`https://wa.me/919876543210?text=${msg}`, '_blank')
+    window.open(`https://wa.me/918511341910?text=${msg}`, '_blank')
     setSubmitted(true)
   }
 
@@ -232,7 +232,7 @@ export default function CustomOrders() {
                   <i className="fab fa-whatsapp" />
                   <div>
                     <strong>Prefer WhatsApp?</strong>
-                    <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer">Message Sapna directly →</a>
+                    <a href="https://wa.me/918511341910" target="_blank" rel="noreferrer">Message Sapna directly →</a>
                   </div>
                 </div>
               </div>

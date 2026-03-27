@@ -73,10 +73,10 @@ export default function Footer() {
                 Every piece I create carries a little piece of a journey, a memory, and a whole lot of love.
               </p>
               <div className="footer-social">
-                <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram" className="social-link">
+                <a href="https://instagram.com/art_wt_sapna" target="_blank" rel="noreferrer" aria-label="Instagram" className="social-link">
                   <i className="fab fa-instagram" />
                 </a>
-                <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" aria-label="WhatsApp" className="social-link whatsapp">
+                <a href="https://wa.me/918511341910" target="_blank" rel="noreferrer" aria-label="WhatsApp" className="social-link whatsapp">
                   <i className="fab fa-whatsapp" />
                 </a>
                 <a href="mailto:hello@sapnaart.studio" aria-label="Email" className="social-link">
@@ -122,7 +122,7 @@ export default function Footer() {
                 <li>
                   <i className="fab fa-whatsapp" />
                   <div>
-                    <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer">+91 98765 43210</a>
+                    <a href="https://wa.me/918511341910" target="_blank" rel="noreferrer">+91 85113 41910</a>
                     <span>Mon–Sat, 10am–7pm IST</span>
                   </div>
                 </li>
@@ -143,7 +143,7 @@ export default function Footer() {
                 <li>
                   <i className="fab fa-instagram" />
                   <div>
-                    <a href="https://instagram.com" target="_blank" rel="noreferrer">@sapnaart.studio</a>
+                    <a href="https://instagram.com/art_wt_sapna" target="_blank" rel="noreferrer">@art_wt_sapna</a>
                     <span>Follow for daily art & travel</span>
                   </div>
                 </li>
