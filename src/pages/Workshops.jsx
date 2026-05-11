@@ -154,7 +154,7 @@ export default function Workshops() {
                       rel="noreferrer"
                       className="btn btn-whatsapp"
                     >
-                      <i className="fab fa-whatsapp" /> Book via WhatsApp
+                      <i className="fab fa-whatsapp" /> Book Your Spot on WhatsApp
                     </a>
                   </div>
                 </div>
