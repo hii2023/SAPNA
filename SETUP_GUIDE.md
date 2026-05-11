@@ -35,15 +35,9 @@ export const WHATSAPP_NUMBER = "919876543210"
 Replace with Sapna's actual number (country code + number, no `+` or spaces).
 Example: `"919898123456"` for +91 98981 23456
 
-### 2. Calendly Booking Link
-Edit `src/data/workshops.js`:
-```js
-export const CALENDLY_URL = "https://calendly.com/sapna-art-studio"
-```
-Replace with Sapna's actual Calendly URL.
-
-To show the live calendar embed on the Workshops page, also open `src/pages/Workshops.jsx`
-and uncomment the `<iframe>` block (search for "ACTUAL CALENDLY IFRAME").
+### 2. Workshop Booking (WhatsApp)
+Workshop booking is currently handled directly on WhatsApp from `src/pages/Workshops.jsx`.
+Update the WhatsApp number/message links in that file if needed.
 
 ### 3. Contact Details
 - **Email**: Search for `hello@sapnaart.studio` across all files
@@ -124,12 +118,8 @@ Edit `src/styles/global.css` to change colours globally:
 
 ## 📅 Workshop Booking
 
-The Workshops page has a Calendly placeholder. To go live:
-1. Create a Calendly account at calendly.com
-2. Set up your event types (one per workshop type)
-3. Copy your Calendly URL
-4. Paste it into `CALENDLY_URL` in `src/data/workshops.js`
-5. Uncomment the iframe in `src/pages/Workshops.jsx`
+The Workshops page uses WhatsApp booking CTAs for quick and personal confirmations.
+To update booking behavior, edit booking links in `src/pages/Workshops.jsx`.
 
 ---
 
