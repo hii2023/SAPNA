@@ -69,7 +69,7 @@ export default function Footer() {
                 </div>
               </Link>
               <p className="footer-bio">
-                Hello! I'm Sapna — a textile artist, painter, and wanderer based in Ahmedabad, Gujarat.
+                Hello! I'm Sapna — an artist focused on macrame, paintings, DIY, and wanderlust-inspired creations, based in Ahmedabad, Gujarat.
                 Every piece I create carries a little piece of a journey, a memory, and a whole lot of love.
               </p>
               <div className="footer-social">
@@ -79,7 +79,7 @@ export default function Footer() {
                 <a href="https://wa.me/918511341910" target="_blank" rel="noreferrer" aria-label="WhatsApp" className="social-link whatsapp">
                   <i className="fab fa-whatsapp" />
                 </a>
-                <a href="mailto:hello@sapnaart.studio" aria-label="Email" className="social-link">
+                <a href="mailto:hello@sapna.space" aria-label="Email" className="social-link">
                   <i className="fas fa-envelope" />
                 </a>
                 <a href="https://pinterest.com" target="_blank" rel="noreferrer" aria-label="Pinterest" className="social-link">
@@ -129,7 +129,7 @@ export default function Footer() {
                 <li>
                   <i className="fas fa-envelope" />
                   <div>
-                    <a href="mailto:hello@sapnaart.studio">hello@sapnaart.studio</a>
+                    <a href="mailto:hello@sapna.space">hello@sapna.space</a>
                     <span>Reply within 24 hours</span>
                   </div>
                 </li>
