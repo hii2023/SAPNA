@@ -97,7 +97,7 @@ function ProductModal({ product, onClose }) {
 }
 
 export default function Shop() {
-  const [products] = useState(() => getProducts())
+  const [products] = useState(() => getProducts().filter(p => p.available))
   const [searchParams, setSearchParams] = useSearchParams()
   const [activeCat, setActiveCat] = useState(searchParams.get('cat') || 'all')
   const [activeTheme, setActiveTheme] = useState('all')

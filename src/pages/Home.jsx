@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { products, getWhatsAppLink } from '../data/products'
+import { getWhatsAppLink } from '../data/products'
+import { getProducts } from '../data/adminData'
 import './Home.css'
 
 // ── Hero slides ────────────────────────────────────────────
@@ -27,9 +28,6 @@ const heroSlides = [
     cta: { label: "Shop Stitching", to: "/shop?cat=stitching" },
   },
 ]
-
-// ── Featured products (first 6 bestsellers/new) ─────────
-const featuredProducts = products.filter(p => p.isBestseller || p.isNew).slice(0, 6)
 
 // ── Categories ────────────────────────────────────────────
 const cats = [
@@ -99,6 +97,11 @@ export default function Home() {
   const [activeSlide, setActiveSlide] = useState(0)
   const [activeTestimonial, setActiveTestimonial] = useState(0)
   const [isVisible, setIsVisible] = useState({})
+  const [featuredProducts] = useState(() =>
+    getProducts()
+      .filter(p => p.available && (p.isBestseller || p.isNew))
+      .slice(0, 6)
+  )
   const slideTimerRef = useRef(null)
 
   // Auto-advance hero slides
@@ -309,7 +312,7 @@ export default function Home() {
               <h2 className="section-title">Hello, I'm Sapna 🌿</h2>
               <div className="divider"><i className="fas fa-leaf" /></div>
               <p className="about-lead">
-                A textile artist, painter, and passionate wanderer based in Ahmedabad, Gujarat.
+                An artist focused on macrame, paintings, and DIY, based in Ahmedabad, Gujarat.
                 I create handmade art inspired by my travels across India — from the golden dunes of Rajasthan to the emerald backwaters of Kerala.
               </p>
               <p className="about-para">

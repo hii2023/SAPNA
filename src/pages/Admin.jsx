@@ -96,7 +96,7 @@ function LoginScreen({ onLogin }) {
             <i className="fas fa-sign-in-alt" /> Sign In
           </button>
         </form>
-        <p className="admin-login-hint">Default password: <code>sapna2024</code></p>
+        <p className="admin-login-hint">Use your admin password to sign in.</p>
         <Link to="/" className="admin-back-link"><i className="fas fa-arrow-left" /> Back to website</Link>
       </div>
     </div>

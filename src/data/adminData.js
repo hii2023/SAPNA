@@ -59,11 +59,11 @@ export const DEFAULT_PROFILE = {
   tagline:    'Handcrafted with Love & Wanderlust',
   location:   'Ahmedabad, Gujarat, India',
   phone:      '+91 85113 41910',
-  email:      'hello@sapnaart.studio',
+  email:      'hello@sapna.space',
   whatsapp:   '918511341910',
   instagram:  'art_wt_sapna',
   photo:      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&q=80',
-  bio:        'I\'m Sapna — a textile artist, painter, and wanderer based in Ahmedabad, Gujarat. I pour my travel memories and love for craft into every macrame wall hanging, painting, embroidery piece, and DIY kit I create.',
+  bio:        'I\'m Sapna — an artist, painter, and wanderer based in Ahmedabad, Gujarat. I pour my travel memories and love for craft into every macrame wall hanging, painting, embroidery piece, and DIY kit I create.',
   longBio:    'Every journey I take becomes a piece of art. From the sand dunes of Rajasthan to the misty peaks of the Himalayas, I bring those textures, colours, and stories home — and weave them into pieces that carry a little magic for you. I started Sapna\'s Art Studio from a small corner of my home in Ahmedabad, and it has grown into a beautiful community of art lovers across India.',
   studioYear: '2018',
 }
