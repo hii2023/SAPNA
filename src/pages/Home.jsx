@@ -97,12 +97,10 @@ export default function Home() {
   const [activeSlide, setActiveSlide] = useState(0)
   const [activeTestimonial, setActiveTestimonial] = useState(0)
   const [isVisible, setIsVisible] = useState({})
-  const [featuredProducts] = useState(() =>
-    getProducts()
-      .filter(p => p.available && (p.isBestseller || p.isNew))
-      .slice(0, 6)
-  )
   const slideTimerRef = useRef(null)
+  const featuredProducts = getProducts()
+    .filter(p => p.available && (p.isBestseller || p.isNew))
+    .slice(0, 6)
 
   // Auto-advance hero slides
   useEffect(() => {
