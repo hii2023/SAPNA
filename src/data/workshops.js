@@ -1,9 +1,6 @@
 // ============================================================
 // WORKSHOPS DATA
-// Calendly: Replace CALENDLY_URL with your actual Calendly link
-// e.g., "https://calendly.com/sapna-art-studio"
 // ============================================================
-export const CALENDLY_URL = "https://calendly.com/sapna-art-studio"
 
 export const workshops = [
   {

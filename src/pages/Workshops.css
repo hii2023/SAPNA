@@ -1,17 +1,17 @@
 /* ── Workshops Page ── */
 .workshops-hero { padding-top: 7rem; }
 
-/* Calendly */
-.workshops-calendly-section { background: var(--cream); }
-.calendly-container { max-width: 900px; margin: 0 auto; }
+/* Booking */
+.workshops-booking-section { background: var(--cream); }
+.workshops-booking-container { max-width: 900px; margin: 0 auto; }
 
-.calendly-placeholder {
+.workshops-booking-card {
   border-radius: var(--radius-xl);
   border: 2px dashed var(--beige-dark);
   background: var(--warm-white);
   overflow: hidden;
 }
-.calendly-placeholder-inner {
+.workshops-booking-card-inner {
   padding: 4rem 2rem;
   display: flex;
   flex-direction: column;
@@ -19,7 +19,7 @@
   text-align: center;
   gap: 1.25rem;
 }
-.calendly-icon {
+.workshops-booking-icon {
   width: 72px; height: 72px;
   background: var(--terracotta-pale);
   border-radius: 50%;
@@ -29,21 +29,12 @@
   font-size: 1.8rem;
   color: var(--terracotta);
 }
-.calendly-placeholder h3 {
+.workshops-booking-card h3 {
   font-family: var(--font-display);
   font-size: 1.6rem;
   color: var(--brown-dark);
 }
-.calendly-placeholder p { color: var(--text-light); max-width: 420px; }
-.calendly-url-box {
-  background: var(--beige-light);
-  border: 1px solid var(--beige-dark);
-  border-radius: var(--radius-md);
-  padding: .75rem 1.5rem;
-  font-size: .88rem;
-}
-.calendly-url-box code { color: var(--terracotta); font-family: monospace; word-break: break-all; }
-.calendly-note { font-size: .82rem; color: var(--text-muted); }
+.workshops-booking-card p { color: var(--text-light); max-width: 420px; }
 
 /* Workshops grid */
 .workshops-grid {
@@ -219,7 +210,6 @@
   gap: .75rem;
 }
 .workshop-actions .btn { flex: 1; justify-content: center; }
-.workshop-actions .btn:last-child { flex: 0 0 auto; padding: .75rem 1rem; }
 
 /* Private */
 .workshops-private { background: var(--cream); }
