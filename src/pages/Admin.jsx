@@ -20,6 +20,19 @@ const TABS = [
   { id: 'settings',  label: 'Settings',   icon: 'fas fa-cog' },
 ]
 
+const readFileAsDataUrl = (file) => new Promise((resolve, reject) => {
+  const reader = new FileReader()
+  reader.onload = () => resolve(reader.result)
+  reader.onerror = () => reject(new Error('Failed to read file'))
+  reader.readAsDataURL(file)
+})
+
+const readFilesAsDataUrls = async (fileList) => {
+  const files = Array.from(fileList || []).filter(file => file.type.startsWith('image/'))
+  if (!files.length) return []
+  return Promise.all(files.map(readFileAsDataUrl))
+}
+
 function Toast({ msg, type, onDone }) {
   useEffect(() => {
     const t = setTimeout(onDone, 2500)
@@ -238,14 +251,20 @@ function ProductsTab({ products, onSave, onToast }) {
     setDirty(true)
   }
 
-  const updateImages = (id, val) => {
-    const imgs = val.split('\n').map(s => s.trim()).filter(Boolean)
-    update(id, 'images', imgs)
-  }
-
   const updateSizes = (id, val) => {
     const sz = val.split('\n').map(s => s.trim()).filter(Boolean)
     update(id, 'sizes', sz)
+  }
+
+  const handleImageUpload = async (id, fileList) => {
+    try {
+      const uploaded = await readFilesAsDataUrls(fileList)
+      if (!uploaded.length) return
+      update(id, 'images', uploaded)
+      onToast('Product images uploaded. Save to publish changes.', 'success')
+    } catch (_) {
+      onToast('Could not upload product images. Please try again.', 'error')
+    }
   }
 
   const handleSave = () => {
@@ -484,11 +503,12 @@ function ProductsTab({ products, onSave, onToast }) {
                 </div>
 
                 <div className="admin-field-group full">
-                  <label>Image URLs <small>(one per line — first image is the main display image)</small></label>
-                  <textarea
-                    rows={Math.max(3, product.images.length + 1)}
-                    value={product.images.join('\n')}
-                    onChange={e => updateImages(product.id, e.target.value)}
+                  <label>Upload Product Images <small>(select one or more images — first image is the main display image)</small></label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={e => handleImageUpload(product.id, e.target.files)}
                   />
                   <div className="admin-image-previews">
                     {product.images.map((img, i) => (
@@ -549,6 +569,17 @@ function ProfileTab({ onToast }) {
     setDirty(true)
   }
 
+  const handlePhotoUpload = async (fileList) => {
+    try {
+      const [photo] = await readFilesAsDataUrls(fileList)
+      if (!photo) return
+      handleChange('photo', photo)
+      onToast('Profile photo uploaded. Save to publish changes.', 'success')
+    } catch (_) {
+      onToast('Could not upload profile photo. Please try again.', 'error')
+    }
+  }
+
   const handleSave = () => {
     saveProfile(form)
     setDirty(false)
@@ -597,7 +628,7 @@ function ProfileTab({ onToast }) {
           <div className="admin-profile-photo-wrap">
             <img src={form.photo} alt="Profile" onError={e => { e.target.src = 'https://via.placeholder.com/200x200?text=Photo' }} />
           </div>
-          <p className="admin-photo-hint">Update the URL below to change your photo</p>
+          <p className="admin-photo-hint">Upload a photo below to update your profile picture</p>
         </div>
 
         <div className="admin-profile-fields">
@@ -622,8 +653,8 @@ function ProfileTab({ onToast }) {
           </div>
 
           <div className="admin-field-group full">
-            <label>Profile Photo URL</label>
-            <input type="url" value={form.photo} onChange={e => handleChange('photo', e.target.value)} placeholder="https://…" />
+            <label>Profile Photo</label>
+            <input type="file" accept="image/*" onChange={e => handlePhotoUpload(e.target.files)} />
           </div>
 
           <div className="admin-field-group full">
@@ -678,6 +709,17 @@ function GalleryTab({ onToast }) {
   const update = (id, field, val) => {
     setItems(prev => prev.map(g => g.id === id ? { ...g, [field]: val } : g))
     setDirty(true)
+  }
+
+  const handleImageUpload = async (id, fileList) => {
+    try {
+      const [image] = await readFilesAsDataUrls(fileList)
+      if (!image) return
+      update(id, 'image', image)
+      onToast('Gallery image uploaded. Save to publish changes.', 'success')
+    } catch (_) {
+      onToast('Could not upload gallery image. Please try again.', 'error')
+    }
   }
 
   const handleSave = () => {
@@ -794,8 +836,8 @@ function GalleryTab({ onToast }) {
                   </select>
                 </div>
                 <div className="admin-field-group">
-                  <label>Image URL</label>
-                  <input type="url" value={item.image} onChange={e => update(item.id, 'image', e.target.value)} />
+                  <label>Gallery Image</label>
+                  <input type="file" accept="image/*" onChange={e => handleImageUpload(item.id, e.target.files)} />
                 </div>
                 <div className="admin-field-group">
                   <label>Project / Series</label>
