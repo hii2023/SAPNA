@@ -5,11 +5,13 @@
 // ============================================================
 import { products as defaultProducts } from './products'
 import { galleryItems as defaultGallery } from './gallery'
+import { projects as defaultProjects } from './projects'
 
 const KEYS = {
   products: 'sapna_admin_products',
   profile:  'sapna_admin_profile',
   gallery:  'sapna_admin_gallery',
+  projects: 'sapna_admin_projects',
   password: 'sapna_admin_password',
   auth:     'sapna_admin_auth',
 }
@@ -94,4 +96,19 @@ export function saveGallery(gallery) {
 }
 export function resetGallery() {
   localStorage.removeItem(KEYS.gallery)
+}
+
+// ── Projects ───────────────────────────────────────────────
+export function getProjects() {
+  try {
+    const stored = localStorage.getItem(KEYS.projects)
+    if (stored) return JSON.parse(stored)
+  } catch (_) {}
+  return defaultProjects
+}
+export function saveProjects(projects) {
+  localStorage.setItem(KEYS.projects, JSON.stringify(projects))
+}
+export function resetProjects() {
+  localStorage.removeItem(KEYS.projects)
 }

@@ -8,6 +8,7 @@ const navLinks = [
   { to: "/shop",         label: "Shop" },
   { to: "/workshops",    label: "Workshops" },
   { to: "/gallery",      label: "Gallery" },
+  { to: "/projects",     label: "Projects" },
   { to: "/custom-orders",label: "Custom Orders" },
   { to: "/blog",         label: "Journal" },
 ]
