@@ -126,7 +126,7 @@ export default function Navbar() {
               <a href="https://instagram.com/art_wt_sapna" target="_blank" rel="noreferrer" aria-label="Instagram">
                 <i className="fab fa-instagram" />
               </a>
-              <a href="mailto:hello@sapna.space" aria-label="Email">
+              <a href="mailto:sapnakm71@gmail.com" aria-label="Email">
                 <i className="fas fa-envelope" />
               </a>
             </div>

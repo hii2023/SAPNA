@@ -705,6 +705,7 @@ function GalleryTab({ onToast }) {
   const [filterCat, setFilterCat] = useState('all')
   const [dirty, setDirty]       = useState(false)
   const [confirm, setConfirm]   = useState(false)
+  const [draggedId, setDraggedId] = useState(null)
 
   const update = (id, field, val) => {
     setItems(prev => prev.map(g => g.id === id ? { ...g, [field]: val } : g))
@@ -762,6 +763,20 @@ function GalleryTab({ onToast }) {
     setDirty(true)
   }
 
+  const moveItem = (fromId, toId) => {
+    if (!fromId || !toId || fromId === toId) return
+    setItems(prev => {
+      const fromIndex = prev.findIndex(item => item.id === fromId)
+      const toIndex = prev.findIndex(item => item.id === toId)
+      if (fromIndex === -1 || toIndex === -1) return prev
+      const next = [...prev]
+      const [moved] = next.splice(fromIndex, 1)
+      next.splice(toIndex, 0, moved)
+      return next
+    })
+    setDirty(true)
+  }
+
   const filtered = filterCat === 'all' ? items : items.filter(g => g.category === filterCat)
 
   return (
@@ -778,6 +793,7 @@ function GalleryTab({ onToast }) {
         <div>
           <h2>Gallery</h2>
           <p>{items.length} pieces in your portfolio</p>
+          <p className="admin-gallery-help">Drag and drop cards to change photo sequence.</p>
         </div>
         <div className="admin-header-actions">
           {dirty && (
@@ -808,8 +824,32 @@ function GalleryTab({ onToast }) {
 
       <div className="admin-gallery-grid">
         {filtered.map(item => (
-          <div key={item.id} className="admin-gallery-card">
+          <div
+            key={item.id}
+            className={`admin-gallery-card ${draggedId === item.id ? 'is-dragging' : ''}`}
+            draggable
+            onDragStart={() => setDraggedId(item.id)}
+            onDragEnd={() => setDraggedId(null)}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault()
+              moveItem(draggedId, item.id)
+              setDraggedId(null)
+            }}
+          >
             <div className="admin-gallery-img-wrap" onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}>
+              <button
+                type="button"
+                className="admin-gallery-remove-btn"
+                title="Delete photo"
+                aria-label={`Delete ${item.title}`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  deleteItem(item.id)
+                }}
+              >
+                ×
+              </button>
               <img src={item.image} alt={item.title} onError={e => { e.target.style.opacity = '0.3' }} />
               {item.featured && <span className="admin-featured-dot">⭐</span>}
               <div className="admin-gallery-overlay">
@@ -818,7 +858,10 @@ function GalleryTab({ onToast }) {
             </div>
             <div className="admin-gallery-card-info">
               <span>{item.title}</span>
-              <span className="admin-cat-chip">{item.category}</span>
+              <div className="admin-gallery-card-meta">
+                <span className="admin-cat-chip">{item.category}</span>
+                <span className="admin-drag-hint" title="Drag to reorder"><i className="fas fa-grip-vertical" /></span>
+              </div>
             </div>
 
             {expandedId === item.id && (

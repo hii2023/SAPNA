@@ -59,7 +59,7 @@ export const DEFAULT_PROFILE = {
   tagline:    'Handcrafted with Love & Wanderlust',
   location:   'Ahmedabad, Gujarat, India',
   phone:      '+91 85113 41910',
-  email:      'hello@sapna.space',
+  email:      'sapnakm71@gmail.com',
   whatsapp:   '918511341910',
   instagram:  'art_wt_sapna',
   photo:      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&q=80',
