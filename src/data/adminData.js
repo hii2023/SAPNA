@@ -5,11 +5,13 @@
 // ============================================================
 import { products as defaultProducts } from './products'
 import { galleryItems as defaultGallery } from './gallery'
+import { projects as defaultProjects } from './projects'
 
 const KEYS = {
   products: 'sapna_admin_products',
   profile:  'sapna_admin_profile',
   gallery:  'sapna_admin_gallery',
+  projects: 'sapna_admin_projects',
   password: 'sapna_admin_password',
   auth:     'sapna_admin_auth',
 }
@@ -59,7 +61,7 @@ export const DEFAULT_PROFILE = {
   tagline:    'Handcrafted with Love & Wanderlust',
   location:   'Ahmedabad, Gujarat, India',
   phone:      '+91 85113 41910',
-  email:      'hello@sapna.space',
+  email:      'sapnakm71@gmail.com',
   whatsapp:   '918511341910',
   instagram:  'art_wt_sapna',
   photo:      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&q=80',
@@ -94,4 +96,19 @@ export function saveGallery(gallery) {
 }
 export function resetGallery() {
   localStorage.removeItem(KEYS.gallery)
+}
+
+// ── Projects ───────────────────────────────────────────────
+export function getProjects() {
+  try {
+    const stored = localStorage.getItem(KEYS.projects)
+    if (stored) return JSON.parse(stored)
+  } catch (_) {}
+  return defaultProjects
+}
+export function saveProjects(projects) {
+  localStorage.setItem(KEYS.projects, JSON.stringify(projects))
+}
+export function resetProjects() {
+  localStorage.removeItem(KEYS.projects)
 }
