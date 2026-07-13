@@ -285,6 +285,28 @@ function ProductsTab({ products, onSave, onToast }) {
     }
   }
 
+  const moveImage = (productId, fromIndex, toIndex) => {
+    const product = items.find(item => item.id === productId)
+    if (!product) return
+    const images = [...(product.images || [])]
+    if (fromIndex === toIndex || toIndex < 0 || toIndex >= images.length) return
+    const [moved] = images.splice(fromIndex, 1)
+    images.splice(toIndex, 0, moved)
+    update(productId, 'images', images)
+  }
+
+  const removeImage = (productId, imageIndex) => {
+    const product = items.find(item => item.id === productId)
+    if (!product) return
+    const images = product.images || []
+    if (images.length <= 1) {
+      onToast('At least one product image is required.', 'error')
+      return
+    }
+    update(productId, 'images', images.filter((_, index) => index !== imageIndex))
+    onToast('Product image removed. Save to publish changes.', 'success')
+  }
+
   const handleSave = () => {
     saveProducts(items)
     onSave(items)
@@ -530,9 +552,43 @@ function ProductsTab({ products, onSave, onToast }) {
                   />
                   <div className="admin-image-previews">
                     {product.images.map((img, i) => (
-                      <img key={i} src={img} alt={`Preview ${i + 1}`} title={`Image ${i + 1}`} />
+                      <div key={`${product.id}-${i}`} className="admin-image-preview-item">
+                        <img src={img} alt={`Preview ${i + 1}`} title={`Image ${i + 1}`} />
+                        <div className="admin-image-preview-actions">
+                          <button
+                            type="button"
+                            className="admin-image-action-btn"
+                            onClick={() => moveImage(product.id, i, i - 1)}
+                            disabled={i === 0}
+                            title="Move image left"
+                            aria-label={`Move image ${i + 1} left`}
+                          >
+                            <i className="fas fa-arrow-left" />
+                          </button>
+                          <button
+                            type="button"
+                            className="admin-image-action-btn"
+                            onClick={() => moveImage(product.id, i, i + 1)}
+                            disabled={i === product.images.length - 1}
+                            title="Move image right"
+                            aria-label={`Move image ${i + 1} right`}
+                          >
+                            <i className="fas fa-arrow-right" />
+                          </button>
+                          <button
+                            type="button"
+                            className="admin-image-action-btn danger"
+                            onClick={() => removeImage(product.id, i)}
+                            title="Delete image"
+                            aria-label={`Delete image ${i + 1}`}
+                          >
+                            <i className="fas fa-trash" />
+                          </button>
+                        </div>
+                      </div>
                     ))}
                   </div>
+                  <small className="admin-image-help">First image is used as the main product image.</small>
                 </div>
 
                 <div className="admin-checkboxes">

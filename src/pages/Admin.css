@@ -734,12 +734,59 @@
   margin-top: 0.5rem;
 }
 
+.admin-image-preview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: center;
+}
+
 .admin-image-previews img {
   width: 80px;
   height: 80px;
   object-fit: cover;
   border-radius: 8px;
   border: 2px solid #e8ddd4;
+}
+
+.admin-image-preview-actions {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.admin-image-action-btn {
+  border: 1px solid #d9cbbf;
+  background: #fff;
+  color: #5f3f2f;
+  border-radius: 6px;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-image-action-btn:hover:not(:disabled) {
+  border-color: #c4714a;
+  color: #c4714a;
+}
+
+.admin-image-action-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.admin-image-action-btn.danger:hover:not(:disabled) {
+  border-color: #d9534f;
+  color: #d9534f;
+}
+
+.admin-image-help {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: #7a6a5f;
 }
 
 .admin-checkboxes {
