@@ -6,7 +6,7 @@ import {
   getProfile, saveProfile, resetProfile, DEFAULT_PROFILE,
   getGallery, saveGallery, resetGallery,
   getProjects, saveProjects, resetProjects,
-  getAdminPassword, setAdminPassword,
+  changeAdminPassword,
 } from '../data/adminData'
 import { categories, themes, products as defaultProducts } from '../data/products'
 import { galleryCategories, galleryItems as defaultGallery } from '../data/gallery'
@@ -70,9 +70,15 @@ function LoginScreen({ onLogin }) {
   const [err, setErr] = useState(false)
   const [show, setShow] = useState(false)
 
-  const handleSubmit = (e) => {
+  const [busy, setBusy] = useState(false)
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (adminLogin(pw)) {
+    if (busy) return
+    setBusy(true)
+    const ok = await adminLogin(pw)
+    setBusy(false)
+    if (ok) {
       onLogin()
     } else {
       setErr(true)
@@ -307,22 +313,31 @@ function ProductsTab({ products, onSave, onToast }) {
     onToast('Product image removed. Save to publish changes.', 'success')
   }
 
-  const handleSave = () => {
-    saveProducts(items)
-    onSave(items)
-    setDirty(false)
-    onToast('Products saved successfully!', 'success')
+  const handleSave = async () => {
+    try {
+      await saveProducts(items)
+      onSave(items)
+      setDirty(false)
+      onToast('Products saved and now live on your website!', 'success')
+    } catch (err) {
+      onToast('Could not save. Check your connection and try again.', 'error')
+    }
   }
 
   const handleReset = () => { setConfirm(true) }
-  const doReset = () => {
-    resetProducts()
-    const fresh = JSON.parse(JSON.stringify(defaultProducts))
-    setItems(fresh)
-    onSave(fresh)
-    setConfirm(false)
-    setDirty(false)
-    onToast('Products reset to defaults.', 'success')
+  const doReset = async () => {
+    try {
+      await resetProducts()
+      const fresh = JSON.parse(JSON.stringify(defaultProducts))
+      setItems(fresh)
+      onSave(fresh)
+      setConfirm(false)
+      setDirty(false)
+      onToast('Products reset to defaults.', 'success')
+    } catch (err) {
+      setConfirm(false)
+      onToast('Could not reset. Check your connection and try again.', 'error')
+    }
   }
 
   const addProduct = () => {
@@ -654,19 +669,28 @@ function ProfileTab({ onToast }) {
     }
   }
 
-  const handleSave = () => {
-    saveProfile(form)
-    setDirty(false)
-    onToast('Profile saved! Reload the site to see changes.', 'success')
+  const handleSave = async () => {
+    try {
+      await saveProfile(form)
+      setDirty(false)
+      onToast('Profile saved and now live on your website!', 'success')
+    } catch (err) {
+      onToast('Could not save. Check your connection and try again.', 'error')
+    }
   }
 
   const handleReset = () => setConfirm(true)
-  const doReset = () => {
-    resetProfile()
-    setForm({ ...DEFAULT_PROFILE })
-    setDirty(false)
-    setConfirm(false)
-    onToast('Profile reset to defaults.', 'success')
+  const doReset = async () => {
+    try {
+      await resetProfile()
+      setForm({ ...DEFAULT_PROFILE })
+      setDirty(false)
+      setConfirm(false)
+      onToast('Profile reset to defaults.', 'success')
+    } catch (err) {
+      setConfirm(false)
+      onToast('Could not reset. Check your connection and try again.', 'error')
+    }
   }
 
   return (
@@ -797,19 +821,28 @@ function GalleryTab({ onToast }) {
     }
   }
 
-  const handleSave = () => {
-    saveGallery(items)
-    setDirty(false)
-    onToast('Gallery saved!', 'success')
+  const handleSave = async () => {
+    try {
+      await saveGallery(items)
+      setDirty(false)
+      onToast('Gallery saved and now live on your website!', 'success')
+    } catch (err) {
+      onToast('Could not save. Check your connection and try again.', 'error')
+    }
   }
 
   const handleReset = () => setConfirm(true)
-  const doReset = () => {
-    resetGallery()
-    setItems(JSON.parse(JSON.stringify(defaultGallery)))
-    setDirty(false)
-    setConfirm(false)
-    onToast('Gallery reset to defaults.', 'success')
+  const doReset = async () => {
+    try {
+      await resetGallery()
+      setItems(JSON.parse(JSON.stringify(defaultGallery)))
+      setDirty(false)
+      setConfirm(false)
+      onToast('Gallery reset to defaults.', 'success')
+    } catch (err) {
+      setConfirm(false)
+      onToast('Could not reset. Check your connection and try again.', 'error')
+    }
   }
 
   const addItem = () => {
@@ -1080,21 +1113,30 @@ function ProjectsTab({ projects, onSave, onToast }) {
     setDirty(true)
   }
 
-  const handleSave = () => {
-    saveProjects(items)
-    onSave(items)
-    setDirty(false)
-    onToast('Projects saved!', 'success')
+  const handleSave = async () => {
+    try {
+      await saveProjects(items)
+      onSave(items)
+      setDirty(false)
+      onToast('Projects saved and now live on your website!', 'success')
+    } catch (err) {
+      onToast('Could not save. Check your connection and try again.', 'error')
+    }
   }
 
-  const doReset = () => {
-    resetProjects()
-    const defaults = JSON.parse(JSON.stringify(defaultProjects))
-    setItems(defaults)
-    onSave(defaults)
-    setDirty(false)
-    setConfirm(false)
-    onToast('Projects reset to defaults.', 'success')
+  const doReset = async () => {
+    try {
+      await resetProjects()
+      const defaults = JSON.parse(JSON.stringify(defaultProjects))
+      setItems(defaults)
+      onSave(defaults)
+      setDirty(false)
+      setConfirm(false)
+      onToast('Projects reset to defaults.', 'success')
+    } catch (err) {
+      setConfirm(false)
+      onToast('Could not reset. Check your connection and try again.', 'error')
+    }
   }
 
   const filtered = filterCat === 'all' ? items : items.filter(item => item.category === filterCat)
@@ -1272,13 +1314,8 @@ function SettingsTab({ onToast, onLogout }) {
   const [showNew, setShowNew]       = useState(false)
   const [pwErr, setPwErr]           = useState('')
 
-  const handleChangePw = (e) => {
+  const handleChangePw = async (e) => {
     e.preventDefault()
-    const stored = getAdminPassword()
-    if (currentPw !== stored) {
-      setPwErr('Current password is incorrect.')
-      return
-    }
     if (newPw.length < 6) {
       setPwErr('New password must be at least 6 characters.')
       return
@@ -1287,19 +1324,23 @@ function SettingsTab({ onToast, onLogout }) {
       setPwErr('Passwords do not match.')
       return
     }
-    setAdminPassword(newPw)
-    setCurrentPw(''); setNewPw(''); setConfirmPw('')
-    setPwErr('')
-    onToast('Password updated successfully!', 'success')
+    try {
+      await changeAdminPassword(currentPw, newPw)
+      setCurrentPw(''); setNewPw(''); setConfirmPw('')
+      setPwErr('')
+      onToast('Password updated successfully!', 'success')
+    } catch (err) {
+      setPwErr('Current password is incorrect.')
+    }
   }
 
   const handleClearAll = () => {
-    if (!window.confirm('Clear ALL admin data (products, profile, gallery, password)? This cannot be undone.')) return
+    if (!window.confirm('Refresh this device from the live website? Your published content is safe. This only clears the local copy and reloads the latest from the cloud.')) return
     localStorage.removeItem('sapna_admin_products')
     localStorage.removeItem('sapna_admin_profile')
     localStorage.removeItem('sapna_admin_gallery')
-    localStorage.removeItem('sapna_admin_password')
-    onToast('All admin data cleared. Reloading…', 'success')
+    localStorage.removeItem('sapna_admin_projects')
+    onToast('Refreshing from the live website…', 'success')
     setTimeout(() => window.location.reload(), 1500)
   }
 
@@ -1346,25 +1387,21 @@ function SettingsTab({ onToast, onLogout }) {
         {/* Info */}
         <div className="admin-settings-card">
           <h3><i className="fas fa-info-circle" /> How Admin Data Works</h3>
-          <p>All your changes (products, profile, gallery) are saved in your browser's <strong>localStorage</strong>. They persist across sessions on this device and browser.</p>
+          <p>Your changes (products, profile, gallery, projects) are saved to the <strong>cloud</strong> and go live on your website for everyone, instantly.</p>
           <ul className="admin-info-list">
-            <li><i className="fas fa-check" /> Changes are instant — no server needed</li>
-            <li><i className="fas fa-check" /> Data stays when you close the browser</li>
-            <li><i className="fas fa-exclamation" /> Clearing browser data will reset everything</li>
-            <li><i className="fas fa-exclamation" /> Changes are per-device (not synced)</li>
+            <li><i className="fas fa-check" /> Changes show on the live site right away</li>
+            <li><i className="fas fa-check" /> Log in and edit from any device or phone</li>
+            <li><i className="fas fa-check" /> Everyone visiting the site sees the same content</li>
+            <li><i className="fas fa-check" /> Nothing is lost if you clear your browser</li>
           </ul>
-          <div className="admin-storage-info">
-            <strong>LocalStorage used:</strong>
-            <span>{Math.round(JSON.stringify(localStorage).length / 1024)} KB</span>
-          </div>
         </div>
 
-        {/* Danger Zone */}
+        {/* Refresh this device */}
         <div className="admin-settings-card danger-zone">
-          <h3><i className="fas fa-exclamation-triangle" /> Danger Zone</h3>
-          <p>Clear all admin data and reset the site to its original default state. This cannot be undone.</p>
+          <h3><i className="fas fa-sync-alt" /> Refresh This Device</h3>
+          <p>Reload the latest published content from the cloud onto this device. Your live website content is not affected.</p>
           <button className="admin-btn admin-btn-danger" onClick={handleClearAll}>
-            <i className="fas fa-trash-alt" /> Clear All Admin Data
+            <i className="fas fa-sync-alt" /> Refresh From Live Site
           </button>
         </div>
 

@@ -1,58 +1,106 @@
 // ============================================================
 // ADMIN DATA UTILITY
 // All pages read from here so admin edits reflect site-wide.
-// Data is stored in localStorage as JSON overrides.
+//
+// Source of truth is now Supabase (table `sapna_content`).
+// On app start we hydrate() from Supabase into a local cache
+// (localStorage), so the synchronous getters below stay
+// synchronous and existing pages need no changes. Admin edits
+// are saved to Supabase via a passcode-gated RPC and go live
+// for every visitor, on every device.
 // ============================================================
 import { products as defaultProducts } from './products'
 import { galleryItems as defaultGallery } from './gallery'
 import { projects as defaultProjects } from './projects'
+import { sbGet, sbRpc } from './supabase'
 
 const KEYS = {
   products: 'sapna_admin_products',
   profile:  'sapna_admin_profile',
   gallery:  'sapna_admin_gallery',
   projects: 'sapna_admin_projects',
-  password: 'sapna_admin_password',
+  passcode: 'sapna_admin_passcode', // per-session, so saves can pass it
   auth:     'sapna_admin_auth',
 }
 
-const DEFAULT_PASSWORD = 'sapna2024'
+// ── Local cache helpers ───────────────────────────────────
+function cacheGet(key) {
+  try {
+    const stored = localStorage.getItem(key)
+    if (stored) return JSON.parse(stored)
+  } catch (_) {}
+  return null
+}
+function cacheSet(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)) } catch (_) {}
+}
+
+// ── Hydration: pull latest published content from Supabase ─
+// Called once at app startup (see App.jsx). Writes into the
+// local cache so the synchronous getters return live data.
+export async function hydrate() {
+  try {
+    const rows = await sbGet('sapna_content?select=key,data')
+    const map = {}
+    for (const row of rows || []) map[row.key] = row.data
+    if (map.products) cacheSet(KEYS.products, map.products)
+    if (map.profile)  cacheSet(KEYS.profile,  map.profile)
+    if (map.gallery)  cacheSet(KEYS.gallery,  map.gallery)
+    if (map.projects) cacheSet(KEYS.projects, map.projects)
+    return true
+  } catch (_) {
+    // Offline / first run: keep whatever is cached (or code defaults).
+    return false
+  }
+}
 
 // ── Auth ──────────────────────────────────────────────────
 export function isAdminLoggedIn() {
   return sessionStorage.getItem(KEYS.auth) === 'true'
 }
-export function adminLogin(password) {
-  const stored = localStorage.getItem(KEYS.password) || DEFAULT_PASSWORD
-  if (password === stored) {
-    sessionStorage.setItem(KEYS.auth, 'true')
-    return true
-  }
+// Verifies the passcode server-side (RPC), so login works on any device.
+export async function adminLogin(passcode) {
+  try {
+    const ok = await sbRpc('sapna_check_pass', { p_passcode: passcode })
+    if (ok === true) {
+      sessionStorage.setItem(KEYS.auth, 'true')
+      try { sessionStorage.setItem(KEYS.passcode, passcode) } catch (_) {}
+      return true
+    }
+  } catch (_) {}
   return false
 }
 export function adminLogout() {
   sessionStorage.removeItem(KEYS.auth)
+  sessionStorage.removeItem(KEYS.passcode)
 }
-export function getAdminPassword() {
-  return localStorage.getItem(KEYS.password) || DEFAULT_PASSWORD
+function currentPasscode() {
+  return sessionStorage.getItem(KEYS.passcode) || ''
 }
-export function setAdminPassword(newPw) {
-  localStorage.setItem(KEYS.password, newPw)
+// Change the admin passcode (verifies the current one server-side).
+export async function changeAdminPassword(current, next) {
+  await sbRpc('sapna_set_pass', { p_passcode: current, p_new: next })
+  try { sessionStorage.setItem(KEYS.passcode, next) } catch (_) {}
+  return true
+}
+
+// ── Generic save to a content section ─────────────────────
+async function saveSection(key, data) {
+  await sbRpc('sapna_save_content', {
+    p_passcode: currentPasscode(), p_key: key, p_data: data,
+  })
+  cacheSet(KEYS[key], data)
 }
 
 // ── Products ──────────────────────────────────────────────
 export function getProducts() {
-  try {
-    const stored = localStorage.getItem(KEYS.products)
-    if (stored) return JSON.parse(stored)
-  } catch (_) {}
-  return defaultProducts
+  return cacheGet(KEYS.products) || defaultProducts
 }
-export function saveProducts(products) {
-  localStorage.setItem(KEYS.products, JSON.stringify(products))
+export async function saveProducts(products) {
+  await saveSection('products', products)
 }
-export function resetProducts() {
-  localStorage.removeItem(KEYS.products)
+export async function resetProducts() {
+  await saveProducts(JSON.parse(JSON.stringify(defaultProducts)))
 }
 
 // ── Profile ───────────────────────────────────────────────
@@ -70,45 +118,34 @@ export const DEFAULT_PROFILE = {
   studioYear: '2018',
 }
 export function getProfile() {
-  try {
-    const stored = localStorage.getItem(KEYS.profile)
-    if (stored) return { ...DEFAULT_PROFILE, ...JSON.parse(stored) }
-  } catch (_) {}
-  return DEFAULT_PROFILE
+  const stored = cacheGet(KEYS.profile)
+  return stored ? { ...DEFAULT_PROFILE, ...stored } : DEFAULT_PROFILE
 }
-export function saveProfile(profile) {
-  localStorage.setItem(KEYS.profile, JSON.stringify(profile))
+export async function saveProfile(profile) {
+  await saveSection('profile', profile)
 }
-export function resetProfile() {
-  localStorage.removeItem(KEYS.profile)
+export async function resetProfile() {
+  await saveProfile({ ...DEFAULT_PROFILE })
 }
 
 // ── Gallery ───────────────────────────────────────────────
 export function getGallery() {
-  try {
-    const stored = localStorage.getItem(KEYS.gallery)
-    if (stored) return JSON.parse(stored)
-  } catch (_) {}
-  return defaultGallery
+  return cacheGet(KEYS.gallery) || defaultGallery
 }
-export function saveGallery(gallery) {
-  localStorage.setItem(KEYS.gallery, JSON.stringify(gallery))
+export async function saveGallery(gallery) {
+  await saveSection('gallery', gallery)
 }
-export function resetGallery() {
-  localStorage.removeItem(KEYS.gallery)
+export async function resetGallery() {
+  await saveGallery(JSON.parse(JSON.stringify(defaultGallery)))
 }
 
-// ── Projects ───────────────────────────────────────────────
+// ── Projects ──────────────────────────────────────────────
 export function getProjects() {
-  try {
-    const stored = localStorage.getItem(KEYS.projects)
-    if (stored) return JSON.parse(stored)
-  } catch (_) {}
-  return defaultProjects
+  return cacheGet(KEYS.projects) || defaultProjects
 }
-export function saveProjects(projects) {
-  localStorage.setItem(KEYS.projects, JSON.stringify(projects))
+export async function saveProjects(projects) {
+  await saveSection('projects', projects)
 }
-export function resetProjects() {
-  localStorage.removeItem(KEYS.projects)
+export async function resetProjects() {
+  await saveProjects(JSON.parse(JSON.stringify(defaultProjects)))
 }

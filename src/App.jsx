@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { hydrate } from './data/adminData'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
@@ -46,10 +47,20 @@ function SiteLayout() {
 }
 
 export default function App() {
+  // Pull the latest published content from Supabase on load, then bump
+  // `ver` to remount the tree so pages re-read the freshly cached data.
+  // First paint uses cached/default data instantly (no blocking loader).
+  const [ver, setVer] = useState(0)
+  useEffect(() => {
+    let alive = true
+    hydrate().finally(() => { if (alive) setVer(v => v + 1) })
+    return () => { alive = false }
+  }, [])
+
   return (
     <Router>
       <ScrollToTop />
-      <SiteLayout />
+      <SiteLayout key={ver} />
     </Router>
   )
 }
