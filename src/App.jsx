@@ -8,6 +8,7 @@ import About from './pages/About'
 import Shop from './pages/Shop'
 import Workshops from './pages/Workshops'
 import Gallery from './pages/Gallery'
+import Recycle from './pages/Recycle'
 import Projects from './pages/Projects'
 import CustomOrders from './pages/CustomOrders'
 import Blog from './pages/Blog'
@@ -35,6 +36,7 @@ function SiteLayout() {
           <Route path="/shop" element={<Shop />} />
           <Route path="/workshops" element={<Workshops />} />
           <Route path="/gallery" element={<Gallery />} />
+          <Route path="/second-life" element={<Recycle />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/custom-orders" element={<CustomOrders />} />
           <Route path="/blog" element={<Blog />} />

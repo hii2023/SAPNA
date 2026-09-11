@@ -66,7 +66,8 @@ begin
     raise exception 'unauthorized';
   end if;
 
-  if p_key not in ('products', 'gallery', 'profile', 'projects', 'siteImages') then
+  if p_key not in ('products', 'gallery', 'profile', 'projects', 'siteImages',
+                   'workshops', 'categories', 'themes', 'blog', 'recycle') then
     raise exception 'invalid key';
   end if;
 

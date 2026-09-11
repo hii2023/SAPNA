@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { blogPosts } from '../data/blog'
+import { getBlog } from '../data/adminData'
 import './Blog.css'
 
 const blogCategories = [
@@ -11,6 +11,7 @@ const blogCategories = [
 ]
 
 export default function Blog() {
+  const blogPosts = getBlog()
   const [activeFilter, setActiveFilter] = useState('all')
   const [selectedPost, setSelectedPost] = useState(null)
   const [isVisible, setIsVisible] = useState({})

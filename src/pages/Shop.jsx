@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { categories, themes, getWhatsAppLink } from '../data/products'
-import { getProducts } from '../data/adminData'
+import { getWhatsAppLink } from '../data/products'
+import { getProducts, getCategories, getThemes } from '../data/adminData'
 import './Shop.css'
 
 // Fullscreen photo viewer — tap the main product photo to see it full-size.
@@ -119,6 +119,8 @@ function ProductModal({ product, onClose }) {
 }
 
 export default function Shop() {
+  const categories = getCategories()
+  const themes = getThemes()
   const [products] = useState(() => getProducts().filter(p => p.available))
   const [searchParams, setSearchParams] = useSearchParams()
   const [activeCat, setActiveCat] = useState(searchParams.get('cat') || 'all')

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { workshops } from '../data/workshops'
-import { getSiteImage } from '../data/adminData'
+import { getSiteImage, getWorkshops } from '../data/adminData'
 import './Workshops.css'
 
 const faqs = [
@@ -13,6 +12,7 @@ const faqs = [
 ]
 
 export default function Workshops() {
+  const workshops = getWorkshops()
   const [openFaq, setOpenFaq] = useState(null)
   const [activeWorkshop, setActiveWorkshop] = useState(null)
   const [isVisible, setIsVisible] = useState({})

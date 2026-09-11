@@ -7,6 +7,11 @@ import {
   getGallery, saveGallery, resetGallery,
   getProjects, saveProjects, resetProjects,
   getSiteImages, saveSiteImages,
+  getWorkshops, saveWorkshops, resetWorkshops,
+  getCategories, saveCategories, resetCategories,
+  getThemes, saveThemes, resetThemes,
+  getBlog, saveBlog, resetBlog,
+  getRecycle, saveRecycle, resetRecycle,
   changeAdminPassword,
 } from '../data/adminData'
 import { categories, themes, products as defaultProducts } from '../data/products'
@@ -21,7 +26,11 @@ const TABS = [
   { id: 'products',  label: 'Products',   icon: 'fas fa-store' },
   { id: 'profile',   label: 'Profile',    icon: 'fas fa-user-circle' },
   { id: 'gallery',   label: 'Gallery',    icon: 'fas fa-images' },
+  { id: 'recycle',   label: 'Second Life',icon: 'fas fa-recycle' },
+  { id: 'workshops', label: 'Workshops',  icon: 'fas fa-chalkboard-teacher' },
   { id: 'projects',  label: 'Projects',   icon: 'fas fa-drafting-compass' },
+  { id: 'blog',      label: 'Journal',    icon: 'fas fa-feather-alt' },
+  { id: 'shopSetup', label: 'Shop Setup', icon: 'fas fa-sliders-h' },
   { id: 'siteImages',label: 'Website Photos', icon: 'fas fa-image' },
   { id: 'settings',  label: 'Settings',   icon: 'fas fa-cog' },
 ]
@@ -1456,6 +1465,377 @@ function SiteImagesTab({ onToast }) {
   )
 }
 
+// ── Shared: image row editor (upload / paste URL / reorder / delete) ──────────
+function ImageRowEditor({ images, onChange, onToast }) {
+  const list = images || []
+  const addFiles = async (files) => {
+    const urls = await readFilesAsDataUrls(files)
+    if (!urls.length) return
+    onChange([...list, ...urls])
+  }
+  const addUrl = (url) => { if (url) onChange([...list, url]) }
+  const remove = (i) => onChange(list.filter((_, idx) => idx !== i))
+  const move = (i, to) => {
+    if (to < 0 || to >= list.length) return
+    const next = [...list]; const [it] = next.splice(i, 1); next.splice(to, 0, it); onChange(next)
+  }
+  const [url, setUrl] = useState('')
+  return (
+    <div className="admin-image-editor">
+      <div className="admin-image-previews">
+        {list.map((img, i) => (
+          <div key={i} className="admin-image-preview-item">
+            <ZoomImg src={img} alt={`Image ${i + 1}`} />
+            <div className="admin-image-preview-actions">
+              <button type="button" className="admin-image-action-btn" onClick={() => move(i, i - 1)} disabled={i === 0} title="Move left"><i className="fas fa-arrow-left" /></button>
+              <button type="button" className="admin-image-action-btn" onClick={() => move(i, i + 1)} disabled={i === list.length - 1} title="Move right"><i className="fas fa-arrow-right" /></button>
+              <button type="button" className="admin-image-action-btn danger" onClick={() => remove(i)} title="Remove"><i className="fas fa-trash" /></button>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="admin-image-add-row">
+        <label className="admin-btn admin-btn-ghost admin-btn-sm siteimg-upload">
+          <i className="fas fa-upload" /> Upload
+          <input type="file" accept="image/*" multiple hidden onChange={e => { addFiles(e.target.files); e.target.value = '' }} />
+        </label>
+        <input type="text" className="siteimg-url" placeholder="…or paste image URL and press Add" value={url} onChange={e => setUrl(e.target.value)} />
+        <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => { addUrl(url.trim()); setUrl('') }}>Add</button>
+      </div>
+    </div>
+  )
+}
+
+// Convert a textarea (one item per line) to/from an array of strings.
+const linesToArr = (s) => (s || '').split('\n').map(x => x.trim()).filter(Boolean)
+const arrToLines = (a) => (a || []).join('\n')
+
+// ── Second Life (Recycle) Tab ─────────────────────────────────────────────────
+function RecycleTab({ onToast }) {
+  const [items, setItems] = useState(() => getRecycle().map(x => ({ ...x })))
+  const [dirty, setDirty] = useState(false)
+  const [confirm, setConfirm] = useState(false)
+
+  const upd = (id, f, v) => { setItems(p => p.map(it => it.id === id ? { ...it, [f]: v } : it)); setDirty(true) }
+  const setImages = (id, imgs) => upd(id, 'images', imgs)
+  const addItem = () => {
+    setItems(p => [{ id: Date.now(), name: 'New Second Life piece', price: 0, originalPrice: null, condition: 'Upcycled', material: '', size: '', images: [], description: '', available: true }, ...p])
+    setDirty(true)
+  }
+  const del = (id) => { if (!window.confirm('Delete this piece? This cannot be undone after you save.')) return; setItems(p => p.filter(it => it.id !== id)); setDirty(true) }
+
+  const handleSave = async () => {
+    try { await saveRecycle(items); setDirty(false); onToast('Second Life saved and now live on your website!', 'success') }
+    catch (e) { onToast('Could not save. Check your connection and try again.', 'error') }
+  }
+  const doReset = async () => {
+    try { await resetRecycle(); setItems(getRecycle().map(x => ({ ...x }))); setDirty(false); setConfirm(false); onToast('Second Life reset to defaults.', 'success') }
+    catch (e) { setConfirm(false); onToast('Could not reset. Try again.', 'error') }
+  }
+
+  return (
+    <div className="admin-tab-content">
+      {confirm && <ConfirmModal msg="Reset Second Life to the original default pieces? Your changes will be lost." onConfirm={doReset} onCancel={() => setConfirm(false)} />}
+      <div className="admin-section-header">
+        <div>
+          <h2>Second Life</h2>
+          <p>Recycled &amp; upcycled pieces shown on the Second Life page.</p>
+        </div>
+        <div className="admin-header-actions">
+          <button className="admin-btn admin-btn-ghost" onClick={() => setConfirm(true)}><i className="fas fa-undo" /> Reset</button>
+          <button className="admin-btn admin-btn-primary" onClick={addItem}><i className="fas fa-plus" /> Add piece</button>
+        </div>
+      </div>
+
+      <div className="admin-edit-list">
+        {items.map(it => (
+          <div key={it.id} className="admin-edit-card">
+            <div className="admin-field-grid">
+              <label className="admin-field span2"><span>Name</span>
+                <input type="text" value={it.name || ''} onChange={e => upd(it.id, 'name', e.target.value)} />
+              </label>
+              <label className="admin-field"><span>Price (₹)</span>
+                <input type="number" value={it.price || 0} onChange={e => upd(it.id, 'price', Number(e.target.value))} />
+              </label>
+              <label className="admin-field"><span>Original price (₹, optional)</span>
+                <input type="number" value={it.originalPrice || ''} onChange={e => upd(it.id, 'originalPrice', e.target.value ? Number(e.target.value) : null)} />
+              </label>
+              <label className="admin-field"><span>Condition / tag</span>
+                <input type="text" value={it.condition || ''} onChange={e => upd(it.id, 'condition', e.target.value)} placeholder="Upcycled / Recycled" />
+              </label>
+              <label className="admin-field"><span>Size</span>
+                <input type="text" value={it.size || ''} onChange={e => upd(it.id, 'size', e.target.value)} />
+              </label>
+              <label className="admin-field span2"><span>Made from (materials)</span>
+                <input type="text" value={it.material || ''} onChange={e => upd(it.id, 'material', e.target.value)} />
+              </label>
+              <label className="admin-field span2"><span>Description</span>
+                <textarea rows="3" value={it.description || ''} onChange={e => upd(it.id, 'description', e.target.value)} />
+              </label>
+            </div>
+            <div className="admin-field"><span>Photos</span>
+              <ImageRowEditor images={it.images} onChange={imgs => setImages(it.id, imgs)} onToast={onToast} />
+            </div>
+            <div className="admin-edit-card-footer">
+              <label className="admin-checkbox">
+                <input type="checkbox" checked={it.available !== false} onChange={e => upd(it.id, 'available', e.target.checked)} /> Available to buy
+              </label>
+              <button className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => del(it.id)}><i className="fas fa-trash" /> Delete</button>
+            </div>
+          </div>
+        ))}
+        {items.length === 0 && <p className="admin-empty-note">No pieces yet. Click "Add piece" to create one.</p>}
+      </div>
+
+      <div className="siteimg-savebar">
+        <button className="admin-btn admin-btn-primary" onClick={handleSave} disabled={!dirty}><i className="fas fa-save" /> Save changes</button>
+      </div>
+    </div>
+  )
+}
+
+// ── Workshops Tab ─────────────────────────────────────────────────────────────
+function WorkshopsTab({ onToast }) {
+  const [items, setItems] = useState(() => getWorkshops().map(x => ({ ...x })))
+  const [dirty, setDirty] = useState(false)
+  const [confirm, setConfirm] = useState(false)
+
+  const upd = (id, f, v) => { setItems(p => p.map(it => it.id === id ? { ...it, [f]: v } : it)); setDirty(true) }
+  const addItem = () => {
+    setItems(p => [{ id: Date.now(), title: 'New Workshop', subtitle: '', icon: '🎨', image: '', duration: '', groupSize: '', price: 0, level: 'All Levels', tag: '', mode: [], whatYouLearn: [], includes: [], upcoming: [] }, ...p])
+    setDirty(true)
+  }
+  const del = (id) => { if (!window.confirm('Delete this workshop?')) return; setItems(p => p.filter(it => it.id !== id)); setDirty(true) }
+
+  const addSession = (id) => upd(id, 'upcoming', [...(items.find(w => w.id === id).upcoming || []), { date: '', time: '', mode: 'In-person', seats: 0 }])
+  const updSession = (id, i, f, v) => {
+    const w = items.find(x => x.id === id)
+    const next = (w.upcoming || []).map((s, idx) => idx === i ? { ...s, [f]: v } : s)
+    upd(id, 'upcoming', next)
+  }
+  const delSession = (id, i) => { const w = items.find(x => x.id === id); upd(id, 'upcoming', (w.upcoming || []).filter((_, idx) => idx !== i)) }
+
+  const handleSave = async () => {
+    try { await saveWorkshops(items); setDirty(false); onToast('Workshops saved and now live on your website!', 'success') }
+    catch (e) { onToast('Could not save. Check your connection and try again.', 'error') }
+  }
+  const doReset = async () => {
+    try { await resetWorkshops(); setItems(getWorkshops().map(x => ({ ...x }))); setDirty(false); setConfirm(false); onToast('Workshops reset to defaults.', 'success') }
+    catch (e) { setConfirm(false); onToast('Could not reset. Try again.', 'error') }
+  }
+
+  return (
+    <div className="admin-tab-content">
+      {confirm && <ConfirmModal msg="Reset all workshops to defaults? Your changes will be lost." onConfirm={doReset} onCancel={() => setConfirm(false)} />}
+      <div className="admin-section-header">
+        <div><h2>Workshops</h2><p>Add, edit or remove the workshops shown on the Workshops page.</p></div>
+        <div className="admin-header-actions">
+          <button className="admin-btn admin-btn-ghost" onClick={() => setConfirm(true)}><i className="fas fa-undo" /> Reset</button>
+          <button className="admin-btn admin-btn-primary" onClick={addItem}><i className="fas fa-plus" /> Add workshop</button>
+        </div>
+      </div>
+
+      <div className="admin-edit-list">
+        {items.map(w => (
+          <div key={w.id} className="admin-edit-card">
+            <div className="admin-field-grid">
+              <label className="admin-field"><span>Icon (emoji)</span>
+                <input type="text" value={w.icon || ''} onChange={e => upd(w.id, 'icon', e.target.value)} /></label>
+              <label className="admin-field span2"><span>Title</span>
+                <input type="text" value={w.title || ''} onChange={e => upd(w.id, 'title', e.target.value)} /></label>
+              <label className="admin-field span3"><span>Subtitle</span>
+                <input type="text" value={w.subtitle || ''} onChange={e => upd(w.id, 'subtitle', e.target.value)} /></label>
+              <label className="admin-field"><span>Price (₹)</span>
+                <input type="number" value={w.price || 0} onChange={e => upd(w.id, 'price', Number(e.target.value))} /></label>
+              <label className="admin-field"><span>Duration</span>
+                <input type="text" value={w.duration || ''} onChange={e => upd(w.id, 'duration', e.target.value)} placeholder="3 hours" /></label>
+              <label className="admin-field"><span>Group size</span>
+                <input type="text" value={w.groupSize || ''} onChange={e => upd(w.id, 'groupSize', e.target.value)} /></label>
+              <label className="admin-field"><span>Level</span>
+                <input type="text" value={w.level || ''} onChange={e => upd(w.id, 'level', e.target.value)} /></label>
+              <label className="admin-field"><span>Tag / badge</span>
+                <input type="text" value={w.tag || ''} onChange={e => upd(w.id, 'tag', e.target.value)} placeholder="Most Popular" /></label>
+              <label className="admin-field span3"><span>Modes (one per line)</span>
+                <textarea rows="2" value={arrToLines(w.mode)} onChange={e => upd(w.id, 'mode', linesToArr(e.target.value))} placeholder={'In-person (Ahmedabad)\nOnline via Zoom'} /></label>
+              <label className="admin-field span3"><span>What you'll learn (one per line)</span>
+                <textarea rows="4" value={arrToLines(w.whatYouLearn)} onChange={e => upd(w.id, 'whatYouLearn', linesToArr(e.target.value))} /></label>
+              <label className="admin-field span3"><span>What's included (one per line)</span>
+                <textarea rows="3" value={arrToLines(w.includes)} onChange={e => upd(w.id, 'includes', linesToArr(e.target.value))} /></label>
+            </div>
+            <div className="admin-field"><span>Photo</span>
+              <ImageRowEditor images={w.image ? [w.image] : []} onChange={imgs => upd(w.id, 'image', imgs[imgs.length - 1] || '')} onToast={onToast} />
+            </div>
+            <div className="admin-subsection">
+              <div className="admin-subsection-head">
+                <strong>Upcoming sessions</strong>
+                <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => addSession(w.id)}><i className="fas fa-plus" /> Add session</button>
+              </div>
+              {(w.upcoming || []).map((s, i) => (
+                <div key={i} className="admin-session-row">
+                  <input type="text" placeholder="Date (April 5, 2026)" value={s.date || ''} onChange={e => updSession(w.id, i, 'date', e.target.value)} />
+                  <input type="text" placeholder="Time" value={s.time || ''} onChange={e => updSession(w.id, i, 'time', e.target.value)} />
+                  <input type="text" placeholder="Mode" value={s.mode || ''} onChange={e => updSession(w.id, i, 'mode', e.target.value)} />
+                  <input type="number" placeholder="Seats" value={s.seats ?? ''} onChange={e => updSession(w.id, i, 'seats', Number(e.target.value))} />
+                  <button className="admin-image-action-btn danger" onClick={() => delSession(w.id, i)} title="Remove session"><i className="fas fa-trash" /></button>
+                </div>
+              ))}
+            </div>
+            <div className="admin-edit-card-footer">
+              <span />
+              <button className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => del(w.id)}><i className="fas fa-trash" /> Delete workshop</button>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="siteimg-savebar">
+        <button className="admin-btn admin-btn-primary" onClick={handleSave} disabled={!dirty}><i className="fas fa-save" /> Save changes</button>
+      </div>
+    </div>
+  )
+}
+
+// ── Journal (Blog) Tab ────────────────────────────────────────────────────────
+function BlogTab({ onToast }) {
+  const [items, setItems] = useState(() => getBlog().map(x => ({ ...x })))
+  const [dirty, setDirty] = useState(false)
+  const [confirm, setConfirm] = useState(false)
+
+  const upd = (id, f, v) => { setItems(p => p.map(it => it.id === id ? { ...it, [f]: v } : it)); setDirty(true) }
+  const slugify = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+  const addItem = () => {
+    const id = Date.now()
+    setItems(p => [{ id, title: 'New Journal Post', slug: 'new-post-' + id, category: 'Travel & Inspiration', tag: 'travel', date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), readTime: '5 min read', excerpt: '', image: '', featured: false, author: 'Sapna', content: '' }, ...p])
+    setDirty(true)
+  }
+  const del = (id) => { if (!window.confirm('Delete this journal post?')) return; setItems(p => p.filter(it => it.id !== id)); setDirty(true) }
+
+  const handleSave = async () => {
+    const cleaned = items.map(it => ({ ...it, slug: it.slug || slugify(it.title) }))
+    try { await saveBlog(cleaned); setItems(cleaned); setDirty(false); onToast('Journal saved and now live on your website!', 'success') }
+    catch (e) { onToast('Could not save. Check your connection and try again.', 'error') }
+  }
+  const doReset = async () => {
+    try { await resetBlog(); setItems(getBlog().map(x => ({ ...x }))); setDirty(false); setConfirm(false); onToast('Journal reset to defaults.', 'success') }
+    catch (e) { setConfirm(false); onToast('Could not reset. Try again.', 'error') }
+  }
+
+  return (
+    <div className="admin-tab-content">
+      {confirm && <ConfirmModal msg="Reset the Journal to default posts? Your changes will be lost." onConfirm={doReset} onCancel={() => setConfirm(false)} />}
+      <div className="admin-section-header">
+        <div><h2>Journal</h2><p>Write and manage the blog posts shown on the Journal page.</p></div>
+        <div className="admin-header-actions">
+          <button className="admin-btn admin-btn-ghost" onClick={() => setConfirm(true)}><i className="fas fa-undo" /> Reset</button>
+          <button className="admin-btn admin-btn-primary" onClick={addItem}><i className="fas fa-plus" /> Add post</button>
+        </div>
+      </div>
+
+      <div className="admin-edit-list">
+        {items.map(b => (
+          <div key={b.id} className="admin-edit-card">
+            <div className="admin-field-grid">
+              <label className="admin-field span3"><span>Title</span>
+                <input type="text" value={b.title || ''} onChange={e => upd(b.id, 'title', e.target.value)} /></label>
+              <label className="admin-field"><span>Category</span>
+                <input type="text" value={b.category || ''} onChange={e => upd(b.id, 'category', e.target.value)} /></label>
+              <label className="admin-field"><span>Tag</span>
+                <input type="text" value={b.tag || ''} onChange={e => upd(b.id, 'tag', e.target.value)} /></label>
+              <label className="admin-field"><span>Date</span>
+                <input type="text" value={b.date || ''} onChange={e => upd(b.id, 'date', e.target.value)} /></label>
+              <label className="admin-field"><span>Read time</span>
+                <input type="text" value={b.readTime || ''} onChange={e => upd(b.id, 'readTime', e.target.value)} placeholder="6 min read" /></label>
+              <label className="admin-field"><span>Author</span>
+                <input type="text" value={b.author || ''} onChange={e => upd(b.id, 'author', e.target.value)} /></label>
+              <label className="admin-field span3"><span>Excerpt (short summary)</span>
+                <textarea rows="2" value={b.excerpt || ''} onChange={e => upd(b.id, 'excerpt', e.target.value)} /></label>
+              <label className="admin-field span3"><span>Full article (use a blank line between paragraphs; **text** for bold headings)</span>
+                <textarea rows="10" value={b.content || ''} onChange={e => upd(b.id, 'content', e.target.value)} /></label>
+            </div>
+            <div className="admin-field"><span>Cover photo</span>
+              <ImageRowEditor images={b.image ? [b.image] : []} onChange={imgs => upd(b.id, 'image', imgs[imgs.length - 1] || '')} onToast={onToast} />
+            </div>
+            <div className="admin-edit-card-footer">
+              <label className="admin-checkbox">
+                <input type="checkbox" checked={!!b.featured} onChange={e => upd(b.id, 'featured', e.target.checked)} /> Featured post
+              </label>
+              <button className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => del(b.id)}><i className="fas fa-trash" /> Delete post</button>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="siteimg-savebar">
+        <button className="admin-btn admin-btn-primary" onClick={handleSave} disabled={!dirty}><i className="fas fa-save" /> Save changes</button>
+      </div>
+    </div>
+  )
+}
+
+// ── Shop Setup Tab (categories + themes) ──────────────────────────────────────
+function ShopSetupTab({ onToast }) {
+  const [cats, setCats] = useState(() => getCategories().map(x => ({ ...x })))
+  const [themes, setThemes] = useState(() => getThemes().map(x => ({ ...x })))
+  const [dirty, setDirty] = useState(false)
+
+  const idFrom = (label) => (label || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || ('c' + Date.now())
+
+  const updCat = (i, f, v) => { setCats(p => p.map((c, idx) => idx === i ? { ...c, [f]: v } : c)); setDirty(true) }
+  const addCat = () => { setCats(p => [...p, { id: idFrom('new-' + Date.now()), label: 'New Category', icon: '🎨' }]); setDirty(true) }
+  const delCat = (i) => { setCats(p => p.filter((_, idx) => idx !== i)); setDirty(true) }
+
+  const updTheme = (i, f, v) => { setThemes(p => p.map((t, idx) => idx === i ? { ...t, [f]: v } : t)); setDirty(true) }
+  const addTheme = () => { setThemes(p => [...p, { id: idFrom('new-' + Date.now()), label: 'New Theme' }]); setDirty(true) }
+  const delTheme = (i) => { setThemes(p => p.filter((_, idx) => idx !== i)); setDirty(true) }
+
+  const handleSave = async () => {
+    try {
+      await saveCategories(cats)
+      await saveThemes(themes)
+      setDirty(false)
+      onToast('Shop setup saved and now live on your website!', 'success')
+    } catch (e) { onToast('Could not save. Check your connection and try again.', 'error') }
+  }
+
+  return (
+    <div className="admin-tab-content">
+      <div className="admin-section-header">
+        <div><h2>Shop Setup</h2><p>The categories and themes used to organise and filter products in the Shop.</p></div>
+        <button className="admin-btn admin-btn-primary" onClick={handleSave} disabled={!dirty}><i className="fas fa-save" /> Save changes</button>
+      </div>
+
+      <div className="admin-settings-card">
+        <h3><i className="fas fa-tags" /> Shop Categories</h3>
+        <p className="admin-hint-note">The first one ("All Art") is the default filter and can't be removed. Renaming or deleting a category won't change products already assigned to it.</p>
+        {cats.map((c, i) => (
+          <div key={i} className="admin-taxo-row">
+            <input className="admin-taxo-icon" type="text" value={c.icon || ''} onChange={e => updCat(i, 'icon', e.target.value)} placeholder="🎨" title="Icon (emoji)" />
+            <input className="admin-taxo-label" type="text" value={c.label || ''} onChange={e => updCat(i, 'label', e.target.value)} placeholder="Category name" />
+            <input className="admin-taxo-id" type="text" value={c.id || ''} onChange={e => updCat(i, 'id', e.target.value)} placeholder="id" disabled={c.id === 'all'} title="Internal id (letters/numbers)" />
+            <button className="admin-image-action-btn danger" onClick={() => delCat(i)} disabled={c.id === 'all'} title="Remove"><i className="fas fa-trash" /></button>
+          </div>
+        ))}
+        <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={addCat}><i className="fas fa-plus" /> Add category</button>
+      </div>
+
+      <div className="admin-settings-card">
+        <h3><i className="fas fa-palette" /> Shop Themes</h3>
+        <p className="admin-hint-note">The first one ("All Themes") is the default filter and can't be removed.</p>
+        {themes.map((t, i) => (
+          <div key={i} className="admin-taxo-row">
+            <input className="admin-taxo-label" type="text" value={t.label || ''} onChange={e => updTheme(i, 'label', e.target.value)} placeholder="Theme name" />
+            <input className="admin-taxo-id" type="text" value={t.id || ''} onChange={e => updTheme(i, 'id', e.target.value)} placeholder="id" disabled={t.id === 'all'} title="Internal id" />
+            <button className="admin-image-action-btn danger" onClick={() => delTheme(i)} disabled={t.id === 'all'} title="Remove"><i className="fas fa-trash" /></button>
+          </div>
+        ))}
+        <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={addTheme}><i className="fas fa-plus" /> Add theme</button>
+      </div>
+
+      <div className="siteimg-savebar">
+        <button className="admin-btn admin-btn-primary" onClick={handleSave} disabled={!dirty}><i className="fas fa-save" /> Save changes</button>
+      </div>
+    </div>
+  )
+}
+
 // ── Settings Tab ──────────────────────────────────────────────────────────────
 function SettingsTab({ onToast, onLogout }) {
   const [currentPw, setCurrentPw]   = useState('')
@@ -1676,6 +2056,18 @@ export default function Admin() {
           )}
           {activeTab === 'projects' && (
             <ProjectsTab projects={projects} onSave={setProjects} onToast={showToast} />
+          )}
+          {activeTab === 'recycle' && (
+            <RecycleTab onToast={showToast} />
+          )}
+          {activeTab === 'workshops' && (
+            <WorkshopsTab onToast={showToast} />
+          )}
+          {activeTab === 'blog' && (
+            <BlogTab onToast={showToast} />
+          )}
+          {activeTab === 'shopSetup' && (
+            <ShopSetupTab onToast={showToast} />
           )}
           {activeTab === 'siteImages' && (
             <SiteImagesTab onToast={showToast} />

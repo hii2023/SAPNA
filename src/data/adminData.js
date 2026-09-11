@@ -9,9 +9,12 @@
 // are saved to Supabase via a passcode-gated RPC and go live
 // for every visitor, on every device.
 // ============================================================
-import { products as defaultProducts } from './products'
+import { products as defaultProducts, categories as defaultCategories, themes as defaultThemes } from './products'
 import { galleryItems as defaultGallery } from './gallery'
 import { projects as defaultProjects } from './projects'
+import { workshops as defaultWorkshops } from './workshops'
+import { blogPosts as defaultBlog } from './blog'
+import { recycleProducts as defaultRecycle } from './recycle'
 import { SITE_IMAGE_DEFAULTS } from './siteImages'
 import { sbGet, sbRpc } from './supabase'
 
@@ -21,6 +24,11 @@ const KEYS = {
   gallery:    'sapna_admin_gallery',
   projects:   'sapna_admin_projects',
   siteImages: 'sapna_admin_site_images',
+  workshops:  'sapna_admin_workshops',
+  categories: 'sapna_admin_categories',
+  themes:     'sapna_admin_themes',
+  blog:       'sapna_admin_blog',
+  recycle:    'sapna_admin_recycle',
   passcode:   'sapna_admin_passcode', // per-session, so saves can pass it
   auth:       'sapna_admin_auth',
 }
@@ -50,6 +58,11 @@ export async function hydrate() {
     if (map.gallery)    cacheSet(KEYS.gallery,    map.gallery)
     if (map.projects)   cacheSet(KEYS.projects,   map.projects)
     if (map.siteImages) cacheSet(KEYS.siteImages, map.siteImages)
+    if (map.workshops)  cacheSet(KEYS.workshops,  map.workshops)
+    if (map.categories) cacheSet(KEYS.categories, map.categories)
+    if (map.themes)     cacheSet(KEYS.themes,     map.themes)
+    if (map.blog)       cacheSet(KEYS.blog,       map.blog)
+    if (map.recycle)    cacheSet(KEYS.recycle,    map.recycle)
     return true
   } catch (_) {
     // Offline / first run: keep whatever is cached (or code defaults).
@@ -166,4 +179,59 @@ export async function saveSiteImages(map) {
 export function getSiteImage(key) {
   const overrides = getSiteImages()
   return (overrides && overrides[key]) || SITE_IMAGE_DEFAULTS[key] || ''
+}
+
+// ── Workshops ─────────────────────────────────────────────
+export function getWorkshops() {
+  return cacheGet(KEYS.workshops) || defaultWorkshops
+}
+export async function saveWorkshops(items) {
+  await saveSection('workshops', items)
+}
+export async function resetWorkshops() {
+  await saveWorkshops(JSON.parse(JSON.stringify(defaultWorkshops)))
+}
+
+// ── Shop categories ───────────────────────────────────────
+export function getCategories() {
+  return cacheGet(KEYS.categories) || defaultCategories
+}
+export async function saveCategories(items) {
+  await saveSection('categories', items)
+}
+export async function resetCategories() {
+  await saveCategories(JSON.parse(JSON.stringify(defaultCategories)))
+}
+
+// ── Shop themes ───────────────────────────────────────────
+export function getThemes() {
+  return cacheGet(KEYS.themes) || defaultThemes
+}
+export async function saveThemes(items) {
+  await saveSection('themes', items)
+}
+export async function resetThemes() {
+  await saveThemes(JSON.parse(JSON.stringify(defaultThemes)))
+}
+
+// ── Journal (blog) ────────────────────────────────────────
+export function getBlog() {
+  return cacheGet(KEYS.blog) || defaultBlog
+}
+export async function saveBlog(items) {
+  await saveSection('blog', items)
+}
+export async function resetBlog() {
+  await saveBlog(JSON.parse(JSON.stringify(defaultBlog)))
+}
+
+// ── Recycle products ──────────────────────────────────────
+export function getRecycle() {
+  return cacheGet(KEYS.recycle) || defaultRecycle
+}
+export async function saveRecycle(items) {
+  await saveSection('recycle', items)
+}
+export async function resetRecycle() {
+  await saveRecycle(JSON.parse(JSON.stringify(defaultRecycle)))
 }

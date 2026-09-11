@@ -1,0 +1,67 @@
+/* ── Second Life (Recycle) page ── */
+.recycle-hero {
+  text-align: center;
+  padding: 120px 20px 48px;
+  background: linear-gradient(160deg, var(--sage-pale, #eef1e8), var(--beige-light, #f7f4ee));
+}
+.recycle-hero h1 {
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  margin: 8px 0 12px;
+  color: var(--sage-dark, #4f5f42);
+}
+.recycle-hero p {
+  max-width: 640px;
+  margin: 0 auto;
+  color: var(--ink-soft, #6f675e);
+  line-height: 1.6;
+}
+
+.recycle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 26px;
+}
+.recycle-card {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, .06);
+  display: flex;
+  flex-direction: column;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.recycle-card:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0, 0, 0, .1); }
+.recycle-img-wrap {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  cursor: pointer;
+  overflow: hidden;
+}
+.recycle-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.recycle-badge {
+  position: absolute;
+  top: 10px; left: 10px;
+  background: var(--sage-dark, #5f7050);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.recycle-info { padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.recycle-name { font-size: 16px; margin: 0; cursor: pointer; color: #2b2622; }
+.recycle-name:hover { color: var(--terracotta, #C4714A); }
+.recycle-material { font-size: 12.5px; color: #7a726a; line-height: 1.4; flex: 1; }
+.recycle-price-row { display: flex; align-items: baseline; gap: 8px; }
+.recycle-price { font-size: 18px; font-weight: 700; color: var(--terracotta, #C4714A); }
+.recycle-orig { font-size: 13px; color: #a49a90; text-decoration: line-through; }
+
+.recycle-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--ink-soft, #7a726a);
+}
+.recycle-empty i { font-size: 42px; color: var(--sage, #8A9E7B); margin-bottom: 14px; }
