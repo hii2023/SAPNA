@@ -11,7 +11,7 @@ const heroSlides = [
     imgKey: "home_hero_1",
     label: "Macrame Art",
     heading: "Threads of a\nWanderer's Soul",
-    sub: "Handcrafted macrame wall hangings, paintings & stitching — each piece a journey",
+    sub: "Handcrafted macrame wall hangings, paintings & stitching, each piece a journey",
     cta: { label: "Explore Shop", to: "/shop" },
   },
   {
@@ -25,7 +25,7 @@ const heroSlides = [
     imgKey: "home_hero_3",
     label: "Embroidery & Stitching",
     heading: "Stories Stitched\nStitch by Stitch",
-    sub: "Botanical embroidery hoops and stitching art — handmade with love in Ahmedabad",
+    sub: "Botanical embroidery hoops and stitching art, handmade with love in Ahmedabad",
     cta: { label: "Shop Stitching", to: "/shop?cat=stitching" },
   },
 ]
@@ -52,7 +52,7 @@ const cats = [
   },
   {
     id: "diy", label: "DIY Kits", icon: "🎁",
-    desc: "Make your own — complete craft kits",
+    desc: "Make your own, complete craft kits",
     imgKey: "home_cat_diy",
     color: "#D4845A",
   },
@@ -64,7 +64,7 @@ const testimonials = [
     name: "Priya M.",
     city: "Mumbai",
     avatar: "P",
-    text: "Sapna's macrame piece is the centrepiece of my living room now. The quality, the detail, the love in every knot — absolutely worth every rupee. She even helped me pick the perfect size over WhatsApp!",
+    text: "Sapna's macrame piece is the centrepiece of my living room now. The quality, the detail, the love in every knot, absolutely worth every rupee. She even helped me pick the perfect size over WhatsApp!",
     rating: 5,
     product: "Desert Dunes Macrame",
   },
@@ -80,7 +80,7 @@ const testimonials = [
     name: "Meghna P.",
     city: "Ahmedabad",
     avatar: "M",
-    text: "Ordered a custom wedding gift — a macrame arch backdrop for our reception. Sapna delivered beyond our dreams. Every guest asked about it. She's incredibly talented and so easy to work with.",
+    text: "Ordered a custom wedding gift, a macrame arch backdrop for our reception. Sapna delivered beyond our dreams. Every guest asked about it. She's incredibly talented and so easy to work with.",
     rating: 5,
     product: "Custom Wedding Installation",
   },
@@ -312,10 +312,10 @@ export default function Home() {
               <div className="divider"><i className="fas fa-leaf" /></div>
               <p className="about-lead">
                 An artist focused on macrame, paintings, and DIY, based in Ahmedabad, Gujarat.
-                I create handmade art inspired by my travels across India — from the golden dunes of Rajasthan to the emerald backwaters of Kerala.
+                I create handmade art inspired by my travels across India, from the golden dunes of Rajasthan to the emerald backwaters of Kerala.
               </p>
               <p className="about-para">
-                Every macrame knot, every watercolour wash, every embroidery stitch carries a memory of a place, a feeling, a moment of quiet beauty. My art is my travel journal — and I invite you to bring a piece of that journey into your home.
+                Every macrame knot, every watercolour wash, every embroidery stitch carries a memory of a place, a feeling, a moment of quiet beauty. My art is my travel journal, and I invite you to bring a piece of that journey into your home.
               </p>
               <div className="about-highlights">
                 <div className="highlight-item">
@@ -352,7 +352,7 @@ export default function Home() {
                 <i className="fas fa-calendar-alt" />
               </div>
               <h3>Workshops</h3>
-              <p>Join a live macrame, painting, or embroidery workshop — online or in Ahmedabad. All skill levels welcome!</p>
+              <p>Join a live macrame, painting, or embroidery workshop, online or in Ahmedabad. All skill levels welcome!</p>
               <Link to="/workshops" className="service-link">Book a Seat <i className="fas fa-arrow-right" /></Link>
             </div>
             <div className="service-card">
@@ -368,7 +368,7 @@ export default function Home() {
                 <i className="fas fa-gift" />
               </div>
               <h3>DIY Kits</h3>
-              <p>Curated craft kits with everything you need — perfect gifts and creative weekends at home.</p>
+              <p>Curated craft kits with everything you need, perfect gifts and creative weekends at home.</p>
               <Link to="/shop?cat=diy" className="service-link">Shop DIY Kits <i className="fas fa-arrow-right" /></Link>
             </div>
             <div className="service-card">
@@ -376,7 +376,7 @@ export default function Home() {
                 <i className="fas fa-images" />
               </div>
               <h3>Gallery</h3>
-              <p>Browse Sapna's best work — commissions, collections, and behind-the-scenes process photography.</p>
+              <p>Browse Sapna's best work, commissions, collections, and behind-the-scenes process photography.</p>
               <Link to="/gallery" className="service-link">View Gallery <i className="fas fa-arrow-right" /></Link>
             </div>
           </div>
@@ -448,7 +448,7 @@ export default function Home() {
             <div className="cta-banner-text">
               <span className="section-label" style={{ color: 'rgba(255,255,255,.7)' }}>Let's Create Together</span>
               <h2>Have Something Special in Mind?</h2>
-              <p>Custom commissions, bulk orders, event installations, or workshop bookings — just say hello!</p>
+              <p>Custom commissions, bulk orders, event installations, or workshop bookings, just say hello!</p>
             </div>
             <div className="cta-banner-actions">
               <a href="https://wa.me/918511341910" target="_blank" rel="noreferrer" className="btn btn-whatsapp btn-lg">

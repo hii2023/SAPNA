@@ -136,7 +136,7 @@ export default function Gallery() {
             <div className="commission-text">
               <span className="section-label" style={{ color: 'rgba(255,255,255,.7)' }}>Custom Commissions</span>
               <h2>Love What You See?<br />Let's Create Something Just for You</h2>
-              <p>Every piece in this gallery started as a conversation. Tell Sapna what you have in mind — she'd love to bring your vision to life.</p>
+              <p>Every piece in this gallery started as a conversation. Tell Sapna what you have in mind, she'd love to bring your vision to life.</p>
             </div>
             <div className="commission-actions">
               <a href="/custom-orders" className="btn btn-primary btn-lg">Request Custom Order</a>

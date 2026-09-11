@@ -61,7 +61,7 @@ const examples = [
   },
   {
     title: "Ganesha Embroidery Diptych",
-    desc: "Twin 25cm embroidery hoops for a pooja room in Pune — gold, saffron, and ivory on brown linen.",
+    desc: "Twin 25cm embroidery hoops for a pooja room in Pune, gold, saffron, and ivory on brown linen.",
     imgKey: "custom_example_3",
     price: "₹4,200",
     time: "2 weeks",
@@ -168,7 +168,7 @@ export default function CustomOrders() {
           <div className={`section-header fade-up ${isVisible['pricing'] ? 'visible' : ''}`}>
             <span className="section-label">Transparent Pricing</span>
             <h2 className="section-title">Pricing Guide</h2>
-            <p className="section-subtitle">All prices are starting points — final quote depends on size, complexity, materials, and timeline. Custom requests are always welcome!</p>
+            <p className="section-subtitle">All prices are starting points, final quote depends on size, complexity, materials, and timeline. Custom requests are always welcome!</p>
           </div>
           <div className={`pricing-grid fade-up ${isVisible['pricing'] ? 'visible' : ''}`}>
             {pricingGuide.map((cat, i) => (
@@ -202,7 +202,7 @@ export default function CustomOrders() {
             <div className={`custom-form-info fade-up ${isVisible['form'] ? 'visible' : ''}`}>
               <span className="section-label">Start Your Commission</span>
               <h2 className="section-title">Tell Me What You Dream Of 🌸</h2>
-              <p>Fill in as many details as you can — the more you share, the better I can bring your vision to life. Don't worry if you're not sure about every detail; we'll figure it out together.</p>
+              <p>Fill in as many details as you can, the more you share, the better I can bring your vision to life. Don't worry if you're not sure about every detail; we'll figure it out together.</p>
               <div className="form-info-items">
                 <div className="form-info-item">
                   <i className="fas fa-clock" />

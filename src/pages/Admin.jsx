@@ -396,7 +396,7 @@ function ProductsTab({ products, onSave, onToast }) {
       originalPrice: null,
       images: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80'],
       size: 'Standard',
-      sizes: ['Standard — ₹1,000'],
+      sizes: ['Standard - ₹1,000'],
       available: true,
       isNew: true,
       isBestseller: false,
@@ -407,7 +407,7 @@ function ProductsTab({ products, onSave, onToast }) {
     setItems(prev => [...prev, newP])
     setExpandedId(newId)
     setDirty(true)
-    onToast('New product added — fill in the details and save.', 'success')
+    onToast('New product added, fill in the details and save.', 'success')
   }
 
   const deleteProduct = (id) => {
@@ -566,7 +566,7 @@ function ProductsTab({ products, onSave, onToast }) {
                 </div>
 
                 <div className="admin-field-group full">
-                  <label>Size Options <small>(one per line, format: "Label — ₹Price")</small></label>
+                  <label>Size Options <small>(one per line, format: "Label - ₹Price")</small></label>
                   <textarea
                     rows={3}
                     value={product.sizes.join('\n')}
@@ -603,7 +603,7 @@ function ProductsTab({ products, onSave, onToast }) {
                 </div>
 
                 <div className="admin-field-group full">
-                  <label>Upload Product Images <small>(select one or more images — first image is the main display image)</small></label>
+                  <label>Upload Product Images <small>(select one or more images, first image is the main display image)</small></label>
                   <input
                     type="file"
                     accept="image/*"
@@ -1818,7 +1818,7 @@ function CustomOrdersTab({ onToast }) {
         </div>
       </div>
 
-      <h3 className="siteimg-group-title">How It Works — steps</h3>
+      <h3 className="siteimg-group-title">How It Works, steps</h3>
       <div className="admin-edit-list">
         {(data.steps || []).map((s, i) => (
           <div key={i} className="admin-edit-card">

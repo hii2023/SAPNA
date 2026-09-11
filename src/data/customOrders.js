@@ -1,5 +1,5 @@
 // ============================================================
-// CUSTOM ORDERS PAGE — editable intro & process text
+// CUSTOM ORDERS PAGE, editable intro & process text
 // Managed from the admin "Custom Orders" tab (saved to Supabase).
 // Order types, pricing tiers and examples stay in the page code.
 // ============================================================

@@ -6,7 +6,7 @@
 // `label` (so the admin knows which section it controls), a short
 // `desc`, and the built-in default image `url`.
 //
-// Product, gallery and project photos are NOT here — those are
+// Product, gallery and project photos are NOT here, those are
 // managed in their own admin tabs.
 // ============================================================
 

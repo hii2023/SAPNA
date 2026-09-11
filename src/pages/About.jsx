@@ -4,19 +4,19 @@ import { getSiteImage } from '../data/adminData'
 import './About.css'
 
 const timeline = [
-  { year: "2019", icon: "🧶", title: "The First Knot", desc: "Discovered macrame on a rainy Ahmedabad weekend — bought ₹200 of cotton rope and never looked back." },
+  { year: "2019", icon: "🧶", title: "The First Knot", desc: "Discovered macrame on a rainy Ahmedabad weekend, bought ₹200 of cotton rope and never looked back." },
   { year: "2020", icon: "📸", title: "First Instagram Post", desc: "Shared my first macrame piece online. 12 likes. One of them was a stranger in Mumbai who later became my first customer." },
   { year: "2021", icon: "✈️", title: "Rajasthan Journey", desc: "A solo trip to Rajasthan transformed my colour palette and gave birth to the Wanderlust Collection." },
   { year: "2022", icon: "🖌️", title: "Painting & Stitching", desc: "Expanded into watercolour painting and embroidery, creating a full handmade art practice." },
   { year: "2023", icon: "🎓", title: "First Workshops", desc: "Started teaching macrame and watercolour workshops in Ahmedabad. Sold out every single session." },
   { year: "2024", icon: "🌟", title: "Gujarat Craft Fair", desc: "Won honourable mention at the Gujarat Craft Fair for the Rajasthan Blue City watercolour series." },
-  { year: "2025", icon: "🚀", title: "Sapna's Art Studio", desc: "Launched the full studio — shop, workshops, DIY kits, and custom commissions — all in one beautiful place." },
+  { year: "2025", icon: "🚀", title: "Sapna's Art Studio", desc: "Launched the full studio, shop, workshops, DIY kits, and custom commissions, all in one beautiful place." },
 ]
 
 const values = [
   { icon: "🌱", title: "Sustainably Made", desc: "Natural cotton ropes, plant-based dyes, recycled packaging. The earth deserves our care." },
   { icon: "✋", title: "100% Handmade", desc: "Every knot, stroke, and stitch by hand. No mass production, ever." },
-  { icon: "🗺️", title: "Travel-Inspired", desc: "Each piece carries a story from a place I've loved — the colours, the textures, the feeling." },
+  { icon: "🗺️", title: "Travel-Inspired", desc: "Each piece carries a story from a place I've loved, the colours, the textures, the feeling." },
   { icon: "🤝", title: "Community First", desc: "My workshops are spaces of joy, not performance. Everyone is an artist here." },
 ]
 
@@ -72,13 +72,13 @@ export default function About() {
               <h2 className="section-title">From Tangled Rope to<br />Full-Time Artist</h2>
               <div className="divider"><i className="fas fa-heart" /></div>
               <p>
-                Five years ago, I was working a desk job in Ahmedabad, spending my lunch breaks watching craft tutorials on my phone and my evenings dreaming about making art. One monsoon weekend in 2019, I finally did something about it — I bought a YouTube tutorial book, two hundred rupees worth of cotton rope from Manek Chowk, and started learning macrame.
+                Five years ago, I was working a desk job in Ahmedabad, spending my lunch breaks watching craft tutorials on my phone and my evenings dreaming about making art. One monsoon weekend in 2019, I finally did something about it, I bought a YouTube tutorial book, two hundred rupees worth of cotton rope from Manek Chowk, and started learning macrame.
               </p>
               <p>
-                The first piece was terrible. The knots were uneven, the tension was wrong, and it sagged sideways. I kept it anyway — it hangs in my studio today as a reminder that every master was once a beginner.
+                The first piece was terrible. The knots were uneven, the tension was wrong, and it sagged sideways. I kept it anyway, it hangs in my studio today as a reminder that every master was once a beginner.
               </p>
               <p>
-                I spent a year practising quietly, gifting pieces to friends, and slowly building an Instagram account. When I got my first real order from a stranger in Mumbai — for a custom piece for her bedroom — I cried actual happy tears.
+                I spent a year practising quietly, gifting pieces to friends, and slowly building an Instagram account. When I got my first real order from a stranger in Mumbai, for a custom piece for her bedroom, I cried actual happy tears.
               </p>
               <p>
                 Today, Sapna's Art Studio is my full-time life. I make macrame wall hangings, travel-inspired watercolour paintings, and botanical embroidery hoops. I run sold-out workshops every week, ship pieces across India, and wake up every morning grateful that I finally let myself be an artist.
@@ -94,7 +94,7 @@ export default function About() {
           <div className={`section-header fade-up ${isVisible['travel'] ? 'visible' : ''}`}>
             <span className="section-label">What Fuels the Art</span>
             <h2 className="section-title">My Work is My Travel Diary</h2>
-            <p className="section-subtitle">Every piece I create carries a memory — a colour I saw, a texture I touched, a moment of quiet beauty on the road.</p>
+            <p className="section-subtitle">Every piece I create carries a memory, a colour I saw, a texture I touched, a moment of quiet beauty on the road.</p>
           </div>
           <div className={`travel-grid fade-up ${isVisible['travel'] ? 'visible' : ''}`}>
             <div className="travel-card">
@@ -104,7 +104,7 @@ export default function About() {
               </div>
               <div className="travel-info">
                 <h3>The Desert Collection</h3>
-                <p>Golden Jaisalmer, cobalt Jodhpur, pink Jaipur — the colours of Rajasthan live in my macrame and paintings. The desert sand became my favourite colour palette.</p>
+                <p>Golden Jaisalmer, cobalt Jodhpur, pink Jaipur, the colours of Rajasthan live in my macrame and paintings. The desert sand became my favourite colour palette.</p>
               </div>
             </div>
             <div className="travel-card">
@@ -114,7 +114,7 @@ export default function About() {
               </div>
               <div className="travel-info">
                 <h3>Backwaters & Emerald Green</h3>
-                <p>Painting from a houseboat on the Alleppey backwaters at dawn — the deep emerald, the mist, the absolute silence. The Kerala series is my most meditative work.</p>
+                <p>Painting from a houseboat on the Alleppey backwaters at dawn, the deep emerald, the mist, the absolute silence. The Kerala series is my most meditative work.</p>
               </div>
             </div>
             <div className="travel-card">
@@ -197,7 +197,7 @@ export default function About() {
           <span className="section-label">Let's Connect</span>
           <h2 className="section-title">Ready to Bring Handmade<br />Art Into Your Home?</h2>
           <p className="section-subtitle" style={{ margin: '0 auto 2.5rem' }}>
-            Browse the shop, book a workshop, or reach out for a custom commission — I'd love to create something beautiful just for you.
+            Browse the shop, book a workshop, or reach out for a custom commission, I'd love to create something beautiful just for you.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link to="/shop" className="btn btn-primary btn-lg">Explore the Shop</Link>

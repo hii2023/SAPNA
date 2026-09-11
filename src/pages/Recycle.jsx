@@ -4,7 +4,7 @@ import { getRecycle } from '../data/adminData'
 import './Shop.css'
 import './Recycle.css'
 
-// Fullscreen photo viewer — tap a photo to see it full-size.
+// Fullscreen photo viewer, tap a photo to see it full-size.
 function PhotoLightbox({ src, alt, onClose }) {
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
@@ -100,7 +100,7 @@ export default function Recycle() {
         <div className="container">
           <span className="section-label">Recycled &amp; Upcycled</span>
           <h1>Second Life</h1>
-          <p>Beautiful pieces given a new beginning — handcrafted from reclaimed, recycled, and upcycled materials. Kind to the planet, one-of-a-kind for your home.</p>
+          <p>Beautiful pieces given a new beginning, handcrafted from reclaimed, recycled, and upcycled materials. Kind to the planet, one-of-a-kind for your home.</p>
         </div>
       </section>
 

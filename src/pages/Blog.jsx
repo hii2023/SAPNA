@@ -71,7 +71,7 @@ export default function Blog() {
               <div className="blog-post-share">
                 <strong>Enjoyed this? Share it 🌸</strong>
                 <div className="share-btns">
-                  <a href={`https://wa.me/?text=${encodeURIComponent(selectedPost.title + ' — from Sapna\'s Art Studio Journal')}`} target="_blank" rel="noreferrer" className="btn btn-whatsapp btn-sm">
+                  <a href={`https://wa.me/?text=${encodeURIComponent(selectedPost.title + ', from Sapna\'s Art Studio Journal')}`} target="_blank" rel="noreferrer" className="btn btn-whatsapp btn-sm">
                     <i className="fab fa-whatsapp" /> Share
                   </a>
                   <a href={`https://instagram.com`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
@@ -100,7 +100,7 @@ export default function Blog() {
         <div className="page-hero-content">
           <span className="section-label">Stories, Tips & Travels</span>
           <h1>Sapna's Journal</h1>
-          <p>Behind the art, inside the studio, across India & beyond — come along for the journey ✨</p>
+          <p>Behind the art, inside the studio, across India & beyond, come along for the journey ✨</p>
         </div>
       </div>
 
@@ -180,7 +180,7 @@ export default function Blog() {
             <div className={`blog-nl-inner fade-up ${isVisible['blog-nl'] ? 'visible' : ''}`}>
               <span className="section-label">Never Miss a Story</span>
               <h2>Join Sapna's Inner Circle 🌸</h2>
-              <p>Get new blog posts, travel diaries, workshop announcements, and exclusive art drops — straight to your inbox.</p>
+              <p>Get new blog posts, travel diaries, workshop announcements, and exclusive art drops, straight to your inbox.</p>
               <form className="blog-nl-form" onSubmit={e => e.preventDefault()}>
                 <input type="email" placeholder="your@email.com" className="form-control" />
                 <button type="submit" className="btn btn-primary">Subscribe</button>

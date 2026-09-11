@@ -25,7 +25,7 @@ export default function Footer() {
             <div className="newsletter-text">
               <span className="section-label">Stay Connected</span>
               <h3>New Art Drops & Workshop Alerts ✨</h3>
-              <p>Join Sapna's community — get first access to new collections, workshop dates, travel-inspired stories & exclusive discounts.</p>
+              <p>Join Sapna's community, get first access to new collections, workshop dates, travel-inspired stories & exclusive discounts.</p>
             </div>
             {subscribed ? (
               <div className="newsletter-success">
@@ -69,7 +69,7 @@ export default function Footer() {
                 </div>
               </Link>
               <p className="footer-bio">
-                Hello! I'm Sapna — an artist focused on macrame, paintings, DIY, and wanderlust-inspired creations, based in Ahmedabad, Gujarat.
+                Hello! I'm Sapna, an artist focused on macrame, paintings, DIY, and wanderlust-inspired creations, based in Ahmedabad, Gujarat.
                 Every piece I create carries a little piece of a journey, a memory, and a whole lot of love.
               </p>
               <div className="footer-social">

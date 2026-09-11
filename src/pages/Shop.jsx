@@ -4,7 +4,7 @@ import { getWhatsAppLink } from '../data/products'
 import { getProducts, getCategories, getThemes } from '../data/adminData'
 import './Shop.css'
 
-// Fullscreen photo viewer — tap the main product photo to see it full-size.
+// Fullscreen photo viewer, tap the main product photo to see it full-size.
 function PhotoLightbox({ src, alt, onClose }) {
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
@@ -73,7 +73,7 @@ function ProductModal({ product, onClose }) {
                 {product.sizes.map((s, i) => (
                   <button
                     key={i}
-                    className={`size-btn ${selectedSize === s.split(' — ')[0] || (i === 0 && selectedSize === product.size) ? 'active' : ''}`}
+                    className={`size-btn ${selectedSize === s.split(/ [-—] /)[0] || (i === 0 && selectedSize === product.size) ? 'active' : ''}`}
                     onClick={() => setSelectedSize(s)}
                   >
                     {s}
@@ -160,7 +160,7 @@ export default function Shop() {
         <div className="page-hero-content">
           <span className="section-label">Every Piece, Made by Hand</span>
           <h1>The Shop</h1>
-          <p>Macrame · Paintings · Stitching · DIY Kits — handcrafted in Ahmedabad with love & wanderlust</p>
+          <p>Macrame · Paintings · Stitching · DIY Kits, handcrafted in Ahmedabad with love & wanderlust</p>
         </div>
       </div>
 

@@ -35,7 +35,7 @@ export default function Workshops() {
         <div className="page-hero-content">
           <span className="section-label">Learn, Create, Take Home</span>
           <h1>Workshops & Classes</h1>
-          <p>In-person in Ahmedabad & online worldwide — all skill levels welcome 🎨</p>
+          <p>In-person in Ahmedabad & online worldwide, all skill levels welcome 🎨</p>
           <a
             href={`https://wa.me/918511341910?text=${encodeURIComponent("Hi Sapna! I'd like to book a workshop. Could you share the available dates? 🙏")}`}
             target="_blank"

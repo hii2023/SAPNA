@@ -85,7 +85,7 @@ export const workshops = [
   {
     id: 4,
     title: "DIY Kit Assembly & Craft Session",
-    subtitle: "Fun group craft day — make & take your creation home",
+    subtitle: "Fun group craft day, make & take your creation home",
     icon: "🎁",
     image: "https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=600&q=80",
     duration: "2 hours",
