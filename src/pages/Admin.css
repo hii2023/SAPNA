@@ -1639,3 +1639,42 @@
   display: flex;
   justify-content: flex-end;
 }
+
+/* ── Click-to-enlarge for admin image thumbnails ── */
+.admin-zoomable { cursor: zoom-in; }
+.admin-photo-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  background: rgba(0, 0, 0, .92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  cursor: zoom-out;
+  animation: adminPhotoFade .18s ease;
+}
+@keyframes adminPhotoFade { from { opacity: 0; } to { opacity: 1; } }
+.admin-photo-lightbox > img {
+  max-width: 94vw;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+  cursor: default;
+}
+.admin-photo-lightbox-close {
+  position: absolute;
+  top: 18px; right: 22px;
+  width: 44px; height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .15);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background .2s ease;
+}
+.admin-photo-lightbox-close:hover { background: rgba(255, 255, 255, .3); }

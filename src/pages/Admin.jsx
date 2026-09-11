@@ -67,6 +67,37 @@ function ConfirmModal({ msg, onConfirm, onCancel }) {
   )
 }
 
+// Clickable thumbnail that opens the full photo in a fullscreen overlay.
+// Drop-in replacement for an <img> preview in the admin panel.
+function ZoomImg({ src, alt, className, ...rest }) {
+  const [open, setOpen] = useState(false)
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open])
+  return (
+    <>
+      <img
+        src={src}
+        alt={alt}
+        className={`admin-zoomable${className ? ' ' + className : ''}`}
+        onClick={() => { if (src) setOpen(true) }}
+        {...rest}
+      />
+      {open && (
+        <div className="admin-photo-lightbox" onClick={() => setOpen(false)}>
+          <button className="admin-photo-lightbox-close" onClick={() => setOpen(false)} aria-label="Close">
+            <i className="fas fa-times" />
+          </button>
+          <img src={src} alt={alt} onClick={e => e.stopPropagation()} />
+        </div>
+      )}
+    </>
+  )
+}
+
 // ── Login Screen ──────────────────────────────────────────────────────────────
 function LoginScreen({ onLogin }) {
   const [pw, setPw] = useState('')
@@ -442,7 +473,7 @@ function ProductsTab({ products, onSave, onToast }) {
           <div key={product.id} className={`admin-product-row ${expandedId === product.id ? 'expanded' : ''}`}>
             {/* Row Header */}
             <div className="admin-product-row-header" onClick={() => setExpandedId(expandedId === product.id ? null : product.id)}>
-              <img src={product.images[0]} alt={product.name} className="admin-product-thumb" />
+              <ZoomImg src={product.images[0]} alt={product.name} className="admin-product-thumb" />
               <div className="admin-product-row-info">
                 <span className="admin-product-row-name">{product.name}</span>
                 <div className="admin-product-row-meta">
@@ -571,7 +602,7 @@ function ProductsTab({ products, onSave, onToast }) {
                   <div className="admin-image-previews">
                     {product.images.map((img, i) => (
                       <div key={`${product.id}-${i}`} className="admin-image-preview-item">
-                        <img src={img} alt={`Preview ${i + 1}`} title={`Image ${i + 1}`} />
+                        <ZoomImg src={img} alt={`Preview ${i + 1}`} title={`Image ${i + 1}`} />
                         <div className="admin-image-preview-actions">
                           <button
                             type="button"
@@ -727,7 +758,7 @@ function ProfileTab({ onToast }) {
         {/* Photo Preview */}
         <div className="admin-profile-photo-col">
           <div className="admin-profile-photo-wrap">
-            <img src={form.photo} alt="Profile" onError={e => { e.target.src = 'https://via.placeholder.com/200x200?text=Photo' }} />
+            <ZoomImg src={form.photo} alt="Profile" onError={e => { e.target.src = 'https://via.placeholder.com/200x200?text=Photo' }} />
           </div>
           <p className="admin-photo-hint">Upload a photo below to update your profile picture</p>
         </div>
@@ -960,7 +991,7 @@ function GalleryTab({ onToast }) {
               >
                 ×
               </button>
-              <img src={item.image} alt={item.title} onError={e => { e.target.style.opacity = '0.3' }} />
+              <ZoomImg src={item.image} alt={item.title} onError={e => { e.target.style.opacity = '0.3' }} />
               {item.featured && <span className="admin-featured-dot">⭐</span>}
               <div className="admin-gallery-overlay">
                 <span><i className="fas fa-edit" /> Edit</span>
@@ -1212,7 +1243,7 @@ function ProjectsTab({ projects, onSave, onToast }) {
               >
                 ×
               </button>
-              <img src={item.photos?.[0]} alt={item.title} onError={e => { e.target.style.opacity = '0.3' }} />
+              <ZoomImg src={item.photos?.[0]} alt={item.title} onError={e => { e.target.style.opacity = '0.3' }} />
               <div className="admin-gallery-card-info">
                 <span>{item.title}</span>
                 <div className="admin-gallery-card-meta">
@@ -1263,7 +1294,7 @@ function ProjectsTab({ projects, onSave, onToast }) {
                   <div className="admin-project-photos-grid">
                     {(item.photos || []).map((photo, index) => (
                       <div key={`${item.id}-${index}`} className="admin-project-photo-item">
-                        <img src={photo} alt={`${item.title} ${index + 1}`} />
+                        <ZoomImg src={photo} alt={`${item.title} ${index + 1}`} />
                         <button
                           type="button"
                           className="admin-project-photo-remove"
@@ -1380,7 +1411,7 @@ function SiteImagesTab({ onToast }) {
             {group.items.map(item => (
               <div key={item.key} className="siteimg-card">
                 <div className="siteimg-preview">
-                  <img src={currentUrl(item)} alt={item.label} loading="lazy" />
+                  <ZoomImg src={currentUrl(item)} alt={item.label} loading="lazy" />
                   {isCustom(item) && <span className="siteimg-badge">Changed</span>}
                 </div>
                 <div className="siteimg-body">
