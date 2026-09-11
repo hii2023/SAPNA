@@ -12,6 +12,7 @@ import {
   getThemes, saveThemes, resetThemes,
   getBlog, saveBlog, resetBlog,
   getRecycle, saveRecycle, resetRecycle,
+  getCustomOrders, saveCustomOrders, resetCustomOrders,
   changeAdminPassword,
 } from '../data/adminData'
 import { categories, themes, products as defaultProducts } from '../data/products'
@@ -30,6 +31,7 @@ const TABS = [
   { id: 'workshops', label: 'Workshops',  icon: 'fas fa-chalkboard-teacher' },
   { id: 'projects',  label: 'Projects',   icon: 'fas fa-drafting-compass' },
   { id: 'blog',      label: 'Journal',    icon: 'fas fa-feather-alt' },
+  { id: 'customOrders', label: 'Custom Orders', icon: 'fas fa-pen-fancy' },
   { id: 'shopSetup', label: 'Shop Setup', icon: 'fas fa-sliders-h' },
   { id: 'siteImages',label: 'Website Photos', icon: 'fas fa-image' },
   { id: 'settings',  label: 'Settings',   icon: 'fas fa-cog' },
@@ -1770,6 +1772,75 @@ function BlogTab({ onToast }) {
   )
 }
 
+// ── Custom Orders Tab (intro + process text) ──────────────────────────────────
+function CustomOrdersTab({ onToast }) {
+  const [data, setData] = useState(() => {
+    const c = getCustomOrders()
+    return { ...c, steps: (c.steps || []).map(s => ({ ...s })) }
+  })
+  const [dirty, setDirty] = useState(false)
+  const [confirm, setConfirm] = useState(false)
+
+  const upd = (f, v) => { setData(d => ({ ...d, [f]: v })); setDirty(true) }
+  const updStep = (i, f, v) => { setData(d => ({ ...d, steps: d.steps.map((s, idx) => idx === i ? { ...s, [f]: v } : s) })); setDirty(true) }
+
+  const handleSave = async () => {
+    try { await saveCustomOrders(data); setDirty(false); onToast('Custom Orders page saved and now live on your website!', 'success') }
+    catch (e) { onToast('Could not save. Check your connection and try again.', 'error') }
+  }
+  const doReset = async () => {
+    try {
+      await resetCustomOrders()
+      const c = getCustomOrders(); setData({ ...c, steps: (c.steps || []).map(s => ({ ...s })) })
+      setDirty(false); setConfirm(false); onToast('Custom Orders text reset to defaults.', 'success')
+    } catch (e) { setConfirm(false); onToast('Could not reset. Try again.', 'error') }
+  }
+
+  return (
+    <div className="admin-tab-content">
+      {confirm && <ConfirmModal msg="Reset the Custom Orders intro and steps to defaults? Your changes will be lost." onConfirm={doReset} onCancel={() => setConfirm(false)} />}
+      <div className="admin-section-header">
+        <div><h2>Custom Orders</h2><p>Edit the intro at the top of the Custom Orders page and the "How It Works" steps. (Prices, examples and the form stay as they are.)</p></div>
+        <div className="admin-header-actions">
+          <button className="admin-btn admin-btn-ghost" onClick={() => setConfirm(true)}><i className="fas fa-undo" /> Reset</button>
+          <button className="admin-btn admin-btn-primary" onClick={handleSave} disabled={!dirty}><i className="fas fa-save" /> Save changes</button>
+        </div>
+      </div>
+
+      <div className="admin-edit-card">
+        <div className="admin-field-grid">
+          <label className="admin-field span3"><span>Top heading</span>
+            <input type="text" value={data.heroTitle || ''} onChange={e => upd('heroTitle', e.target.value)} /></label>
+          <label className="admin-field span3"><span>Intro paragraph</span>
+            <textarea rows="2" value={data.heroIntro || ''} onChange={e => upd('heroIntro', e.target.value)} /></label>
+          <label className="admin-field span3"><span>"How It Works" heading</span>
+            <input type="text" value={data.processHeading || ''} onChange={e => upd('processHeading', e.target.value)} /></label>
+        </div>
+      </div>
+
+      <h3 className="siteimg-group-title">How It Works — steps</h3>
+      <div className="admin-edit-list">
+        {(data.steps || []).map((s, i) => (
+          <div key={i} className="admin-edit-card">
+            <div className="admin-field-grid">
+              <label className="admin-field"><span>Step {i + 1} icon (emoji)</span>
+                <input type="text" value={s.icon || ''} onChange={e => updStep(i, 'icon', e.target.value)} /></label>
+              <label className="admin-field span2"><span>Step {i + 1} title</span>
+                <input type="text" value={s.title || ''} onChange={e => updStep(i, 'title', e.target.value)} /></label>
+              <label className="admin-field span3"><span>Step {i + 1} description</span>
+                <textarea rows="2" value={s.desc || ''} onChange={e => updStep(i, 'desc', e.target.value)} /></label>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="siteimg-savebar">
+        <button className="admin-btn admin-btn-primary" onClick={handleSave} disabled={!dirty}><i className="fas fa-save" /> Save changes</button>
+      </div>
+    </div>
+  )
+}
+
 // ── Shop Setup Tab (categories + themes) ──────────────────────────────────────
 function ShopSetupTab({ onToast }) {
   const [cats, setCats] = useState(() => getCategories().map(x => ({ ...x })))
@@ -2065,6 +2136,9 @@ export default function Admin() {
           )}
           {activeTab === 'blog' && (
             <BlogTab onToast={showToast} />
+          )}
+          {activeTab === 'customOrders' && (
+            <CustomOrdersTab onToast={showToast} />
           )}
           {activeTab === 'shopSetup' && (
             <ShopSetupTab onToast={showToast} />

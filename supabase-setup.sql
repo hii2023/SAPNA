@@ -67,7 +67,7 @@ begin
   end if;
 
   if p_key not in ('products', 'gallery', 'profile', 'projects', 'siteImages',
-                   'workshops', 'categories', 'themes', 'blog', 'recycle') then
+                   'workshops', 'categories', 'themes', 'blog', 'recycle', 'customOrders') then
     raise exception 'invalid key';
   end if;
 

@@ -15,6 +15,7 @@ import { projects as defaultProjects } from './projects'
 import { workshops as defaultWorkshops } from './workshops'
 import { blogPosts as defaultBlog } from './blog'
 import { recycleProducts as defaultRecycle } from './recycle'
+import { customOrdersContent as defaultCustomOrders } from './customOrders'
 import { SITE_IMAGE_DEFAULTS } from './siteImages'
 import { sbGet, sbRpc } from './supabase'
 
@@ -29,6 +30,7 @@ const KEYS = {
   themes:     'sapna_admin_themes',
   blog:       'sapna_admin_blog',
   recycle:    'sapna_admin_recycle',
+  customOrders: 'sapna_admin_custom_orders',
   passcode:   'sapna_admin_passcode', // per-session, so saves can pass it
   auth:       'sapna_admin_auth',
 }
@@ -63,6 +65,7 @@ export async function hydrate() {
     if (map.themes)     cacheSet(KEYS.themes,     map.themes)
     if (map.blog)       cacheSet(KEYS.blog,       map.blog)
     if (map.recycle)    cacheSet(KEYS.recycle,    map.recycle)
+    if (map.customOrders) cacheSet(KEYS.customOrders, map.customOrders)
     return true
   } catch (_) {
     // Offline / first run: keep whatever is cached (or code defaults).
@@ -234,4 +237,16 @@ export async function saveRecycle(items) {
 }
 export async function resetRecycle() {
   await saveRecycle(JSON.parse(JSON.stringify(defaultRecycle)))
+}
+
+// ── Custom Orders page (intro + process text) ─────────────
+export function getCustomOrders() {
+  const stored = cacheGet(KEYS.customOrders)
+  return stored ? { ...defaultCustomOrders, ...stored } : defaultCustomOrders
+}
+export async function saveCustomOrders(data) {
+  await saveSection('customOrders', data)
+}
+export async function resetCustomOrders() {
+  await saveCustomOrders(JSON.parse(JSON.stringify(defaultCustomOrders)))
 }

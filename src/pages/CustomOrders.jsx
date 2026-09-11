@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { getSiteImage } from '../data/adminData'
+import { getSiteImage, getCustomOrders } from '../data/adminData'
 import './CustomOrders.css'
 
 const orderTypes = [
@@ -69,6 +69,7 @@ const examples = [
 ]
 
 export default function CustomOrders() {
+  const content = getCustomOrders()
   const [form, setForm] = useState({
     name: '', email: '', phone: '', city: '', type: '', size: '', budget: '', timeline: '', description: '', reference: '',
   })
@@ -109,8 +110,8 @@ export default function CustomOrders() {
       <div className="page-hero custom-orders-hero">
         <div className="page-hero-content">
           <span className="section-label">Something Just for You</span>
-          <h1>Custom Orders</h1>
-          <p>Commission a one-of-a-kind piece — macrame, painting, embroidery, or a full installation — made with your story in mind</p>
+          <h1>{content.heroTitle}</h1>
+          <p>{content.heroIntro}</p>
         </div>
       </div>
 
@@ -119,17 +120,12 @@ export default function CustomOrders() {
         <div className="container">
           <div className={`section-header fade-up ${isVisible['process'] ? 'visible' : ''}`}>
             <span className="section-label">How It Works</span>
-            <h2 className="section-title">From Idea to Artwork in 4 Steps</h2>
+            <h2 className="section-title">{content.processHeading}</h2>
           </div>
           <div className={`process-steps fade-up ${isVisible['process'] ? 'visible' : ''}`}>
-            {[
-              { n: "01", icon: "💬", title: "Share Your Vision", desc: "Fill the form below or message Sapna on WhatsApp. Share your ideas, references, size requirements, and budget." },
-              { n: "02", icon: "✏️", title: "Design Consultation", desc: "Sapna will chat with you to understand your vision, suggest materials and sizes, and send a detailed quote within 24 hours." },
-              { n: "03", icon: "🎨", title: "Creation with Updates", desc: "Once confirmed and advance paid, Sapna begins creating. You receive progress photos throughout the process." },
-              { n: "04", icon: "📦", title: "Shipped with Love", desc: "Your finished piece is carefully packaged and shipped across India, arriving safely at your door." },
-            ].map((step, i) => (
+            {(content.steps || []).map((step, i) => (
               <div key={i} className="process-step" style={{ transitionDelay: `${i * .1}s` }}>
-                <div className="process-num">{step.n}</div>
+                <div className="process-num">{String(i + 1).padStart(2, '0')}</div>
                 <div className="process-icon">{step.icon}</div>
                 <h3>{step.title}</h3>
                 <p>{step.desc}</p>
