@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { getSiteImage } from '../data/adminData'
 import './CustomOrders.css'
 
 const orderTypes = [
@@ -47,21 +48,21 @@ const examples = [
   {
     title: "Wedding Macrame Arch",
     desc: "A 3-metre wide macrame arch for a boho wedding reception in Udaipur. Completed in 3 weeks.",
-    image: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=500&q=80",
+    imgKey: "custom_example_1",
     price: "₹18,000",
     time: "3 weeks",
   },
   {
     title: "Rajasthan Travel Painting",
     desc: "A commissioned watercolour of a couple's favourite memory from their Rajasthan honeymoon.",
-    image: "https://images.unsplash.com/photo-1532664189809-02133fee698d?w=500&q=80",
+    imgKey: "custom_example_2",
     price: "₹5,500",
     time: "10 days",
   },
   {
     title: "Ganesha Embroidery Diptych",
     desc: "Twin 25cm embroidery hoops for a pooja room in Pune — gold, saffron, and ivory on brown linen.",
-    image: "https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=500&q=80",
+    imgKey: "custom_example_3",
     price: "₹4,200",
     time: "2 weeks",
   },
@@ -149,7 +150,7 @@ export default function CustomOrders() {
             {examples.map((ex, i) => (
               <div key={i} className="example-card">
                 <div className="example-img img-overlay">
-                  <img src={ex.image} alt={ex.title} loading="lazy" />
+                  <img src={getSiteImage(ex.imgKey)} alt={ex.title} loading="lazy" />
                 </div>
                 <div className="example-info">
                   <h3>{ex.title}</h3>

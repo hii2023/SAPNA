@@ -429,3 +429,64 @@
   .filter-theme, .filter-sort { min-width: unset; width: 100%; }
 }
 @media (max-width: 480px) { .shop-grid { grid-template-columns: 1fr; } }
+
+/* ── Full-photo lightbox (click product image to enlarge) ── */
+.modal-main-img.is-zoomable { cursor: zoom-in; position: relative; }
+.modal-zoom-hint {
+  position: absolute;
+  bottom: 10px; right: 10px;
+  background: rgba(0, 0, 0, .6);
+  color: #fff;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+.modal-main-img.is-zoomable:hover .modal-zoom-hint { opacity: 1; }
+
+.photo-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(0, 0, 0, .92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  cursor: zoom-out;
+  animation: photoFade .18s ease;
+}
+@keyframes photoFade { from { opacity: 0; } to { opacity: 1; } }
+.photo-lightbox img {
+  max-width: 96vw;
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+  cursor: default;
+}
+.photo-lightbox-close {
+  position: absolute;
+  top: 18px; right: 22px;
+  width: 44px; height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .15);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background .2s ease;
+}
+.photo-lightbox-close:hover { background: rgba(255, 255, 255, .3); }
+
+/* On small screens the hint is always visible (no hover on touch) */
+@media (max-width: 640px) {
+  .modal-zoom-hint { opacity: 1; }
+}

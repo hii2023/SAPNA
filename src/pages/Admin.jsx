@@ -6,11 +6,13 @@ import {
   getProfile, saveProfile, resetProfile, DEFAULT_PROFILE,
   getGallery, saveGallery, resetGallery,
   getProjects, saveProjects, resetProjects,
+  getSiteImages, saveSiteImages,
   changeAdminPassword,
 } from '../data/adminData'
 import { categories, themes, products as defaultProducts } from '../data/products'
 import { galleryCategories, galleryItems as defaultGallery } from '../data/gallery'
 import { projectCategories, projects as defaultProjects } from '../data/projects'
+import { SITE_IMAGE_GROUPS } from '../data/siteImages'
 import './Admin.css'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -20,6 +22,7 @@ const TABS = [
   { id: 'profile',   label: 'Profile',    icon: 'fas fa-user-circle' },
   { id: 'gallery',   label: 'Gallery',    icon: 'fas fa-images' },
   { id: 'projects',  label: 'Projects',   icon: 'fas fa-drafting-compass' },
+  { id: 'siteImages',label: 'Website Photos', icon: 'fas fa-image' },
   { id: 'settings',  label: 'Settings',   icon: 'fas fa-cog' },
 ]
 
@@ -1305,6 +1308,123 @@ function ProjectsTab({ projects, onSave, onToast }) {
   )
 }
 
+// ── Website Photos Tab ────────────────────────────────────────────────────────
+// Lets the admin change the fixed "section" photos across the site (heroes,
+// category cards, banners, etc.). Each slot is labelled so it's clear which
+// part of the website will change. Product/gallery/project photos live in
+// their own tabs.
+function SiteImagesTab({ onToast }) {
+  const [overrides, setOverrides] = useState(() => ({ ...getSiteImages() }))
+  const [dirty, setDirty] = useState(false)
+  const [saving, setSaving] = useState(false)
+
+  const currentUrl = (item) => overrides[item.key] || item.url
+  const isCustom = (item) => Boolean(overrides[item.key])
+
+  const setUrl = (key, url) => {
+    setOverrides(prev => {
+      const next = { ...prev }
+      if (url) next[key] = url
+      else delete next[key]
+      return next
+    })
+    setDirty(true)
+  }
+
+  const handleUpload = async (key, fileList) => {
+    const file = Array.from(fileList || []).find(f => f.type.startsWith('image/'))
+    if (!file) return
+    if (file.size > 3 * 1024 * 1024) {
+      onToast('That image is larger than 3 MB. Please use a smaller photo.', 'error')
+      return
+    }
+    try {
+      const dataUrl = await readFileAsDataUrl(file)
+      setUrl(key, dataUrl)
+      onToast('Photo added. Click "Save changes" to publish.', 'success')
+    } catch (_) {
+      onToast('Could not read that image. Please try another.', 'error')
+    }
+  }
+
+  const resetSlot = (key) => { setUrl(key, '') }
+
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      await saveSiteImages(overrides)
+      setDirty(false)
+      onToast('Website photos saved and now live on your website!', 'success')
+    } catch (err) {
+      onToast('Could not save. Check your connection and try again.', 'error')
+    }
+    setSaving(false)
+  }
+
+  return (
+    <div className="admin-tab-content">
+      <div className="admin-section-header">
+        <div>
+          <h2>Website Photos</h2>
+          <p>Change the fixed photos in each section of your website. The name tells you exactly which part will change.</p>
+        </div>
+        <button className="admin-btn admin-btn-primary" onClick={handleSave} disabled={!dirty || saving}>
+          <i className="fas fa-save" /> {saving ? 'Saving…' : 'Save changes'}
+        </button>
+      </div>
+
+      {SITE_IMAGE_GROUPS.map(group => (
+        <div key={group.page} className="siteimg-group">
+          <h3 className="siteimg-group-title">{group.page}</h3>
+          <div className="siteimg-grid">
+            {group.items.map(item => (
+              <div key={item.key} className="siteimg-card">
+                <div className="siteimg-preview">
+                  <img src={currentUrl(item)} alt={item.label} loading="lazy" />
+                  {isCustom(item) && <span className="siteimg-badge">Changed</span>}
+                </div>
+                <div className="siteimg-body">
+                  <strong className="siteimg-label">{item.label}</strong>
+                  <span className="siteimg-desc">{item.desc}</span>
+                  <div className="siteimg-actions">
+                    <label className="admin-btn admin-btn-ghost admin-btn-sm siteimg-upload">
+                      <i className="fas fa-upload" /> Upload photo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        onChange={e => { handleUpload(item.key, e.target.files); e.target.value = '' }}
+                      />
+                    </label>
+                    {isCustom(item) && (
+                      <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => resetSlot(item.key)}>
+                        <i className="fas fa-undo" /> Reset
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    className="siteimg-url"
+                    placeholder="…or paste an image URL"
+                    value={overrides[item.key] && !overrides[item.key].startsWith('data:') ? overrides[item.key] : ''}
+                    onChange={e => setUrl(item.key, e.target.value.trim())}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <div className="siteimg-savebar">
+        <button className="admin-btn admin-btn-primary" onClick={handleSave} disabled={!dirty || saving}>
+          <i className="fas fa-save" /> {saving ? 'Saving…' : 'Save changes'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // ── Settings Tab ──────────────────────────────────────────────────────────────
 function SettingsTab({ onToast, onLogout }) {
   const [currentPw, setCurrentPw]   = useState('')
@@ -1525,6 +1645,9 @@ export default function Admin() {
           )}
           {activeTab === 'projects' && (
             <ProjectsTab projects={projects} onSave={setProjects} onToast={showToast} />
+          )}
+          {activeTab === 'siteImages' && (
+            <SiteImagesTab onToast={showToast} />
           )}
           {activeTab === 'settings' && (
             <SettingsTab onToast={showToast} onLogout={handleLogout} />

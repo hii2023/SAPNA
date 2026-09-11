@@ -4,9 +4,27 @@ import { categories, themes, getWhatsAppLink } from '../data/products'
 import { getProducts } from '../data/adminData'
 import './Shop.css'
 
+// Fullscreen photo viewer — tap the main product photo to see it full-size.
+function PhotoLightbox({ src, alt, onClose }) {
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+  return (
+    <div className="photo-lightbox" onClick={onClose}>
+      <button className="photo-lightbox-close" onClick={onClose} aria-label="Close">
+        <i className="fas fa-times" />
+      </button>
+      <img src={src} alt={alt} onClick={e => e.stopPropagation()} />
+    </div>
+  )
+}
+
 function ProductModal({ product, onClose }) {
   const [selectedImg, setSelectedImg] = useState(0)
   const [selectedSize, setSelectedSize] = useState(product.size)
+  const [zoom, setZoom] = useState(false)
 
   if (!product) return null
   return (
@@ -15,8 +33,9 @@ function ProductModal({ product, onClose }) {
         <button className="modal-close" onClick={onClose}><i className="fas fa-times" /></button>
         <div className="modal-inner">
           <div className="modal-gallery">
-            <div className="modal-main-img img-overlay">
+            <div className="modal-main-img img-overlay is-zoomable" onClick={() => setZoom(true)} title="Click to view full photo">
               <img src={product.images[selectedImg]} alt={product.name} />
+              <span className="modal-zoom-hint"><i className="fas fa-expand" /> Click to enlarge</span>
             </div>
             {product.images.length > 1 && (
               <div className="modal-thumbs">
@@ -91,6 +110,9 @@ function ProductModal({ product, onClose }) {
             </p>
           </div>
         </div>
+        {zoom && (
+          <PhotoLightbox src={product.images[selectedImg]} alt={product.name} onClose={() => setZoom(false)} />
+        )}
       </div>
     </div>
   )

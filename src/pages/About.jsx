@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { getSiteImage } from '../data/adminData'
 import './About.css'
 
 const timeline = [
@@ -38,7 +39,7 @@ export default function About() {
       {/* ── Hero ── */}
       <section className="about-hero">
         <div className="about-hero-bg">
-          <img src="https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=1600&q=80" alt="Sapna at work" />
+          <img src={getSiteImage('about_hero')} alt="Sapna at work" />
           <div className="about-hero-overlay" />
         </div>
         <div className="about-hero-content container">
@@ -60,10 +61,10 @@ export default function About() {
           <div className={`about-story-inner fade-up ${isVisible['story'] ? 'visible' : ''}`}>
             <div className="story-images">
               <div className="story-img-wrap img-overlay">
-                <img src="https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=700&q=80" alt="Sapna crafting" loading="lazy" />
+                <img src={getSiteImage('about_story_main')} alt="Sapna crafting" loading="lazy" />
               </div>
               <div className="story-img-small img-overlay">
-                <img src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=400&q=80" alt="Embroidery work" loading="lazy" />
+                <img src={getSiteImage('about_story_small')} alt="Embroidery work" loading="lazy" />
               </div>
             </div>
             <div className="story-text">
@@ -98,7 +99,7 @@ export default function About() {
           <div className={`travel-grid fade-up ${isVisible['travel'] ? 'visible' : ''}`}>
             <div className="travel-card">
               <div className="travel-img img-overlay">
-                <img src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=600&q=80" alt="Rajasthan" loading="lazy" />
+                <img src={getSiteImage('about_travel_rajasthan')} alt="Rajasthan" loading="lazy" />
                 <div className="travel-label">Rajasthan</div>
               </div>
               <div className="travel-info">
@@ -108,7 +109,7 @@ export default function About() {
             </div>
             <div className="travel-card">
               <div className="travel-img img-overlay">
-                <img src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=600&q=80" alt="Kerala" loading="lazy" />
+                <img src={getSiteImage('about_travel_kerala')} alt="Kerala" loading="lazy" />
                 <div className="travel-label">Kerala</div>
               </div>
               <div className="travel-info">
@@ -118,7 +119,7 @@ export default function About() {
             </div>
             <div className="travel-card">
               <div className="travel-img img-overlay">
-                <img src="https://images.unsplash.com/photo-1579703822122-204b92e80d61?w=600&q=80" alt="Himalayas" loading="lazy" />
+                <img src={getSiteImage('about_travel_himalayas')} alt="Himalayas" loading="lazy" />
                 <div className="travel-label">Himalayas</div>
               </div>
               <div className="travel-info">

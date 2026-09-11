@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { workshops } from '../data/workshops'
+import { getSiteImage } from '../data/adminData'
 import './Workshops.css'
 
 const faqs = [
@@ -189,7 +190,7 @@ export default function Workshops() {
               </a>
             </div>
             <div className="private-image img-overlay">
-              <img src="https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=700&q=80" alt="Group workshop" loading="lazy" />
+              <img src={getSiteImage('workshops_private')} alt="Group workshop" loading="lazy" />
             </div>
           </div>
         </div>

@@ -1,27 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { getWhatsAppLink } from '../data/products'
-import { getProducts } from '../data/adminData'
+import { getProducts, getSiteImage } from '../data/adminData'
 import './Home.css'
 
 // ── Hero slides ────────────────────────────────────────────
+// Images come from the "Website Photos" admin tab via getSiteImage(imgKey).
 const heroSlides = [
   {
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=85",
+    imgKey: "home_hero_1",
     label: "Macrame Art",
     heading: "Threads of a\nWanderer's Soul",
     sub: "Handcrafted macrame wall hangings, paintings & stitching — each piece a journey",
     cta: { label: "Explore Shop", to: "/shop" },
   },
   {
-    image: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1600&q=85",
+    imgKey: "home_hero_2",
     label: "Watercolour Paintings",
     heading: "Colours Collected\nAcross India",
     sub: "Travel-inspired watercolours & acrylics that bring the world's beauty into your home",
     cta: { label: "View Paintings", to: "/shop?cat=painting" },
   },
   {
-    image: "https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=1600&q=85",
+    imgKey: "home_hero_3",
     label: "Embroidery & Stitching",
     heading: "Stories Stitched\nStitch by Stitch",
     sub: "Botanical embroidery hoops and stitching art — handmade with love in Ahmedabad",
@@ -34,25 +35,25 @@ const cats = [
   {
     id: "macrame", label: "Macrame", icon: "🪢",
     desc: "Handknotted wall hangings in natural cotton",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80",
+    imgKey: "home_cat_macrame",
     color: "#C4714A",
   },
   {
     id: "painting", label: "Paintings", icon: "🖌️",
     desc: "Travel watercolours & textured acrylics",
-    image: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=500&q=80",
+    imgKey: "home_cat_painting",
     color: "#8A9E7B",
   },
   {
     id: "stitching", label: "Stitching", icon: "🧵",
     desc: "Botanical embroidery & stitched hoop art",
-    image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80",
+    imgKey: "home_cat_stitching",
     color: "#D4A843",
   },
   {
     id: "diy", label: "DIY Kits", icon: "🎁",
     desc: "Make your own — complete craft kits",
-    image: "https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=500&q=80",
+    imgKey: "home_cat_diy",
     color: "#D4845A",
   },
 ]
@@ -149,7 +150,7 @@ export default function Home() {
       <section className="hero" aria-label="Hero">
         {heroSlides.map((s, i) => (
           <div key={i} className={`hero-slide ${i === activeSlide ? 'active' : ''}`}>
-            <img src={s.image} alt={s.label} loading={i === 0 ? 'eager' : 'lazy'} />
+            <img src={getSiteImage(s.imgKey)} alt={s.label} loading={i === 0 ? 'eager' : 'lazy'} />
           </div>
         ))}
         <div className="hero-overlay" />
@@ -218,7 +219,7 @@ export default function Home() {
                 style={{ transitionDelay: `${i * .1}s` }}
               >
                 <div className="cat-img-wrap">
-                  <img src={cat.image} alt={cat.label} loading="lazy" />
+                  <img src={getSiteImage(cat.imgKey)} alt={cat.label} loading="lazy" />
                   <div className="cat-overlay" style={{ background: cat.color + '33' }} />
                 </div>
                 <div className="cat-body">
@@ -295,10 +296,10 @@ export default function Home() {
           <div className={`home-about-inner fade-up ${isVisible['about-snip'] ? 'visible' : ''}`}>
             <div className="home-about-images">
               <div className="about-img-main img-overlay">
-                <img src="https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=600&q=80" alt="Sapna at work" loading="lazy" />
+                <img src={getSiteImage('home_about_main')} alt="Sapna at work" loading="lazy" />
               </div>
               <div className="about-img-secondary img-overlay">
-                <img src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=400&q=80" alt="Travel inspiration" loading="lazy" />
+                <img src={getSiteImage('home_about_secondary')} alt="Travel inspiration" loading="lazy" />
               </div>
               <div className="about-badge-float">
                 <span className="about-badge-num">5+</span>
@@ -427,15 +428,11 @@ export default function Home() {
         </div>
         <div className="insta-grid">
           {[
-            "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80",
-            "https://images.unsplash.com/photo-1579703822122-204b92e80d61?w=400&q=80",
-            "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=400&q=80",
-            "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=400&q=80",
-            "https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=400&q=80",
-            "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&q=80",
-          ].map((src, i) => (
+            'home_insta_1', 'home_insta_2', 'home_insta_3',
+            'home_insta_4', 'home_insta_5', 'home_insta_6',
+          ].map((imgKey, i) => (
             <a key={i} href="https://instagram.com/art_wt_sapna" target="_blank" rel="noreferrer" className="insta-item img-overlay">
-              <img src={src} alt={`Instagram ${i + 1}`} loading="lazy" />
+              <img src={getSiteImage(imgKey)} alt={`Instagram ${i + 1}`} loading="lazy" />
               <div className="insta-overlay">
                 <i className="fab fa-instagram" />
               </div>

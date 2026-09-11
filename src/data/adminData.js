@@ -12,15 +12,17 @@
 import { products as defaultProducts } from './products'
 import { galleryItems as defaultGallery } from './gallery'
 import { projects as defaultProjects } from './projects'
+import { SITE_IMAGE_DEFAULTS } from './siteImages'
 import { sbGet, sbRpc } from './supabase'
 
 const KEYS = {
-  products: 'sapna_admin_products',
-  profile:  'sapna_admin_profile',
-  gallery:  'sapna_admin_gallery',
-  projects: 'sapna_admin_projects',
-  passcode: 'sapna_admin_passcode', // per-session, so saves can pass it
-  auth:     'sapna_admin_auth',
+  products:   'sapna_admin_products',
+  profile:    'sapna_admin_profile',
+  gallery:    'sapna_admin_gallery',
+  projects:   'sapna_admin_projects',
+  siteImages: 'sapna_admin_site_images',
+  passcode:   'sapna_admin_passcode', // per-session, so saves can pass it
+  auth:       'sapna_admin_auth',
 }
 
 // ── Local cache helpers ───────────────────────────────────
@@ -43,10 +45,11 @@ export async function hydrate() {
     const rows = await sbGet('sapna_content?select=key,data')
     const map = {}
     for (const row of rows || []) map[row.key] = row.data
-    if (map.products) cacheSet(KEYS.products, map.products)
-    if (map.profile)  cacheSet(KEYS.profile,  map.profile)
-    if (map.gallery)  cacheSet(KEYS.gallery,  map.gallery)
-    if (map.projects) cacheSet(KEYS.projects, map.projects)
+    if (map.products)   cacheSet(KEYS.products,   map.products)
+    if (map.profile)    cacheSet(KEYS.profile,    map.profile)
+    if (map.gallery)    cacheSet(KEYS.gallery,    map.gallery)
+    if (map.projects)   cacheSet(KEYS.projects,   map.projects)
+    if (map.siteImages) cacheSet(KEYS.siteImages, map.siteImages)
     return true
   } catch (_) {
     // Offline / first run: keep whatever is cached (or code defaults).
@@ -148,4 +151,19 @@ export async function saveProjects(projects) {
 }
 export async function resetProjects() {
   await saveProjects(JSON.parse(JSON.stringify(defaultProjects)))
+}
+
+// ── Site images (fixed section photos) ────────────────────
+// Stored as a { slotKey: url } map of overrides. Any slot not
+// overridden falls back to its built-in default from siteImages.js.
+export function getSiteImages() {
+  return cacheGet(KEYS.siteImages) || {}
+}
+export async function saveSiteImages(map) {
+  await saveSection('siteImages', map)
+}
+// Resolve a single slot to its current URL (override or default).
+export function getSiteImage(key) {
+  const overrides = getSiteImages()
+  return (overrides && overrides[key]) || SITE_IMAGE_DEFAULTS[key] || ''
 }
