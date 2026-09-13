@@ -75,6 +75,14 @@ export default function ImageCropModal({ src, aspect, outW, outH, label, onCance
   }
   const onPointerUp = () => { drag.current = null }
 
+  // Reset framing: whole image, centred, no zoom.
+  const resetFraming = () => {
+    if (!img) return
+    const cs = coverScale
+    setZoom(1)
+    setOffset(clamp({ x: (vw - img.w * cs) / 2, y: (vh - img.h * cs) / 2 }, cs))
+  }
+
   const handleConfirm = async () => {
     if (!img) return
     setBusy(true)
@@ -130,6 +138,9 @@ export default function ImageCropModal({ src, aspect, outW, outH, label, onCance
         </div>
 
         <div className="crop-actions">
+          <button className="admin-btn admin-btn-ghost crop-reset" onClick={resetFraming} disabled={!img} title="Show the whole photo again">
+            <i className="fas fa-undo" /> Reset
+          </button>
           <button className="admin-btn admin-btn-ghost" onClick={onCancel}>Cancel</button>
           <button className="admin-btn admin-btn-primary" onClick={handleConfirm} disabled={busy || !img}>
             <i className="fas fa-check" /> {busy ? 'Saving…' : 'Use this photo'}

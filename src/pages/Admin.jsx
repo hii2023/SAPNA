@@ -616,6 +616,14 @@ function ProductsTab({ products, onSave, onToast }) {
                       <div key={`${product.id}-${i}`} className="admin-image-preview-item">
                         <ZoomImg src={img} alt={`Preview ${i + 1}`} title={`Image ${i + 1}`} />
                         <div className="admin-image-preview-actions">
+                          <RecropButton
+                            src={img}
+                            aspect={3 / 4}
+                            outW={900}
+                            outH={1200}
+                            onToast={onToast}
+                            onCropped={u => { setItems(prev => prev.map(p => p.id === product.id ? { ...p, images: p.images.map((im, idx) => idx === i ? u : im) } : p)); setDirty(true) }}
+                          />
                           <button
                             type="button"
                             className="admin-image-action-btn"
@@ -771,8 +779,20 @@ function ProfileTab({ onToast }) {
         <div className="admin-profile-photo-col">
           <div className="admin-profile-photo-wrap">
             <ZoomImg src={form.photo} alt="Profile" onError={e => { e.target.src = 'https://via.placeholder.com/200x200?text=Photo' }} />
+            {form.photo && (
+              <RecropButton
+                src={form.photo}
+                aspect={1}
+                outW={600}
+                outH={600}
+                onToast={onToast}
+                className="admin-image-action-btn admin-profile-recrop"
+                title="Reposition / resize"
+                onCropped={u => handleChange('photo', u)}
+              />
+            )}
           </div>
-          <p className="admin-photo-hint">Upload a photo below to update your profile picture</p>
+          <p className="admin-photo-hint">Upload a photo below, or use the crop button to reposition the current one</p>
         </div>
 
         <div className="admin-profile-fields">
@@ -1040,12 +1060,24 @@ function GalleryTab({ onToast }) {
                 </div>
                 <div className="admin-field-group">
                   <label>Gallery Image <small>(keeps the photo's own shape)</small></label>
-                  <UploadCropButton
-                    label="Upload & position"
-                    aspect="natural"
-                    onToast={onToast}
-                    onAdd={u => { setItems(prev => prev.map(g => g.id === item.id ? { ...g, image: u } : g)); setDirty(true) }}
-                  />
+                  <div className="admin-inline-actions">
+                    <UploadCropButton
+                      label="Upload & position"
+                      aspect="natural"
+                      onToast={onToast}
+                      onAdd={u => { setItems(prev => prev.map(g => g.id === item.id ? { ...g, image: u } : g)); setDirty(true) }}
+                    />
+                    {item.image && (
+                      <RecropButton
+                        src={item.image}
+                        aspect="natural"
+                        onToast={onToast}
+                        className="admin-btn admin-btn-ghost admin-btn-sm"
+                        title="Reposition current photo"
+                        onCropped={u => { setItems(prev => prev.map(g => g.id === item.id ? { ...g, image: u } : g)); setDirty(true) }}
+                      />
+                    )}
+                  </div>
                 </div>
                 <div className="admin-field-group">
                   <label>Project / Series</label>
@@ -1327,14 +1359,25 @@ function ProjectsTab({ projects, onSave, onToast }) {
                     {(item.photos || []).map((photo, index) => (
                       <div key={`${item.id}-${index}`} className="admin-project-photo-item">
                         <ZoomImg src={photo} alt={`${item.title} ${index + 1}`} />
-                        <button
-                          type="button"
-                          className="admin-project-photo-remove"
-                          onClick={() => removePhoto(item.id, index)}
-                          aria-label={`Remove photo ${index + 1}`}
-                        >
-                          ×
-                        </button>
+                        <div className="admin-project-photo-tools">
+                          <RecropButton
+                            src={photo}
+                            aspect={4 / 3}
+                            outW={1000}
+                            outH={750}
+                            onToast={onToast}
+                            className="admin-project-photo-crop"
+                            onCropped={u => { setItems(prev => prev.map(it => it.id === item.id ? { ...it, photos: it.photos.map((ph, idx) => idx === index ? u : ph) } : it)); setDirty(true) }}
+                          />
+                          <button
+                            type="button"
+                            className="admin-project-photo-remove"
+                            onClick={() => removePhoto(item.id, index)}
+                            aria-label={`Remove photo ${index + 1}`}
+                          >
+                            ×
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1568,6 +1611,43 @@ function UploadCropButton({ label = 'Upload & position', aspect = 'natural', out
   )
 }
 
+// ── Shared: reposition/resize an EXISTING image (opens the crop frame) ────────
+function RecropButton({ src, aspect = 'natural', outW, outH, onCropped, onToast, className = 'admin-image-action-btn', title = 'Reposition / resize' }) {
+  const [job, setJob] = useState(null)
+  const open = async () => {
+    if (!src) return
+    try {
+      let a = aspect, ow = outW, oh = outH
+      if (aspect === 'natural') {
+        const im = await loadImage(src)
+        let na = (im.naturalWidth || 1) / (im.naturalHeight || 1)
+        na = Math.max(0.6, Math.min(1.9, na))
+        a = na
+        const cap = 1400
+        if (na >= 1) { ow = Math.min(im.naturalWidth || cap, cap); oh = Math.round(ow / na) }
+        else { oh = Math.min(im.naturalHeight || cap, cap); ow = Math.round(oh * na) }
+      }
+      setJob({ src, aspect: a, outW: ow, outH: oh })
+    } catch (_) { onToast && onToast('Could not open that image.', 'error') }
+  }
+  return (
+    <>
+      <button type="button" className={className} onClick={open} title={title}><i className="fas fa-crop-alt" /></button>
+      {job && (
+        <ImageCropModal
+          src={job.src}
+          aspect={job.aspect}
+          outW={job.outW}
+          outH={job.outH}
+          label={title}
+          onCancel={() => setJob(null)}
+          onConfirm={u => { onCropped(u); setJob(null) }}
+        />
+      )}
+    </>
+  )
+}
+
 // ── Shared: image row editor (upload / paste URL / reorder / delete) ──────────
 function ImageRowEditor({ images, onChange, onToast, aspect = 'natural', outW, outH }) {
   const list = images || []
@@ -1585,6 +1665,7 @@ function ImageRowEditor({ images, onChange, onToast, aspect = 'natural', outW, o
           <div key={i} className="admin-image-preview-item">
             <ZoomImg src={img} alt={`Image ${i + 1}`} />
             <div className="admin-image-preview-actions">
+              <RecropButton src={img} aspect={aspect} outW={outW} outH={outH} onToast={onToast} onCropped={u => onChange(list.map((im, idx) => idx === i ? u : im))} />
               <button type="button" className="admin-image-action-btn" onClick={() => move(i, i - 1)} disabled={i === 0} title="Move left"><i className="fas fa-arrow-left" /></button>
               <button type="button" className="admin-image-action-btn" onClick={() => move(i, i + 1)} disabled={i === list.length - 1} title="Move right"><i className="fas fa-arrow-right" /></button>
               <button type="button" className="admin-image-action-btn danger" onClick={() => remove(i)} title="Remove"><i className="fas fa-trash" /></button>

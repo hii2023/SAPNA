@@ -53,6 +53,7 @@
 .crop-zoom input { flex: 1; accent-color: var(--terracotta, #C4714A); }
 
 .crop-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+.crop-actions .crop-reset { margin-right: auto; }
 
 @media (max-width: 480px) {
   .crop-modal { max-width: 100%; padding: 14px; border-radius: 14px; }
