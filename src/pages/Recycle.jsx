@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { getWhatsAppLink } from '../data/products'
 import { getRecycle } from '../data/adminData'
+import { useSeo } from '../hooks/useSeo'
 import './Shop.css'
 import './Recycle.css'
 
@@ -91,6 +92,11 @@ function RecycleModal({ product, onClose }) {
 }
 
 export default function Recycle() {
+  useSeo({
+    title: 'Second Life: Recycled & Upcycled Art | Sapna\'s Art Studio',
+    description: 'One-of-a-kind pieces handcrafted from reclaimed, recycled and upcycled materials by Sapna in Ahmedabad. Sustainable art, kind to the planet.',
+    path: '/second-life',
+  })
   const [items] = useState(() => getRecycle())
   const [selected, setSelected] = useState(null)
 

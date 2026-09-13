@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { getProjects } from '../data/adminData'
 import { projectCategories } from '../data/projects'
+import { useSeo } from '../hooks/useSeo'
 import './Projects.css'
 
 function ProjectModal({ project, onClose }) {
@@ -32,6 +33,11 @@ function ProjectModal({ project, onClose }) {
 }
 
 export default function Projects() {
+  useSeo({
+    title: 'Projects & Commissions | Sapna\'s Art Studio',
+    description: 'Selected art projects, commissions and installations by Sapna, an artist in Ahmedabad working across India and internationally.',
+    path: '/projects',
+  })
   const [projects] = useState(() => getProjects())
   const [activeCategory, setActiveCategory] = useState('all')
   const [selectedProject, setSelectedProject] = useState(null)

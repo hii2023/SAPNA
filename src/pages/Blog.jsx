@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { getBlog } from '../data/adminData'
+import { useSeo } from '../hooks/useSeo'
+import { subscribeNewsletter } from '../data/leads'
 import './Blog.css'
 
 const blogCategories = [
@@ -11,13 +13,29 @@ const blogCategories = [
 ]
 
 export default function Blog() {
+  useSeo({
+    title: 'Journal | Sapna\'s Art Studio',
+    description: 'Stories, tips and travel diaries from Sapna\'s Art Studio. Behind the art, inside the studio, across India and beyond.',
+    path: '/blog',
+  })
+  const navigate = useNavigate()
   const blogPosts = getBlog()
   const [activeFilter, setActiveFilter] = useState('all')
-  const [selectedPost, setSelectedPost] = useState(null)
   const [isVisible, setIsVisible] = useState({})
+  const [email, setEmail] = useState('')
+  const [subscribed, setSubscribed] = useState(false)
 
   const filtered = activeFilter === 'all' ? blogPosts : blogPosts.filter(p => p.tag === activeFilter)
   const featured = blogPosts.find(p => p.featured)
+  const openPost = (post) => navigate(`/blog/${post.slug}`)
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault()
+    if (!email.trim()) return
+    setSubscribed(true)
+    try { await subscribeNewsletter(email.trim(), 'journal') } catch (_) {}
+    setEmail('')
+  }
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -29,69 +47,6 @@ export default function Blog() {
     document.querySelectorAll('[data-id]').forEach(el => observer.observe(el))
     return () => observer.disconnect()
   }, [])
-
-  if (selectedPost) {
-    return (
-      <div className="blog-page">
-        <div className="blog-post-view">
-          <div className="blog-post-hero">
-            <img src={selectedPost.image} alt={selectedPost.title} />
-            <div className="blog-post-hero-overlay" />
-            <div className="blog-post-hero-content container">
-              <span className="tag tag-terracotta">{selectedPost.category}</span>
-              <h1>{selectedPost.title}</h1>
-              <div className="blog-post-meta">
-                <span><i className="fas fa-user" /> {selectedPost.author}</span>
-                <span><i className="fas fa-calendar" /> {selectedPost.date}</span>
-                <span><i className="fas fa-clock" /> {selectedPost.readTime}</span>
-              </div>
-            </div>
-          </div>
-          <div className="container container-narrow" style={{ padding: '3rem 2rem' }}>
-            <button className="blog-back-btn" onClick={() => setSelectedPost(null)}>
-              <i className="fas fa-arrow-left" /> Back to Journal
-            </button>
-            <div className="blog-post-body">
-              {selectedPost.content.split('\n\n').map((para, i) => {
-                if (para.startsWith('**') && para.endsWith('**')) {
-                  return <h3 key={i}>{para.replace(/\*\*/g, '')}</h3>
-                }
-                if (para.includes('**')) {
-                  const parts = para.split('**')
-                  return (
-                    <p key={i}>
-                      {parts.map((part, j) => j % 2 === 1 ? <strong key={j}>{part}</strong> : part)}
-                    </p>
-                  )
-                }
-                return <p key={i}>{para}</p>
-              })}
-            </div>
-            <div className="blog-post-footer">
-              <div className="blog-post-share">
-                <strong>Enjoyed this? Share it 🌸</strong>
-                <div className="share-btns">
-                  <a href={`https://wa.me/?text=${encodeURIComponent(selectedPost.title + ', from Sapna\'s Art Studio Journal')}`} target="_blank" rel="noreferrer" className="btn btn-whatsapp btn-sm">
-                    <i className="fab fa-whatsapp" /> Share
-                  </a>
-                  <a href={`https://instagram.com`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
-                    <i className="fab fa-instagram" /> Instagram
-                  </a>
-                </div>
-              </div>
-              <div className="blog-post-cta">
-                <h3>Ready to Create Something Beautiful?</h3>
-                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                  <Link to="/shop" className="btn btn-primary">Visit the Shop</Link>
-                  <Link to="/workshops" className="btn btn-sage">Book a Workshop</Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="blog-page">
@@ -110,7 +65,7 @@ export default function Blog() {
           {/* ── Featured Post ── */}
           {featured && (
             <div className="blog-featured" data-id="blog-featured">
-              <div className={`blog-featured-inner fade-up ${isVisible['blog-featured'] ? 'visible' : ''}`} onClick={() => setSelectedPost(featured)}>
+              <div className={`blog-featured-inner fade-up ${isVisible['blog-featured'] ? 'visible' : ''}`} onClick={() => openPost(featured)}>
                 <div className="blog-featured-img img-overlay">
                   <img src={featured.image} alt={featured.title} loading="lazy" />
                   <span className="blog-featured-badge">✨ Featured Story</span>
@@ -153,7 +108,7 @@ export default function Blog() {
                 key={post.id}
                 className={`blog-card fade-up ${isVisible['blog-grid'] ? 'visible' : ''}`}
                 style={{ transitionDelay: `${i * .08}s` }}
-                onClick={() => setSelectedPost(post)}
+                onClick={() => openPost(post)}
               >
                 <div className="blog-card-img img-overlay">
                   <img src={post.image} alt={post.title} loading="lazy" />
@@ -181,10 +136,14 @@ export default function Blog() {
               <span className="section-label">Never Miss a Story</span>
               <h2>Join Sapna's Inner Circle 🌸</h2>
               <p>Get new blog posts, travel diaries, workshop announcements, and exclusive art drops, straight to your inbox.</p>
-              <form className="blog-nl-form" onSubmit={e => e.preventDefault()}>
-                <input type="email" placeholder="your@email.com" className="form-control" />
-                <button type="submit" className="btn btn-primary">Subscribe</button>
-              </form>
+              {subscribed ? (
+                <p className="blog-nl-thanks"><i className="fas fa-check-circle" /> Thank you! You're on the list. 🌸</p>
+              ) : (
+                <form className="blog-nl-form" onSubmit={handleSubscribe}>
+                  <input type="email" required placeholder="your@email.com" className="form-control" value={email} onChange={e => setEmail(e.target.value)} />
+                  <button type="submit" className="btn btn-primary">Subscribe</button>
+                </form>
+              )}
             </div>
           </div>
         </div>

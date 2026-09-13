@@ -20,12 +20,14 @@ import { galleryCategories, galleryItems as defaultGallery } from '../data/galle
 import { projectCategories, projects as defaultProjects } from '../data/projects'
 import { SITE_IMAGE_GROUPS } from '../data/siteImages'
 import { compressImage, fileToDataUrl, loadImage } from '../utils/image'
+import { listLeads, updateLeadStatus } from '../data/leads'
 import ImageCropModal from './ImageCropModal'
 import './Admin.css'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 const TABS = [
   { id: 'dashboard', label: 'Dashboard',  icon: 'fas fa-tachometer-alt' },
+  { id: 'leads',     label: 'Inquiries',  icon: 'fas fa-inbox' },
   { id: 'products',  label: 'Products',   icon: 'fas fa-store' },
   { id: 'profile',   label: 'Profile',    icon: 'fas fa-user-circle' },
   { id: 'gallery',   label: 'Gallery',    icon: 'fas fa-images' },
@@ -2089,6 +2091,79 @@ function ShopSetupTab({ onToast }) {
   )
 }
 
+// ── Inquiries Tab (leads captured from the site) ──────────────────────────────
+function InquiriesTab({ onToast }) {
+  const [leads, setLeads] = useState(null)
+  const [filter, setFilter] = useState('all')
+
+  const load = useCallback(async () => {
+    try { setLeads(await listLeads() || []) }
+    catch (e) { setLeads([]); onToast('Could not load inquiries. Try again.', 'error') }
+  }, [onToast])
+  useEffect(() => { load() }, [load])
+
+  const setStatus = async (id, status) => {
+    setLeads(prev => prev.map(l => l.id === id ? { ...l, status } : l))
+    try { await updateLeadStatus(id, status) } catch (e) { onToast('Could not update. Try again.', 'error') }
+  }
+
+  const typeLabel = { commission: 'Custom order', inquiry: 'Inquiry', newsletter: 'Newsletter', workshop: 'Workshop' }
+  const shown = (leads || []).filter(l => filter === 'all' ? true : l.status === filter)
+  const fmtDate = (d) => { try { return new Date(d).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) } catch (_) { return d } }
+
+  return (
+    <div className="admin-tab-content">
+      <div className="admin-section-header">
+        <div>
+          <h2>Inquiries</h2>
+          <p>Every custom order, message and newsletter signup from your website. Saved here so none are lost.</p>
+        </div>
+        <button className="admin-btn admin-btn-ghost" onClick={load}><i className="fas fa-sync-alt" /> Refresh</button>
+      </div>
+
+      <div className="admin-lead-filters">
+        {['all', 'new', 'contacted', 'done'].map(f => (
+          <button key={f} className={`filter-chip ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
+            {f === 'all' ? 'All' : f[0].toUpperCase() + f.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      {leads === null ? (
+        <p className="admin-empty-note">Loading…</p>
+      ) : shown.length === 0 ? (
+        <p className="admin-empty-note">No inquiries yet. New form submissions will appear here.</p>
+      ) : (
+        <div className="admin-leads">
+          {shown.map(l => (
+            <div key={l.id} className={`admin-lead-card status-${l.status}`}>
+              <div className="admin-lead-top">
+                <span className="admin-lead-type">{typeLabel[l.type] || l.type}</span>
+                <span className="admin-lead-date">{fmtDate(l.created_at)}</span>
+              </div>
+              {l.name && <strong className="admin-lead-name">{l.name}</strong>}
+              <div className="admin-lead-contacts">
+                {l.phone && <a href={`https://wa.me/${(l.phone || '').replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer"><i className="fab fa-whatsapp" /> {l.phone}</a>}
+                {l.email && <a href={`mailto:${l.email}`}><i className="fas fa-envelope" /> {l.email}</a>}
+                {l.city && <span><i className="fas fa-map-marker-alt" /> {l.city}</span>}
+              </div>
+              {(l.budget || l.timeline) && <div className="admin-lead-meta2">{l.budget && <span>Budget: {l.budget}</span>}{l.timeline && <span>Timeline: {l.timeline}</span>}</div>}
+              {l.message && <p className="admin-lead-msg">{l.message}</p>}
+              <div className="admin-lead-actions">
+                {['new', 'contacted', 'done'].map(s => (
+                  <button key={s} className={`admin-btn admin-btn-sm ${l.status === s ? 'admin-btn-primary' : 'admin-btn-ghost'}`} onClick={() => setStatus(l.id, s)}>
+                    {s[0].toUpperCase() + s.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Settings Tab ──────────────────────────────────────────────────────────────
 function SettingsTab({ onToast, onLogout }) {
   const [currentPw, setCurrentPw]   = useState('')
@@ -2324,6 +2399,9 @@ export default function Admin() {
           )}
           {activeTab === 'shopSetup' && (
             <ShopSetupTab onToast={showToast} />
+          )}
+          {activeTab === 'leads' && (
+            <InquiriesTab onToast={showToast} />
           )}
           {activeTab === 'siteImages' && (
             <SiteImagesTab onToast={showToast} />

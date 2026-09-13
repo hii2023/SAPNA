@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getSiteImage } from '../data/adminData'
+import { useSeo } from '../hooks/useSeo'
 import './About.css'
 
 const timeline = [
@@ -21,6 +22,11 @@ const values = [
 ]
 
 export default function About() {
+  useSeo({
+    title: 'About Sapna | Artist in Ahmedabad, India',
+    description: 'Meet Sapna, an independent contemporary artist in Ahmedabad creating macrame, paintings and art-led projects. Available for commissions, installations, murals and creative collaborations.',
+    path: '/about',
+  })
   const [isVisible, setIsVisible] = useState({})
 
   useEffect(() => {

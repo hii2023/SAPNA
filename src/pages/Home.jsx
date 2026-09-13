@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { getWhatsAppLink } from '../data/products'
 import { getProducts, getSiteImage } from '../data/adminData'
+import { useSeo } from '../hooks/useSeo'
 import './Home.css'
 
 // ── Hero slides ────────────────────────────────────────────
@@ -95,6 +96,11 @@ const testimonials = [
 ]
 
 export default function Home() {
+  useSeo({
+    title: "Sapna's Art Studio | Artist in Ahmedabad, India",
+    description: 'Contemporary artist in Ahmedabad. Original artworks, macrame, paintings and DIY kits, plus art commissions, installations, murals and creative collaborations across India and worldwide.',
+    path: '/',
+  })
   const [activeSlide, setActiveSlide] = useState(0)
   const [activeTestimonial, setActiveTestimonial] = useState(0)
   const [isVisible, setIsVisible] = useState({})

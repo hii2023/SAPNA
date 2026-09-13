@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { getSiteImage, getCustomOrders } from '../data/adminData'
+import { useSeo } from '../hooks/useSeo'
+import { submitLead } from '../data/leads'
 import './CustomOrders.css'
 
 const orderTypes = [
@@ -69,6 +71,11 @@ const examples = [
 ]
 
 export default function CustomOrders() {
+  useSeo({
+    title: 'Custom Art Commissions | Sapna\'s Art Studio, Ahmedabad',
+    description: 'Commission a one-of-a-kind piece: custom macrame, paintings, embroidery, murals and installations by Sapna. Made to your story, shipped across India.',
+    path: '/custom-orders',
+  })
   const content = getCustomOrders()
   const [form, setForm] = useState({
     name: '', email: '', phone: '', city: '', type: '', size: '', budget: '', timeline: '', description: '', reference: '',
@@ -91,6 +98,13 @@ export default function CustomOrders() {
 
   const handleSubmit = e => {
     e.preventDefault()
+    // Save the inquiry (never lost) + email Sapna, before opening WhatsApp.
+    submitLead({
+      type: 'commission',
+      name: form.name, email: form.email, phone: form.phone, city: form.city,
+      budget: form.budget, timeline: form.timeline, message: form.description,
+      meta: { artType: form.type, size: form.size, reference: form.reference },
+    })
     const msg = encodeURIComponent(
       `Hi Sapna! 🌸 I'd like to place a custom order.\n\n` +
       `*Name:* ${form.name}\n` +

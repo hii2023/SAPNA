@@ -1772,3 +1772,27 @@
   background: rgba(0,0,0,.6); color: #fff; border: none; cursor: pointer;
 }
 .admin-profile-recrop:hover { background: rgba(0,0,0,.8); }
+
+/* ── Inquiries / leads ── */
+.admin-lead-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.admin-leads { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.admin-lead-card {
+  border: 1px solid rgba(0,0,0,.1); border-left: 4px solid var(--sage, #8A9E7B);
+  border-radius: 12px; background: #fff; padding: 14px; display: flex; flex-direction: column; gap: 8px;
+}
+.admin-lead-card.status-new { border-left-color: var(--terracotta, #C4714A); }
+.admin-lead-card.status-contacted { border-left-color: var(--gold, #D4A843); }
+.admin-lead-card.status-done { border-left-color: #9aa39a; opacity: .8; }
+.admin-lead-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.admin-lead-type { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--terracotta, #C4714A); background: var(--terracotta-pale, #f6e9e2); padding: 3px 8px; border-radius: 999px; }
+.admin-lead-date { font-size: 11.5px; color: #8a8178; }
+.admin-lead-name { font-size: 15px; color: #2b2622; }
+.admin-lead-contacts { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.admin-lead-contacts a { color: var(--sage-dark, #5f7050); text-decoration: none; }
+.admin-lead-contacts a:hover { text-decoration: underline; }
+.admin-lead-meta2 { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12.5px; color: #6f675e; }
+.admin-lead-msg { font-size: 13px; color: #4a443e; line-height: 1.5; background: #faf8f5; padding: 8px 10px; border-radius: 8px; margin: 0; }
+.admin-lead-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+
+/* newsletter thank-you */
+.blog-nl-thanks { color: var(--sage-dark, #4f5f42); font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }

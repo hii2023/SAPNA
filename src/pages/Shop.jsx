@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { getWhatsAppLink } from '../data/products'
 import { getProducts, getCategories, getThemes } from '../data/adminData'
+import { useSeo } from '../hooks/useSeo'
 import './Shop.css'
 
 // Fullscreen photo viewer, tap the main product photo to see it full-size.
@@ -119,6 +120,11 @@ function ProductModal({ product, onClose }) {
 }
 
 export default function Shop() {
+  useSeo({
+    title: 'Shop Handmade Art | Sapna\'s Art Studio, Ahmedabad',
+    description: 'Shop original handmade macrame wall hangings, travel-inspired paintings, embroidery and DIY craft kits by Sapna. Handcrafted in Ahmedabad, shipped across India.',
+    path: '/shop',
+  })
   const categories = getCategories()
   const themes = getThemes()
   const [products] = useState(() => getProducts().filter(p => p.available))

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { getSiteImage, getWorkshops } from '../data/adminData'
+import { useSeo } from '../hooks/useSeo'
 import './Workshops.css'
 
 const faqs = [
@@ -12,6 +13,11 @@ const faqs = [
 ]
 
 export default function Workshops() {
+  useSeo({
+    title: 'Art Workshops in Ahmedabad | Sapna\'s Art Studio',
+    description: 'Join macrame, watercolour painting and embroidery workshops with Sapna in Ahmedabad or online. Beginner-friendly, all materials included. Private and group sessions available.',
+    path: '/workshops',
+  })
   const workshops = getWorkshops()
   const [openFaq, setOpenFaq] = useState(null)
   const [activeWorkshop, setActiveWorkshop] = useState(null)
