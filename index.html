@@ -2,6 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- Forward old hash-style links (/#/admin) to the new clean paths (/admin) -->
+    <script type="text/javascript">
+      (function (l) {
+        if (l.hash.indexOf('#/') === 0) {
+          window.history.replaceState(null, null, l.pathname.replace(/\/$/, '') + l.hash.slice(1));
+        }
+      }(window.location));
+    </script>
     <!-- SPA redirect restore (pairs with 404.html) so deep links like /shop work on GitHub Pages -->
     <script type="text/javascript">
       (function (l) {
