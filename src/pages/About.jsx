@@ -88,6 +88,49 @@ export default function About() {
         </div>
       </section>
 
+      {/* ── Practice & Collaborations (SEO / professional positioning) ── */}
+      <section className="section about-practice" data-id="practice">
+        <div className="container container-narrow">
+          <div className={`section-header fade-up ${isVisible['practice'] ? 'visible' : ''}`}>
+            <span className="section-label">Practice &amp; Collaborations</span>
+            <h2 className="section-title">Art, Spaces &amp; Creative Direction</h2>
+          </div>
+          <div className={`about-practice-body fade-up ${isVisible['practice'] ? 'visible' : ''}`}>
+            <p>
+              Sapna is an independent artist based in Ahmedabad, India, creating contemporary artwork,
+              visual experiences and art-led projects. Her practice explores ideas, spaces, materials and
+              visual storytelling through original artworks and creative collaborations.
+            </p>
+            <p>
+              Based in Ahmedabad and open to working across India and internationally, she collaborates with
+              individuals, brands, architects, designers, cultural spaces, hospitality projects and organisations
+              looking for distinctive art and creative direction.
+            </p>
+            <p className="about-practice-lead">She is available for:</p>
+            <ul className="about-practice-list">
+              <li><i className="fas fa-palette" /> Art commissions</li>
+              <li><i className="fas fa-map-pin" /> Site-specific artwork</li>
+              <li><i className="fas fa-cubes" /> Installations</li>
+              <li><i className="fas fa-paint-roller" /> Murals</li>
+              <li><i className="fas fa-users" /> Collaborations &amp; special creative projects</li>
+            </ul>
+            <p>
+              If you have an interesting space, idea or project that could benefit from an original artistic
+              perspective, she is open to travelling and exploring the possibility of working together.
+            </p>
+            <a
+              href={`https://wa.me/918511341910?text=${encodeURIComponent("Hi Sapna! I'd love to discuss an art project / collaboration with you. 🙏")}`}
+              target="_blank"
+              rel="noreferrer"
+              className="btn btn-primary"
+              style={{ marginTop: '1.25rem' }}
+            >
+              <i className="fab fa-whatsapp" /> Discuss a Project
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* ── Travel & Inspiration ── */}
       <section className="section about-travel" style={{ background: 'var(--beige-light)' }} data-id="travel">
         <div className="container">
