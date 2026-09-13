@@ -19,6 +19,8 @@ import { categories, themes, products as defaultProducts } from '../data/product
 import { galleryCategories, galleryItems as defaultGallery } from '../data/gallery'
 import { projectCategories, projects as defaultProjects } from '../data/projects'
 import { SITE_IMAGE_GROUPS } from '../data/siteImages'
+import { compressImage, fileToDataUrl } from '../utils/image'
+import ImageCropModal from './ImageCropModal'
 import './Admin.css'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -37,17 +39,13 @@ const TABS = [
   { id: 'settings',  label: 'Settings',   icon: 'fas fa-cog' },
 ]
 
-const readFileAsDataUrl = (file) => new Promise((resolve, reject) => {
-  const reader = new FileReader()
-  reader.onload = () => resolve(reader.result)
-  reader.onerror = () => reject(new Error('Failed to read file'))
-  reader.readAsDataURL(file)
-})
-
+// Read + downscale + compress so saved photos stay small (raw phone
+// photos are several MB and make saving fail). Product/gallery/project/
+// workshop/journal/recycle uploads all go through here.
 const readFilesAsDataUrls = async (fileList) => {
   const files = Array.from(fileList || []).filter(file => file.type.startsWith('image/'))
   if (!files.length) return []
-  return Promise.all(files.map(readFileAsDataUrl))
+  return Promise.all(files.map(f => compressImage(f, { maxW: 1400, maxH: 1400, quality: 0.82 })))
 }
 
 function Toast({ msg, type, onDone }) {
@@ -1359,6 +1357,7 @@ function SiteImagesTab({ onToast }) {
   const [overrides, setOverrides] = useState(() => ({ ...getSiteImages() }))
   const [dirty, setDirty] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [cropTarget, setCropTarget] = useState(null) // { item, src }
 
   const currentUrl = (item) => overrides[item.key] || item.url
   const isCustom = (item) => Boolean(overrides[item.key])
@@ -1373,20 +1372,26 @@ function SiteImagesTab({ onToast }) {
     setDirty(true)
   }
 
-  const handleUpload = async (key, fileList) => {
+  // Choosing a file opens the crop modal (locked to this section's shape).
+  const startCrop = async (item, fileList) => {
     const file = Array.from(fileList || []).find(f => f.type.startsWith('image/'))
     if (!file) return
-    if (file.size > 3 * 1024 * 1024) {
-      onToast('That image is larger than 3 MB. Please use a smaller photo.', 'error')
+    if (file.size > 15 * 1024 * 1024) {
+      onToast('That image is very large (over 15 MB). Please use a smaller photo.', 'error')
       return
     }
     try {
-      const dataUrl = await readFileAsDataUrl(file)
-      setUrl(key, dataUrl)
-      onToast('Photo added. Click "Save changes" to publish.', 'success')
+      const src = await fileToDataUrl(file)
+      setCropTarget({ item, src })
     } catch (_) {
       onToast('Could not read that image. Please try another.', 'error')
     }
+  }
+
+  const onCropConfirm = (dataUrl) => {
+    if (cropTarget) setUrl(cropTarget.item.key, dataUrl)
+    setCropTarget(null)
+    onToast('Photo positioned. Click "Save changes" to publish.', 'success')
   }
 
   const resetSlot = (key) => { setUrl(key, '') }
@@ -1398,7 +1403,7 @@ function SiteImagesTab({ onToast }) {
       setDirty(false)
       onToast('Website photos saved and now live on your website!', 'success')
     } catch (err) {
-      onToast('Could not save. Check your connection and try again.', 'error')
+      onToast('Could not save. The photos may be too large, or check your connection, then try again.', 'error')
     }
     setSaving(false)
   }
@@ -1408,7 +1413,7 @@ function SiteImagesTab({ onToast }) {
       <div className="admin-section-header">
         <div>
           <h2>Website Photos</h2>
-          <p>Change the fixed photos in each section of your website. The name tells you exactly which part will change.</p>
+          <p>Change the fixed photos in each section. After you pick a photo you can drag to choose exactly which part shows. The size guide tells you the best shape for each spot.</p>
         </div>
         <button className="admin-btn admin-btn-primary" onClick={handleSave} disabled={!dirty || saving}>
           <i className="fas fa-save" /> {saving ? 'Saving…' : 'Save changes'}
@@ -1421,23 +1426,29 @@ function SiteImagesTab({ onToast }) {
           <div className="siteimg-grid">
             {group.items.map(item => (
               <div key={item.key} className="siteimg-card">
-                <div className="siteimg-preview">
+                <div className="siteimg-preview" style={{ aspectRatio: `${item.w} / ${item.h}` }}>
                   <ZoomImg src={currentUrl(item)} alt={item.label} loading="lazy" />
                   {isCustom(item) && <span className="siteimg-badge">Changed</span>}
                 </div>
                 <div className="siteimg-body">
                   <strong className="siteimg-label">{item.label}</strong>
                   <span className="siteimg-desc">{item.desc}</span>
+                  <span className="siteimg-guide"><i className="fas fa-ruler-combined" /> Best size: {item.w} × {item.h} px</span>
                   <div className="siteimg-actions">
                     <label className="admin-btn admin-btn-ghost admin-btn-sm siteimg-upload">
-                      <i className="fas fa-upload" /> Upload photo
+                      <i className="fas fa-upload" /> Upload &amp; position
                       <input
                         type="file"
                         accept="image/*"
                         hidden
-                        onChange={e => { handleUpload(item.key, e.target.files); e.target.value = '' }}
+                        onChange={e => { startCrop(item, e.target.files); e.target.value = '' }}
                       />
                     </label>
+                    {isCustom(item) && overrides[item.key] && overrides[item.key].startsWith('data:') && (
+                      <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setCropTarget({ item, src: overrides[item.key] })}>
+                        <i className="fas fa-crop-alt" /> Reposition
+                      </button>
+                    )}
                     {isCustom(item) && (
                       <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => resetSlot(item.key)}>
                         <i className="fas fa-undo" /> Reset
@@ -1463,6 +1474,18 @@ function SiteImagesTab({ onToast }) {
           <i className="fas fa-save" /> {saving ? 'Saving…' : 'Save changes'}
         </button>
       </div>
+
+      {cropTarget && (
+        <ImageCropModal
+          src={cropTarget.src}
+          aspect={cropTarget.item.w / cropTarget.item.h}
+          outW={cropTarget.item.w}
+          outH={cropTarget.item.h}
+          label={`${cropTarget.item.label} · ${cropTarget.item.w} × ${cropTarget.item.h} px`}
+          onCancel={() => setCropTarget(null)}
+          onConfirm={onCropConfirm}
+        />
+      )}
     </div>
   )
 }

@@ -1743,3 +1743,16 @@
   .admin-field.span2, .admin-field.span3 { grid-column: span 1; }
   .admin-session-row { grid-template-columns: 1fr 1fr; }
 }
+
+/* size guide under each Website Photo slot */
+.siteimg-guide {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--sage-dark, #5f7050);
+  background: var(--sage-pale, #eef1e8);
+  padding: 4px 9px;
+  border-radius: 999px;
+  align-self: flex-start;
+}
