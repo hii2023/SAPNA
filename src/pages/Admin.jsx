@@ -19,7 +19,7 @@ import { categories, themes, products as defaultProducts } from '../data/product
 import { galleryCategories, galleryItems as defaultGallery } from '../data/gallery'
 import { projectCategories, projects as defaultProjects } from '../data/projects'
 import { SITE_IMAGE_GROUPS } from '../data/siteImages'
-import { compressImage, fileToDataUrl } from '../utils/image'
+import { compressImage, fileToDataUrl, loadImage } from '../utils/image'
 import ImageCropModal from './ImageCropModal'
 import './Admin.css'
 
@@ -601,12 +601,15 @@ function ProductsTab({ products, onSave, onToast }) {
                 </div>
 
                 <div className="admin-field-group full">
-                  <label>Upload Product Images <small>(select one or more images, first image is the main display image)</small></label>
-                  <input
-                    type="file"
-                    accept="image/*"
+                  <label>Upload Product Images <small>(first image is the main display image · frame is 3:4 portrait)</small></label>
+                  <UploadCropButton
+                    label="Upload & position images"
+                    aspect={3 / 4}
+                    outW={900}
+                    outH={1200}
                     multiple
-                    onChange={e => handleImageUpload(product.id, e.target.files)}
+                    onToast={onToast}
+                    onAdd={u => { setItems(prev => prev.map(p => p.id === product.id ? { ...p, images: [...(p.images || []), u] } : p)); setDirty(true) }}
                   />
                   <div className="admin-image-previews">
                     {product.images.map((img, i) => (
@@ -794,8 +797,15 @@ function ProfileTab({ onToast }) {
           </div>
 
           <div className="admin-field-group full">
-            <label>Profile Photo</label>
-            <input type="file" accept="image/*" onChange={e => handlePhotoUpload(e.target.files)} />
+            <label>Profile Photo <small>(square)</small></label>
+            <UploadCropButton
+              label="Upload & position photo"
+              aspect={1}
+              outW={600}
+              outH={600}
+              onToast={onToast}
+              onAdd={u => handleChange('photo', u)}
+            />
           </div>
 
           <div className="admin-field-group full">
@@ -1029,8 +1039,13 @@ function GalleryTab({ onToast }) {
                   </select>
                 </div>
                 <div className="admin-field-group">
-                  <label>Gallery Image</label>
-                  <input type="file" accept="image/*" onChange={e => handleImageUpload(item.id, e.target.files)} />
+                  <label>Gallery Image <small>(keeps the photo's own shape)</small></label>
+                  <UploadCropButton
+                    label="Upload & position"
+                    aspect="natural"
+                    onToast={onToast}
+                    onAdd={u => { setItems(prev => prev.map(g => g.id === item.id ? { ...g, image: u } : g)); setDirty(true) }}
+                  />
                 </div>
                 <div className="admin-field-group">
                   <label>Project / Series</label>
@@ -1298,8 +1313,16 @@ function ProjectsTab({ projects, onSave, onToast }) {
                 </div>
 
                 <div className="admin-field-group">
-                  <label>Project Photos</label>
-                  <input type="file" accept="image/*" multiple onChange={e => handleUploadPhotos(item.id, e.target.files)} />
+                  <label>Project Photos <small>(frame is 4:3)</small></label>
+                  <UploadCropButton
+                    label="Upload & position photos"
+                    aspect={4 / 3}
+                    outW={1000}
+                    outH={750}
+                    multiple
+                    onToast={onToast}
+                    onAdd={u => { setItems(prev => prev.map(it => it.id === item.id ? { ...it, photos: [...(it.photos || []), u] } : it)); setDirty(true) }}
+                  />
                   <div className="admin-project-photos-grid">
                     {(item.photos || []).map((photo, index) => (
                       <div key={`${item.id}-${index}`} className="admin-project-photo-item">
@@ -1490,14 +1513,64 @@ function SiteImagesTab({ onToast }) {
   )
 }
 
-// ── Shared: image row editor (upload / paste URL / reorder / delete) ──────────
-function ImageRowEditor({ images, onChange, onToast }) {
-  const list = images || []
-  const addFiles = async (files) => {
-    const urls = await readFilesAsDataUrls(files)
-    if (!urls.length) return
-    onChange([...list, ...urls])
+// ── Shared: upload button that opens the crop/position frame for each file ────
+// aspect: a number (locked shape) or 'natural' (keep each photo's own shape).
+// Files are processed one at a time so the user frames each photo.
+function UploadCropButton({ label = 'Upload & position', aspect = 'natural', outW, outH, multiple = false, onAdd, onToast, buttonClass = 'admin-btn admin-btn-ghost admin-btn-sm', icon = 'fas fa-upload' }) {
+  const [queue, setQueue] = useState([])
+
+  const pick = async (fileList) => {
+    const files = Array.from(fileList || []).filter(f => f.type.startsWith('image/'))
+    if (!files.length) return
+    const items = []
+    for (const f of files) {
+      if (f.size > 15 * 1024 * 1024) { onToast && onToast('One image is over 15 MB. Please use a smaller photo.', 'error'); continue }
+      try {
+        const src = await fileToDataUrl(f)
+        let a = aspect, ow = outW, oh = outH
+        if (aspect === 'natural') {
+          const im = await loadImage(src)
+          let na = (im.naturalWidth || 1) / (im.naturalHeight || 1)
+          na = Math.max(0.6, Math.min(1.9, na))
+          a = na
+          const cap = 1400
+          if (na >= 1) { ow = Math.min(im.naturalWidth || cap, cap); oh = Math.round(ow / na) }
+          else { oh = Math.min(im.naturalHeight || cap, cap); ow = Math.round(oh * na) }
+        }
+        items.push({ src, aspect: a, outW: ow, outH: oh })
+      } catch (_) { onToast && onToast('Could not read one image. Please try another.', 'error') }
+    }
+    if (items.length) setQueue(items)
   }
+
+  const current = queue[0]
+  const confirm = (url) => { onAdd && onAdd(url); setQueue(q => q.slice(1)) }
+  const cancel = () => setQueue([])
+
+  return (
+    <>
+      <label className={`${buttonClass} siteimg-upload`}>
+        <i className={icon} /> {label}
+        <input type="file" accept="image/*" multiple={multiple} hidden onChange={e => { pick(e.target.files); e.target.value = '' }} />
+      </label>
+      {current && (
+        <ImageCropModal
+          src={current.src}
+          aspect={current.aspect}
+          outW={current.outW}
+          outH={current.outH}
+          label={label + (queue.length > 1 ? ` (${queue.length} left)` : '')}
+          onCancel={cancel}
+          onConfirm={confirm}
+        />
+      )}
+    </>
+  )
+}
+
+// ── Shared: image row editor (upload / paste URL / reorder / delete) ──────────
+function ImageRowEditor({ images, onChange, onToast, aspect = 'natural', outW, outH }) {
+  const list = images || []
   const addUrl = (url) => { if (url) onChange([...list, url]) }
   const remove = (i) => onChange(list.filter((_, idx) => idx !== i))
   const move = (i, to) => {
@@ -1520,10 +1593,15 @@ function ImageRowEditor({ images, onChange, onToast }) {
         ))}
       </div>
       <div className="admin-image-add-row">
-        <label className="admin-btn admin-btn-ghost admin-btn-sm siteimg-upload">
-          <i className="fas fa-upload" /> Upload
-          <input type="file" accept="image/*" multiple hidden onChange={e => { addFiles(e.target.files); e.target.value = '' }} />
-        </label>
+        <UploadCropButton
+          label="Upload & position"
+          aspect={aspect}
+          outW={outW}
+          outH={outH}
+          multiple
+          onAdd={u => onChange([...(images || []), u])}
+          onToast={onToast}
+        />
         <input type="text" className="siteimg-url" placeholder="…or paste image URL and press Add" value={url} onChange={e => setUrl(e.target.value)} />
         <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => { addUrl(url.trim()); setUrl('') }}>Add</button>
       </div>
@@ -1599,7 +1677,7 @@ function RecycleTab({ onToast }) {
               </label>
             </div>
             <div className="admin-field"><span>Photos</span>
-              <ImageRowEditor images={it.images} onChange={imgs => setImages(it.id, imgs)} onToast={onToast} />
+              <ImageRowEditor images={it.images} onChange={imgs => setImages(it.id, imgs)} onToast={onToast} aspect={1} outW={1000} outH={1000} />
             </div>
             <div className="admin-edit-card-footer">
               <label className="admin-checkbox">
@@ -1688,7 +1766,7 @@ function WorkshopsTab({ onToast }) {
                 <textarea rows="3" value={arrToLines(w.includes)} onChange={e => upd(w.id, 'includes', linesToArr(e.target.value))} /></label>
             </div>
             <div className="admin-field"><span>Photo</span>
-              <ImageRowEditor images={w.image ? [w.image] : []} onChange={imgs => upd(w.id, 'image', imgs[imgs.length - 1] || '')} onToast={onToast} />
+              <ImageRowEditor images={w.image ? [w.image] : []} onChange={imgs => upd(w.id, 'image', imgs[imgs.length - 1] || '')} onToast={onToast} aspect={16 / 7} outW={1200} outH={525} />
             </div>
             <div className="admin-subsection">
               <div className="admin-subsection-head">
@@ -1777,7 +1855,7 @@ function BlogTab({ onToast }) {
                 <textarea rows="10" value={b.content || ''} onChange={e => upd(b.id, 'content', e.target.value)} /></label>
             </div>
             <div className="admin-field"><span>Cover photo</span>
-              <ImageRowEditor images={b.image ? [b.image] : []} onChange={imgs => upd(b.id, 'image', imgs[imgs.length - 1] || '')} onToast={onToast} />
+              <ImageRowEditor images={b.image ? [b.image] : []} onChange={imgs => upd(b.id, 'image', imgs[imgs.length - 1] || '')} onToast={onToast} aspect={16 / 9} outW={1200} outH={675} />
             </div>
             <div className="admin-edit-card-footer">
               <label className="admin-checkbox">
