@@ -486,7 +486,7 @@ function ProductsTab({ products, onSave, onToast }) {
         {filtered.map(product => (
           <div key={product.id} className={`admin-product-row ${expandedId === product.id ? 'expanded' : ''}`}>
             {/* Row Header */}
-            <div className="admin-product-row-header" onClick={() => setExpandedId(expandedId === product.id ? null : product.id)}>
+            <div className="admin-product-row-header" onClick={() => setExpandedId(product.id)}>
               <ZoomImg src={product.images[0]} alt={product.name} className="admin-product-thumb" />
               <div className="admin-product-row-info">
                 <span className="admin-product-row-name">{product.name}</span>
@@ -507,14 +507,21 @@ function ProductsTab({ products, onSave, onToast }) {
                   <span className="admin-toggle-slider" />
                   <span className="admin-toggle-label">{product.available ? 'Available' : 'Sold Out'}</span>
                 </label>
-                <button className="admin-expand-btn">
-                  <i className={`fas fa-chevron-${expandedId === product.id ? 'up' : 'down'}`} />
+                <button className="admin-expand-btn" title="Edit product">
+                  <i className="fas fa-pen" />
                 </button>
               </div>
             </div>
 
-            {/* Expanded Edit Form */}
+            {/* Edit Form (popup) */}
             {expandedId === product.id && (
+              <div className="admin-edit-modal-overlay" onClick={() => setExpandedId(null)}>
+                <div className="admin-edit-modal" onClick={e => e.stopPropagation()}>
+                  <div className="admin-edit-modal-header">
+                    <h3>{product.name ? `Edit: ${product.name}` : 'New product'}</h3>
+                    <button type="button" className="crop-x" onClick={() => setExpandedId(null)} aria-label="Close"><i className="fas fa-times" /></button>
+                  </div>
+                  <div className="admin-edit-modal-body">
               <div className="admin-product-edit">
                 <div className="admin-edit-grid">
                   <div className="admin-field-group">
@@ -681,12 +688,15 @@ function ProductsTab({ products, onSave, onToast }) {
                 </div>
 
                 <div className="admin-product-edit-footer">
-                  <button className="admin-btn admin-btn-primary" onClick={handleSave}>
-                    <i className="fas fa-save" /> Save All Changes
+                  <button className="admin-btn admin-btn-primary" onClick={() => { handleSave(); setExpandedId(null) }}>
+                    <i className="fas fa-save" /> Save &amp; Close
                   </button>
                   <button className="admin-btn admin-btn-danger" onClick={() => deleteProduct(product.id)}>
                     <i className="fas fa-trash" /> Delete This Product
                   </button>
+                </div>
+              </div>
+                  </div>
                 </div>
               </div>
             )}
