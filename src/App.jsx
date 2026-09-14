@@ -7,16 +7,29 @@ import Home from './pages/Home'
 // Route-based code splitting: the landing page loads eagerly; everything
 // else (especially the large Admin) is a separate chunk fetched on demand,
 // so public visitors download far less up front.
-const About = lazy(() => import('./pages/About'))
-const Shop = lazy(() => import('./pages/Shop'))
-const Workshops = lazy(() => import('./pages/Workshops'))
-const Gallery = lazy(() => import('./pages/Gallery'))
-const Recycle = lazy(() => import('./pages/Recycle'))
-const Projects = lazy(() => import('./pages/Projects'))
-const CustomOrders = lazy(() => import('./pages/CustomOrders'))
-const Blog = lazy(() => import('./pages/Blog'))
-const BlogPost = lazy(() => import('./pages/BlogPost'))
-const Admin = lazy(() => import('./pages/Admin'))
+// After a new deploy, the old chunk hashes disappear, so a stale page would
+// fail to import and show blank. lazyWithRetry recovers by reloading once
+// to fetch the fresh index + chunks.
+function lazyWithRetry(factory) {
+  return lazy(() => factory().catch((err) => {
+    if (!sessionStorage.getItem('chunk-reloaded')) {
+      try { sessionStorage.setItem('chunk-reloaded', '1') } catch (_) {}
+      window.location.reload()
+      return new Promise(() => {}) // hold until the reload happens
+    }
+    throw err
+  }))
+}
+const About = lazyWithRetry(() => import('./pages/About'))
+const Shop = lazyWithRetry(() => import('./pages/Shop'))
+const Workshops = lazyWithRetry(() => import('./pages/Workshops'))
+const Gallery = lazyWithRetry(() => import('./pages/Gallery'))
+const Recycle = lazyWithRetry(() => import('./pages/Recycle'))
+const Projects = lazyWithRetry(() => import('./pages/Projects'))
+const CustomOrders = lazyWithRetry(() => import('./pages/CustomOrders'))
+const Blog = lazyWithRetry(() => import('./pages/Blog'))
+const BlogPost = lazyWithRetry(() => import('./pages/BlogPost'))
+const Admin = lazyWithRetry(() => import('./pages/Admin'))
 
 function RouteFallback() {
   return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8a8178' }}>Loading…</div>
@@ -66,6 +79,9 @@ export default function App() {
   const [ver, setVer] = useState(0)
   useEffect(() => {
     let alive = true
+    // App mounted successfully: clear the stale-chunk reload guard so a
+    // future deploy can recover the same way.
+    try { sessionStorage.removeItem('chunk-reloaded') } catch (_) {}
     hydrate().finally(() => { if (alive) setVer(v => v + 1) })
     return () => { alive = false }
   }, [])
