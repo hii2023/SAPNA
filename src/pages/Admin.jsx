@@ -7,6 +7,7 @@ import {
   getGallery, saveGallery, resetGallery,
   getProjects, saveProjects, resetProjects,
   getSiteImages, saveSiteImages,
+  getSiteTexts, saveSiteTexts,
   getWorkshops, saveWorkshops, resetWorkshops,
   getCategories, saveCategories, resetCategories,
   getThemes, saveThemes, resetThemes,
@@ -19,6 +20,7 @@ import { categories, themes, products as defaultProducts } from '../data/product
 import { galleryCategories, galleryItems as defaultGallery } from '../data/gallery'
 import { projectCategories, projects as defaultProjects } from '../data/projects'
 import { SITE_IMAGE_GROUPS } from '../data/siteImages'
+import { SITE_TEXT_GROUPS } from '../data/siteText'
 import { compressImage, fileToDataUrl, loadImage } from '../utils/image'
 import { listLeads, updateLeadStatus } from '../data/leads'
 import ImageCropModal from './ImageCropModal'
@@ -37,6 +39,7 @@ const TABS = [
   { id: 'blog',      label: 'Journal',    icon: 'fas fa-feather-alt' },
   { id: 'customOrders', label: 'Custom Orders', icon: 'fas fa-pen-fancy' },
   { id: 'shopSetup', label: 'Shop Setup', icon: 'fas fa-sliders-h' },
+  { id: 'siteText',  label: 'Website Text', icon: 'fas fa-heading' },
   { id: 'siteImages',label: 'Website Photos', icon: 'fas fa-image' },
   { id: 'settings',  label: 'Settings',   icon: 'fas fa-cog' },
 ]
@@ -1421,6 +1424,85 @@ function ProjectsTab({ projects, onSave, onToast }) {
 // category cards, banners, etc.). Each slot is labelled so it's clear which
 // part of the website will change. Product/gallery/project photos live in
 // their own tabs.
+// ── Website Text Tab (editable headings / labels / taglines) ──────────────────
+function SiteTextTab({ onToast }) {
+  const [overrides, setOverrides] = useState(() => ({ ...getSiteTexts() }))
+  const [dirty, setDirty] = useState(false)
+  const [saving, setSaving] = useState(false)
+
+  const valueOf = (item) => (overrides[item.key] !== undefined && overrides[item.key] !== null) ? overrides[item.key] : item.def
+  const isCustom = (item) => overrides[item.key] !== undefined && overrides[item.key] !== item.def
+
+  const setVal = (item, val) => {
+    setOverrides(prev => {
+      const next = { ...prev }
+      if (val === item.def) delete next[item.key]
+      else next[item.key] = val
+      return next
+    })
+    setDirty(true)
+  }
+  const resetOne = (item) => {
+    setOverrides(prev => { const n = { ...prev }; delete n[item.key]; return n })
+    setDirty(true)
+  }
+
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      await saveSiteTexts(overrides)
+      setDirty(false)
+      onToast('Website text saved and now live on your website!', 'success')
+    } catch (err) {
+      onToast('Could not save. Check your connection and try again.', 'error')
+    }
+    setSaving(false)
+  }
+
+  return (
+    <div className="admin-tab-content">
+      <div className="admin-section-header">
+        <div>
+          <h2>Website Text</h2>
+          <p>Edit any heading, label or tagline across your website. Each field says where it appears. Leave blank to keep the original wording.</p>
+        </div>
+        <button className="admin-btn admin-btn-primary" onClick={handleSave} disabled={!dirty || saving}>
+          <i className="fas fa-save" /> {saving ? 'Saving…' : 'Save changes'}
+        </button>
+      </div>
+
+      {SITE_TEXT_GROUPS.map(group => (
+        <div key={group.page} className="siteimg-group">
+          <h3 className="siteimg-group-title">{group.page}</h3>
+          <div className="sitetext-grid">
+            {group.items.map(item => (
+              <div key={item.key} className="sitetext-field">
+                <label>
+                  <span className="sitetext-label">{item.label}{isCustom(item) && <span className="siteimg-badge sitetext-badge">Changed</span>}</span>
+                  {item.multiline
+                    ? <textarea rows="2" value={valueOf(item)} onChange={e => setVal(item, e.target.value)} />
+                    : <input type="text" value={valueOf(item)} onChange={e => setVal(item, e.target.value)} />}
+                </label>
+                {isCustom(item) && (
+                  <button className="admin-btn admin-btn-ghost admin-btn-sm sitetext-reset" onClick={() => resetOne(item)}>
+                    <i className="fas fa-undo" /> Reset to original
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <div className="siteimg-savebar">
+        <button className="admin-btn admin-btn-primary" onClick={handleSave} disabled={!dirty || saving}>
+          <i className="fas fa-save" /> {saving ? 'Saving…' : 'Save changes'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function SiteImagesTab({ onToast }) {
   const [overrides, setOverrides] = useState(() => ({ ...getSiteImages() }))
   const [dirty, setDirty] = useState(false)
@@ -2402,6 +2484,9 @@ export default function Admin() {
           )}
           {activeTab === 'leads' && (
             <InquiriesTab onToast={showToast} />
+          )}
+          {activeTab === 'siteText' && (
+            <SiteTextTab onToast={showToast} />
           )}
           {activeTab === 'siteImages' && (
             <SiteImagesTab onToast={showToast} />

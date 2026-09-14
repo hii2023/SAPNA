@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getSiteImage } from '../data/adminData'
+import { getSiteImage, getSiteText } from '../data/adminData'
 import { useSeo } from '../hooks/useSeo'
 import './About.css'
 
@@ -74,8 +74,8 @@ export default function About() {
               </div>
             </div>
             <div className="story-text">
-              <span className="section-label">My Story</span>
-              <h2 className="section-title">From Tangled Rope to<br />Full-Time Artist</h2>
+              <span className="section-label">{getSiteText('about_story_label')}</span>
+              <h2 className="section-title">{getSiteText('about_story_title')}</h2>
               <div className="divider"><i className="fas fa-heart" /></div>
               <p>
                 Five years ago, I was working a desk job in Ahmedabad, spending my lunch breaks watching craft tutorials on my phone and my evenings dreaming about making art. One monsoon weekend in 2019, I finally did something about it, I bought a YouTube tutorial book, two hundred rupees worth of cotton rope from Manek Chowk, and started learning macrame.
@@ -98,8 +98,8 @@ export default function About() {
       <section className="section about-practice" data-id="practice">
         <div className="container container-narrow">
           <div className={`section-header fade-up ${isVisible['practice'] ? 'visible' : ''}`}>
-            <span className="section-label">Practice &amp; Collaborations</span>
-            <h2 className="section-title">Art, Spaces &amp; Creative Direction</h2>
+            <span className="section-label">{getSiteText('about_practice_label')}</span>
+            <h2 className="section-title">{getSiteText('about_practice_title')}</h2>
           </div>
           <div className={`about-practice-body fade-up ${isVisible['practice'] ? 'visible' : ''}`}>
             <p>
@@ -141,9 +141,9 @@ export default function About() {
       <section className="section about-travel" style={{ background: 'var(--beige-light)' }} data-id="travel">
         <div className="container">
           <div className={`section-header fade-up ${isVisible['travel'] ? 'visible' : ''}`}>
-            <span className="section-label">What Fuels the Art</span>
-            <h2 className="section-title">My Work is My Travel Diary</h2>
-            <p className="section-subtitle">Every piece I create carries a memory, a colour I saw, a texture I touched, a moment of quiet beauty on the road.</p>
+            <span className="section-label">{getSiteText('about_travel_label')}</span>
+            <h2 className="section-title">{getSiteText('about_travel_title')}</h2>
+            <p className="section-subtitle">{getSiteText('about_travel_sub')}</p>
           </div>
           <div className={`travel-grid fade-up ${isVisible['travel'] ? 'visible' : ''}`}>
             <div className="travel-card">
@@ -184,8 +184,8 @@ export default function About() {
       <section className="section about-values" data-id="values">
         <div className="container">
           <div className={`section-header fade-up ${isVisible['values'] ? 'visible' : ''}`}>
-            <span className="section-label">What I Believe In</span>
-            <h2 className="section-title">Art Made with Intention</h2>
+            <span className="section-label">{getSiteText('about_values_label')}</span>
+            <h2 className="section-title">{getSiteText('about_values_title')}</h2>
           </div>
           <div className={`values-grid fade-up ${isVisible['values'] ? 'visible' : ''}`}>
             {values.map((v, i) => (
@@ -243,8 +243,8 @@ export default function About() {
       {/* ── CTA ── */}
       <section className="section about-cta" data-id="about-cta">
         <div className={`container container-narrow text-center fade-up ${isVisible['about-cta'] ? 'visible' : ''}`}>
-          <span className="section-label">Let's Connect</span>
-          <h2 className="section-title">Ready to Bring Handmade<br />Art Into Your Home?</h2>
+          <span className="section-label">{getSiteText('about_cta_label')}</span>
+          <h2 className="section-title">{getSiteText('about_cta_title')}</h2>
           <p className="section-subtitle" style={{ margin: '0 auto 2.5rem' }}>
             Browse the shop, book a workshop, or reach out for a custom commission, I'd love to create something beautiful just for you.
           </p>

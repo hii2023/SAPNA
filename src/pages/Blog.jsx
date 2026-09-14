@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getBlog } from '../data/adminData'
+import { getBlog, getSiteText } from '../data/adminData'
 import { useSeo } from '../hooks/useSeo'
 import { subscribeNewsletter } from '../data/leads'
 import './Blog.css'
@@ -53,9 +53,9 @@ export default function Blog() {
       {/* ── Hero ── */}
       <div className="page-hero blog-hero">
         <div className="page-hero-content">
-          <span className="section-label">Stories, Tips & Travels</span>
-          <h1>Sapna's Journal</h1>
-          <p>Behind the art, inside the studio, across India & beyond, come along for the journey ✨</p>
+          <span className="section-label">{getSiteText('blog_hero_label')}</span>
+          <h1>{getSiteText('blog_hero_title')}</h1>
+          <p>{getSiteText('blog_hero_sub')}</p>
         </div>
       </div>
 

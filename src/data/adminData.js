@@ -17,6 +17,7 @@ import { blogPosts as defaultBlog } from './blog'
 import { recycleProducts as defaultRecycle } from './recycle'
 import { customOrdersContent as defaultCustomOrders } from './customOrders'
 import { SITE_IMAGE_DEFAULTS } from './siteImages'
+import { SITE_TEXT_DEFAULTS } from './siteText'
 import { sbGet, sbRpc } from './supabase'
 
 const KEYS = {
@@ -25,6 +26,7 @@ const KEYS = {
   gallery:    'sapna_admin_gallery',
   projects:   'sapna_admin_projects',
   siteImages: 'sapna_admin_site_images',
+  siteText:   'sapna_admin_site_text',
   workshops:  'sapna_admin_workshops',
   categories: 'sapna_admin_categories',
   themes:     'sapna_admin_themes',
@@ -60,6 +62,7 @@ export async function hydrate() {
     if (map.gallery)    cacheSet(KEYS.gallery,    map.gallery)
     if (map.projects)   cacheSet(KEYS.projects,   map.projects)
     if (map.siteImages) cacheSet(KEYS.siteImages, map.siteImages)
+    if (map.siteText)   cacheSet(KEYS.siteText,   map.siteText)
     if (map.workshops)  cacheSet(KEYS.workshops,  map.workshops)
     if (map.categories) cacheSet(KEYS.categories, map.categories)
     if (map.themes)     cacheSet(KEYS.themes,     map.themes)
@@ -182,6 +185,20 @@ export async function saveSiteImages(map) {
 export function getSiteImage(key) {
   const overrides = getSiteImages()
   return (overrides && overrides[key]) || SITE_IMAGE_DEFAULTS[key] || ''
+}
+
+// ── Site text (editable headings / labels / taglines) ─────
+export function getSiteTexts() {
+  return cacheGet(KEYS.siteText) || {}
+}
+export async function saveSiteTexts(map) {
+  await saveSection('siteText', map)
+}
+// Resolve one text slot: override, else built-in default.
+export function getSiteText(key) {
+  const o = getSiteTexts()
+  const v = o && o[key]
+  return (v !== undefined && v !== null && v !== '') ? v : (SITE_TEXT_DEFAULTS[key] || '')
 }
 
 // ── Workshops ─────────────────────────────────────────────

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { getSiteImage, getWorkshops } from '../data/adminData'
+import { getSiteImage, getWorkshops, getSiteText } from '../data/adminData'
 import { useSeo } from '../hooks/useSeo'
 import './Workshops.css'
 
@@ -39,9 +39,9 @@ export default function Workshops() {
       {/* ── Hero ── */}
       <div className="page-hero workshops-hero">
         <div className="page-hero-content">
-          <span className="section-label">Learn, Create, Take Home</span>
-          <h1>Workshops & Classes</h1>
-          <p>In-person in Ahmedabad & online worldwide, all skill levels welcome 🎨</p>
+          <span className="section-label">{getSiteText('workshops_hero_label')}</span>
+          <h1>{getSiteText('workshops_hero_title')}</h1>
+          <p>{getSiteText('workshops_hero_sub')}</p>
           <a
             href={`https://wa.me/918511341910?text=${encodeURIComponent("Hi Sapna! I'd like to book a workshop. Could you share the available dates? 🙏")}`}
             target="_blank"
@@ -88,8 +88,8 @@ export default function Workshops() {
       <section className="section" style={{ background: 'var(--beige-light)' }} data-id="workshop-cards">
         <div className="container">
           <div className={`section-header fade-up ${isVisible['workshop-cards'] ? 'visible' : ''}`}>
-            <span className="section-label">What's On Offer</span>
-            <h2 className="section-title">Choose Your Creative Adventure</h2>
+            <span className="section-label">{getSiteText('workshops_cards_label')}</span>
+            <h2 className="section-title">{getSiteText('workshops_cards_title')}</h2>
           </div>
           <div className="workshops-grid">
             {workshops.map((w, i) => (
@@ -176,8 +176,8 @@ export default function Workshops() {
         <div className="container">
           <div className={`private-inner fade-up ${isVisible['private'] ? 'visible' : ''}`}>
             <div className="private-text">
-              <span className="section-label">Private Events</span>
-              <h2 className="section-title">Want the Whole Experience<br />Just for Your Group?</h2>
+              <span className="section-label">{getSiteText('workshops_private_label')}</span>
+              <h2 className="section-title">{getSiteText('workshops_private_title')}</h2>
               <p>Sapna offers private workshops for birthdays, bachelorettes, corporate team-building, kitty parties, and more. She'll come to your venue in Ahmedabad or host your group in her studio.</p>
               <ul className="private-list">
                 <li><i className="fas fa-check" /> Minimum 5 participants</li>
@@ -206,8 +206,8 @@ export default function Workshops() {
       <section className="section workshops-faq" style={{ background: 'var(--beige-light)' }} data-id="faq">
         <div className="container container-narrow">
           <div className={`section-header fade-up ${isVisible['faq'] ? 'visible' : ''}`}>
-            <span className="section-label">Got Questions?</span>
-            <h2 className="section-title">Frequently Asked</h2>
+            <span className="section-label">{getSiteText('workshops_faq_label')}</span>
+            <h2 className="section-title">{getSiteText('workshops_faq_title')}</h2>
           </div>
           <div className={`faq-list fade-up ${isVisible['faq'] ? 'visible' : ''}`}>
             {faqs.map((faq, i) => (

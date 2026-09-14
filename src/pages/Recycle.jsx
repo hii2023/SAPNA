@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { getWhatsAppLink } from '../data/products'
-import { getRecycle } from '../data/adminData'
+import { getRecycle, getSiteText } from '../data/adminData'
 import { useSeo } from '../hooks/useSeo'
 import './Shop.css'
 import './Recycle.css'
@@ -104,9 +104,9 @@ export default function Recycle() {
     <div className="recycle-page">
       <section className="recycle-hero">
         <div className="container">
-          <span className="section-label">Recycled &amp; Upcycled</span>
-          <h1>Second Life</h1>
-          <p>Beautiful pieces given a new beginning, handcrafted from reclaimed, recycled, and upcycled materials. Kind to the planet, one-of-a-kind for your home.</p>
+          <span className="section-label">{getSiteText('recycle_hero_label')}</span>
+          <h1>{getSiteText('recycle_hero_title')}</h1>
+          <p>{getSiteText('recycle_hero_sub')}</p>
         </div>
       </section>
 

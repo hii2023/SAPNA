@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { getWhatsAppLink } from '../data/products'
-import { getProducts, getCategories, getThemes } from '../data/adminData'
+import { getProducts, getCategories, getThemes, getSiteText } from '../data/adminData'
 import { useSeo } from '../hooks/useSeo'
 import './Shop.css'
 
@@ -164,9 +164,9 @@ export default function Shop() {
       {/* ── Hero ── */}
       <div className="page-hero shop-hero">
         <div className="page-hero-content">
-          <span className="section-label">Every Piece, Made by Hand</span>
-          <h1>The Shop</h1>
-          <p>Macrame · Paintings · Stitching · DIY Kits, handcrafted in Ahmedabad with love & wanderlust</p>
+          <span className="section-label">{getSiteText('shop_hero_label')}</span>
+          <h1>{getSiteText('shop_hero_title')}</h1>
+          <p>{getSiteText('shop_hero_sub')}</p>
         </div>
       </div>
 

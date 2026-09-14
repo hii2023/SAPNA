@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { getProjects } from '../data/adminData'
+import { getProjects, getSiteText } from '../data/adminData'
 import { projectCategories } from '../data/projects'
 import { useSeo } from '../hooks/useSeo'
 import './Projects.css'
@@ -53,9 +53,9 @@ export default function Projects() {
     <div className="projects-page">
       <div className="page-hero projects-hero">
         <div className="page-hero-content">
-          <span className="section-label">Concept to Model</span>
-          <h1>Projects</h1>
-          <p>Diorama · Model Making · Educational Displays · Mixed Media Builds</p>
+          <span className="section-label">{getSiteText('projects_hero_label')}</span>
+          <h1>{getSiteText('projects_hero_title')}</h1>
+          <p>{getSiteText('projects_hero_sub')}</p>
         </div>
       </div>
 

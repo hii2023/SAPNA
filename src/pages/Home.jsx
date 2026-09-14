@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { getWhatsAppLink } from '../data/products'
-import { getProducts, getSiteImage } from '../data/adminData'
+import { getProducts, getSiteImage, getSiteText } from '../data/adminData'
 import { useSeo } from '../hooks/useSeo'
 import './Home.css'
 
@@ -148,6 +148,10 @@ export default function Home() {
   }, [])
 
   const slide = heroSlides[activeSlide]
+  const hk = 'home_hero' + (activeSlide + 1)
+  const slideLabel = getSiteText(hk + '_label')
+  const slideHeading = getSiteText(hk + '_heading')
+  const slideSub = getSiteText(hk + '_sub')
 
   return (
     <div className="home-page">
@@ -166,15 +170,15 @@ export default function Home() {
 
         <div className="hero-content container">
           <div className="hero-badge fade-in-up">
-            <span className="hero-category">{slide.label}</span>
+            <span className="hero-category">{slideLabel}</span>
           </div>
           <h1 className="hero-title fade-in-up" style={{ animationDelay: '.1s' }}>
-            {slide.heading.split('\n').map((line, i) => (
-              <React.Fragment key={i}>{line}{i < slide.heading.split('\n').length - 1 && <br />}</React.Fragment>
+            {slideHeading.split('\n').map((line, i, arr) => (
+              <React.Fragment key={i}>{line}{i < arr.length - 1 && <br />}</React.Fragment>
             ))}
           </h1>
           <p className="hero-sub fade-in-up" style={{ animationDelay: '.2s' }}>
-            {slide.sub}
+            {slideSub}
           </p>
           <div className="hero-tagline fade-in-up" style={{ animationDelay: '.3s' }}>
             <span>Macrame</span>
@@ -213,8 +217,8 @@ export default function Home() {
       <section className="section home-categories" data-id="cats">
         <div className="container">
           <div className={`section-header fade-up ${isVisible['cats'] ? 'visible' : ''}`}>
-            <span className="section-label">Find Your Art</span>
-            <h2 className="section-title">Four Ways to Bring<br />Handmade Art Home</h2>
+            <span className="section-label">{getSiteText('home_cats_label')}</span>
+            <h2 className="section-title">{getSiteText('home_cats_title')}</h2>
           </div>
           <div className="cats-grid">
             {cats.map((cat, i) => (
@@ -244,9 +248,9 @@ export default function Home() {
       <section className="section home-featured" data-id="featured" style={{ background: 'var(--beige-light)' }}>
         <div className="container">
           <div className={`section-header fade-up ${isVisible['featured'] ? 'visible' : ''}`}>
-            <span className="section-label">Fresh Arrivals & Bestsellers</span>
-            <h2 className="section-title">Handpicked Just for You</h2>
-            <p className="section-subtitle">Every piece is one-of-a-kind, made with care and shipped with love from Ahmedabad.</p>
+            <span className="section-label">{getSiteText('home_featured_label')}</span>
+            <h2 className="section-title">{getSiteText('home_featured_title')}</h2>
+            <p className="section-subtitle">{getSiteText('home_featured_sub')}</p>
           </div>
           <div className="products-grid">
             {featuredProducts.map((p, i) => (
@@ -313,8 +317,8 @@ export default function Home() {
               </div>
             </div>
             <div className="home-about-text">
-              <span className="section-label">The Artist Behind the Art</span>
-              <h2 className="section-title">Hello, I'm Sapna 🌿</h2>
+              <span className="section-label">{getSiteText('home_about_label')}</span>
+              <h2 className="section-title">{getSiteText('home_about_title')}</h2>
               <div className="divider"><i className="fas fa-leaf" /></div>
               <p className="about-lead">
                 An artist focused on macrame, paintings, and DIY, based in Ahmedabad, Gujarat.
@@ -349,8 +353,8 @@ export default function Home() {
       <section className="section home-services" data-id="services" style={{ background: 'var(--sage-pale)' }}>
         <div className="container">
           <div className={`section-header fade-up ${isVisible['services'] ? 'visible' : ''}`}>
-            <span className="section-label">What I Offer</span>
-            <h2 className="section-title">More Ways to Create With Me</h2>
+            <span className="section-label">{getSiteText('home_services_label')}</span>
+            <h2 className="section-title">{getSiteText('home_services_title')}</h2>
           </div>
           <div className={`services-grid fade-up ${isVisible['services'] ? 'visible' : ''}`}>
             <div className="service-card">
@@ -393,8 +397,8 @@ export default function Home() {
       <section className="section home-testimonials" data-id="reviews">
         <div className="container">
           <div className={`section-header fade-up ${isVisible['reviews'] ? 'visible' : ''}`}>
-            <span className="section-label">Happy Customers</span>
-            <h2 className="section-title">Made with Love, Received with Joy</h2>
+            <span className="section-label">{getSiteText('home_reviews_label')}</span>
+            <h2 className="section-title">{getSiteText('home_reviews_title')}</h2>
           </div>
           <div className={`testimonials-wrap fade-up ${isVisible['reviews'] ? 'visible' : ''}`}>
             <div className="testimonials-track" style={{ transform: `translateX(-${activeTestimonial * 100}%)` }}>
@@ -452,9 +456,9 @@ export default function Home() {
         <div className={`container fade-up ${isVisible['cta-banner'] ? 'visible' : ''}`}>
           <div className="cta-banner-inner">
             <div className="cta-banner-text">
-              <span className="section-label" style={{ color: 'rgba(255,255,255,.7)' }}>Let's Create Together</span>
-              <h2>Have Something Special in Mind?</h2>
-              <p>Custom commissions, bulk orders, event installations, or workshop bookings, just say hello!</p>
+              <span className="section-label" style={{ color: 'rgba(255,255,255,.7)' }}>{getSiteText('home_cta_label')}</span>
+              <h2>{getSiteText('home_cta_title')}</h2>
+              <p>{getSiteText('home_cta_sub')}</p>
             </div>
             <div className="cta-banner-actions">
               <a href="https://wa.me/918511341910" target="_blank" rel="noreferrer" className="btn btn-whatsapp btn-lg">
