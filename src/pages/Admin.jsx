@@ -27,20 +27,20 @@ import ImageCropModal from './ImageCropModal'
 import './Admin.css'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
+// Profile and Inquiries now live inside the Settings tab as sub-pages, so
+// they are intentionally left out of the main sidebar nav below.
 const TABS = [
   { id: 'dashboard', label: 'Dashboard',  icon: 'fas fa-tachometer-alt' },
-  { id: 'leads',     label: 'Inquiries',  icon: 'fas fa-inbox' },
   { id: 'products',  label: 'Products',   icon: 'fas fa-store' },
-  { id: 'profile',   label: 'Profile',    icon: 'fas fa-user-circle' },
-  { id: 'gallery',   label: 'Gallery',    icon: 'fas fa-images' },
   { id: 'recycle',   label: 'Second Life',icon: 'fas fa-recycle' },
   { id: 'workshops', label: 'Workshops',  icon: 'fas fa-chalkboard-teacher' },
   { id: 'projects',  label: 'Projects',   icon: 'fas fa-drafting-compass' },
-  { id: 'blog',      label: 'Journal',    icon: 'fas fa-feather-alt' },
   { id: 'customOrders', label: 'Custom Orders', icon: 'fas fa-pen-fancy' },
   { id: 'shopSetup', label: 'Shop Setup', icon: 'fas fa-sliders-h' },
   { id: 'siteText',  label: 'Website Text', icon: 'fas fa-heading' },
   { id: 'siteImages',label: 'Website Photos', icon: 'fas fa-image' },
+  { id: 'gallery',   label: 'Gallery',    icon: 'fas fa-images' },
+  { id: 'blog',      label: 'Journal',    icon: 'fas fa-feather-alt' },
   { id: 'settings',  label: 'Settings',   icon: 'fas fa-cog' },
 ]
 
@@ -245,7 +245,7 @@ function DashboardTab({ products, profile, gallery, projects, onTabChange }) {
               </div>
               <i className="fas fa-chevron-right" />
             </button>
-            <button className="admin-action-item" onClick={() => onTabChange('profile')}>
+            <button className="admin-action-item" onClick={() => onTabChange('settings')}>
               <i className="fas fa-user-edit" />
               <div>
                 <strong>Update Profile</strong>
@@ -2257,7 +2257,14 @@ function InquiriesTab({ onToast }) {
 }
 
 // ── Settings Tab ──────────────────────────────────────────────────────────────
+const SETTINGS_SUBTABS = [
+  { id: 'general',   label: 'General',   icon: 'fas fa-cog' },
+  { id: 'profile',   label: 'Profile',   icon: 'fas fa-user-circle' },
+  { id: 'inquiries', label: 'Inquiries', icon: 'fas fa-inbox' },
+]
+
 function SettingsTab({ onToast, onLogout }) {
+  const [sub, setSub]               = useState('general')
   const [currentPw, setCurrentPw]   = useState('')
   const [newPw, setNewPw]           = useState('')
   const [confirmPw, setConfirmPw]   = useState('')
@@ -2300,10 +2307,27 @@ function SettingsTab({ onToast, onLogout }) {
       <div className="admin-section-header">
         <div>
           <h2>Settings</h2>
-          <p>Admin password and data management</p>
+          <p>Profile, inquiries, password and account</p>
         </div>
       </div>
 
+      {/* Sub-navigation for the pages that live inside Settings */}
+      <div className="admin-subnav">
+        {SETTINGS_SUBTABS.map(s => (
+          <button
+            key={s.id}
+            className={`admin-subnav-item ${sub === s.id ? 'active' : ''}`}
+            onClick={() => setSub(s.id)}
+          >
+            <i className={s.icon} /> <span>{s.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {sub === 'profile'   && <ProfileTab onToast={onToast} />}
+      {sub === 'inquiries' && <InquiriesTab onToast={onToast} />}
+
+      {sub === 'general' && (
       <div className="admin-settings-grid">
         {/* Change Password */}
         <div className="admin-settings-card">
@@ -2355,8 +2379,11 @@ function SettingsTab({ onToast, onLogout }) {
             <i className="fas fa-sync-alt" /> Refresh From Live Site
           </button>
         </div>
+      </div>
+      )}
 
-        {/* Logout */}
+      {/* Logout — always at the very end of the Settings tab */}
+      <div className="admin-settings-grid">
         <div className="admin-settings-card">
           <h3><i className="fas fa-sign-out-alt" /> Session</h3>
           <p>You are currently logged in as admin. Your session lasts until you close the browser tab.</p>
@@ -2423,10 +2450,6 @@ export default function Admin() {
             <i className="fas fa-external-link-alt" />
             <span>View Website</span>
           </Link>
-          <button className="admin-nav-item logout" onClick={handleLogout}>
-            <i className="fas fa-sign-out-alt" />
-            <span>Log Out</span>
-          </button>
         </div>
       </aside>
 
@@ -2468,9 +2491,6 @@ export default function Admin() {
               onToast={showToast}
             />
           )}
-          {activeTab === 'profile' && (
-            <ProfileTab onToast={showToast} />
-          )}
           {activeTab === 'gallery' && (
             <GalleryTab onToast={showToast} />
           )}
@@ -2491,9 +2511,6 @@ export default function Admin() {
           )}
           {activeTab === 'shopSetup' && (
             <ShopSetupTab onToast={showToast} />
-          )}
-          {activeTab === 'leads' && (
-            <InquiriesTab onToast={showToast} />
           )}
           {activeTab === 'siteText' && (
             <SiteTextTab onToast={showToast} />

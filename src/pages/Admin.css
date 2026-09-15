@@ -1205,6 +1205,46 @@
 }
 
 /* ── Settings ─────────────────────────────────────────────── */
+/* ── Settings sub-navigation ──────────────────────────────── */
+.admin-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e8ddd4;
+}
+
+.admin-subnav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  background: #fff;
+  border: 1px solid #e8ddd4;
+  border-radius: 999px;
+  color: #8a7a6e;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.admin-subnav-item i {
+  font-size: 0.9rem;
+}
+
+.admin-subnav-item:hover {
+  color: #3D2B1F;
+  border-color: #C4714A;
+}
+
+.admin-subnav-item.active {
+  background: #C4714A;
+  border-color: #C4714A;
+  color: #fff;
+}
+
 .admin-settings-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
