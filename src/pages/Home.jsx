@@ -308,9 +308,6 @@ export default function Home() {
               <div className="about-img-main img-overlay">
                 <img src={getSiteImage('home_about_main')} alt="Sapna at work" loading="lazy" />
               </div>
-              <div className="about-img-secondary img-overlay">
-                <img src={getSiteImage('home_about_secondary')} alt="Travel inspiration" loading="lazy" />
-              </div>
               <div className="about-badge-float">
                 <span className="about-badge-num">5+</span>
                 <span className="about-badge-text">Years of<br />Handcraft</span>
