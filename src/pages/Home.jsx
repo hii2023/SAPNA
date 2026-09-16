@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { getWhatsAppLink } from '../data/products'
-import { getProducts, getSiteImage, getSiteText } from '../data/adminData'
+import { getProducts, getSiteImage, getSiteText, getVideos } from '../data/adminData'
+import { youtubeId } from '../data/videos'
+import VideoGrid from '../components/VideoGrid'
 import { useSeo } from '../hooks/useSeo'
 import './Home.css'
 
@@ -108,6 +110,9 @@ export default function Home() {
   const featuredProducts = getProducts()
     .filter(p => p.available && (p.isBestseller || p.isNew))
     .slice(0, 6)
+  // Only videos with a readable YouTube link count, so a half-filled row in
+  // the admin never leaves an empty section on the home page.
+  const homeVideos = getVideos().filter(v => youtubeId(v.video))
 
   // Auto-advance hero slides
   useEffect(() => {
@@ -389,6 +394,22 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── VIDEOS ── (hidden entirely until a video is added in the admin) */}
+      {homeVideos.length > 0 && (
+        <section className="section home-videos" data-id="videos">
+          <div className="container">
+            <div className={`section-header fade-up ${isVisible['videos'] ? 'visible' : ''}`}>
+              <span className="section-label">{getSiteText('home_videos_label')}</span>
+              <h2 className="section-title">{getSiteText('home_videos_title')}</h2>
+              <p className="section-subtitle">{getSiteText('home_videos_sub')}</p>
+            </div>
+            <div className={`fade-up ${isVisible['videos'] ? 'visible' : ''}`}>
+              <VideoGrid items={homeVideos} />
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── TESTIMONIALS ── */}
       <section className="section home-testimonials" data-id="reviews">

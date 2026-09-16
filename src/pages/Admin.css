@@ -1205,6 +1205,82 @@
 }
 
 /* ── Settings ─────────────────────────────────────────────── */
+/* ── Videos tab ───────────────────────────────────────────── */
+.admin-video-row {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.admin-video-thumb {
+  flex: 0 0 200px;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #3D2B1F;
+  border: 1px solid #e8ddd4;
+}
+
+.admin-video-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.admin-video-thumb-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 1.9rem;
+}
+
+.admin-video-fields {
+  flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Empty-state note (also reusable by other tabs) */
+.admin-empty-note {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: #fff;
+  border: 1px dashed #d9c9a8;
+  border-radius: 14px;
+}
+
+.admin-empty-note i {
+  font-size: 1.6rem;
+  color: #C4714A;
+}
+
+.admin-empty-note div {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-empty-note strong {
+  color: #3D2B1F;
+  font-size: 0.95rem;
+}
+
+.admin-empty-note span {
+  color: #8a7a6e;
+  font-size: 0.86rem;
+}
+
+@media (max-width: 640px) {
+  .admin-video-thumb { flex-basis: 100%; }
+}
+
 /* ── Settings sub-navigation ──────────────────────────────── */
 .admin-subnav {
   display: flex;

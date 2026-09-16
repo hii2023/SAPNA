@@ -30,7 +30,14 @@ export default function ImageCropModal({ src, aspect, outW, outH, label, onCance
     return () => window.removeEventListener('resize', measure)
   }, [])
 
+  // `cover` fills the frame (cropping whatever overflows); `contain` fits the
+  // whole photo inside it. Zoom is expressed as a multiple of cover, so 1 is
+  // the old behaviour and anything below it shrinks the photo towards contain.
+  // Being able to go below 1 is the point: a tall photo in a wide frame used
+  // to be stuck at a heavy crop with no way to show more of it.
   const coverScale = img ? Math.max(vw / img.w, vh / img.h) : 1
+  const containScale = img ? Math.min(vw / img.w, vh / img.h) : 1
+  const minZoom = img ? containScale / coverScale : 1
   const scale = coverScale * zoom
   const dw = img ? img.w * scale : 0
   const dh = img ? img.h * scale : 0
@@ -38,9 +45,11 @@ export default function ImageCropModal({ src, aspect, outW, outH, label, onCance
   const clamp = useCallback((o, curScale) => {
     const w = img ? img.w * curScale : 0
     const h = img ? img.h * curScale : 0
+    // Bigger than the frame: keep it covering, so no empty edge can be dragged
+    // into view. Smaller: centre it, so the blank margin is even on both sides.
     return {
-      x: Math.min(0, Math.max(vw - w, o.x)),
-      y: Math.min(0, Math.max(vh - h, o.y)),
+      x: w >= vw ? Math.min(0, Math.max(vw - w, o.x)) : (vw - w) / 2,
+      y: h >= vh ? Math.min(0, Math.max(vh - h, o.y)) : (vh - h) / 2,
     }
   }, [img, vw, vh])
 
@@ -75,12 +84,12 @@ export default function ImageCropModal({ src, aspect, outW, outH, label, onCance
   }
   const onPointerUp = () => { drag.current = null }
 
-  // Reset framing: whole image, centred, no zoom.
-  const resetFraming = () => {
+  // Zoom all the way out: the entire photo inside the frame, centred. Any area
+  // the photo does not cover is rendered white by cropImage().
+  const fitWholePhoto = () => {
     if (!img) return
-    const cs = coverScale
-    setZoom(1)
-    setOffset(clamp({ x: (vw - img.w * cs) / 2, y: (vh - img.h * cs) / 2 }, cs))
+    setZoom(minZoom)
+    setOffset(clamp({ x: 0, y: 0 }, containScale))
   }
 
   const handleConfirm = async () => {
@@ -109,7 +118,7 @@ export default function ImageCropModal({ src, aspect, outW, outH, label, onCance
           <button className="crop-x" onClick={onCancel} aria-label="Close"><i className="fas fa-times" /></button>
         </div>
 
-        <p className="crop-hint">Drag the photo to choose which part shows. Use the slider to zoom. The frame is the exact shape this section uses.</p>
+        <p className="crop-hint">Drag the photo to choose which part shows. Use the slider to zoom in, or out to fit more of the photo in. The frame is the exact shape this section uses.</p>
 
         <div
           className="crop-viewport"
@@ -133,13 +142,13 @@ export default function ImageCropModal({ src, aspect, outW, outH, label, onCance
 
         <div className="crop-zoom">
           <i className="fas fa-search-minus" />
-          <input type="range" min="1" max="4" step="0.01" value={zoom} onChange={e => onZoom(Number(e.target.value))} />
+          <input type="range" min={minZoom} max="4" step="0.01" value={zoom} onChange={e => onZoom(Number(e.target.value))} />
           <i className="fas fa-search-plus" />
         </div>
 
         <div className="crop-actions">
-          <button className="admin-btn admin-btn-ghost crop-reset" onClick={resetFraming} disabled={!img} title="Show the whole photo again">
-            <i className="fas fa-undo" /> Reset
+          <button className="admin-btn admin-btn-ghost crop-reset" onClick={fitWholePhoto} disabled={!img} title="Zoom out until the whole photo fits the frame">
+            <i className="fas fa-compress-arrows-alt" /> Fit whole photo
           </button>
           <button className="admin-btn admin-btn-ghost" onClick={onCancel}>Cancel</button>
           <button className="admin-btn admin-btn-primary" onClick={handleConfirm} disabled={busy || !img}>

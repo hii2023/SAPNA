@@ -1,0 +1,123 @@
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.video-card {
+  background: #fff;
+  border: 1px solid var(--beige);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 14px rgba(61, 43, 31, 0.05);
+  transition: transform .3s, box-shadow .3s;
+}
+
+.video-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(61, 43, 31, 0.1);
+}
+
+.video-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--brown-dark);
+}
+
+.video-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.video-play {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  display: block;
+}
+
+.video-play img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .5s;
+}
+
+.video-card:hover .video-play img { transform: scale(1.04); }
+
+/* Play button */
+.video-play-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--terracotta);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
+  transition: transform .25s, background .25s;
+}
+
+.video-play-dot svg {
+  width: 26px;
+  height: 26px;
+  margin-left: 3px; /* optically centre the triangle */
+}
+
+.video-play:hover .video-play-dot,
+.video-play:focus-visible .video-play-dot {
+  transform: translate(-50%, -50%) scale(1.08);
+  background: var(--terracotta-dark);
+}
+
+.video-play:focus-visible {
+  outline: 3px solid var(--terracotta);
+  outline-offset: -3px;
+}
+
+.video-body { padding: 1.25rem 1.35rem 1.5rem; }
+
+.video-body h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  color: var(--brown-dark);
+  margin: 0 0 .4rem;
+  line-height: 1.3;
+}
+
+.video-body p {
+  margin: 0;
+  color: var(--brown-mid);
+  font-size: .92rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  .video-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .video-play-dot { width: 52px; height: 52px; }
+  .video-play-dot svg { width: 22px; height: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .video-card,
+  .video-play img,
+  .video-play-dot { transition: none; }
+  .video-card:hover { transform: none; }
+  .video-card:hover .video-play img { transform: none; }
+}

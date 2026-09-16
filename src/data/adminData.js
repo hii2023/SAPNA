@@ -2,12 +2,17 @@
 // ADMIN DATA UTILITY
 // All pages read from here so admin edits reflect site-wide.
 //
-// Source of truth is now Supabase (table `sapna_content`).
-// On app start we hydrate() from Supabase into a local cache
-// (localStorage), so the synchronous getters below stay
-// synchronous and existing pages need no changes. Admin edits
-// are saved to Supabase via a passcode-gated RPC and go live
-// for every visitor, on every device.
+// Source of truth is Supabase (table `sapna_content`). On app
+// start we hydrate() from Supabase into an in-memory store (and
+// mirror it to localStorage for a fast first paint), so the
+// synchronous getters below stay synchronous and existing pages
+// need no changes. Admin edits are saved to Supabase via a
+// passcode-gated RPC and go live for every visitor, on every
+// device.
+//
+// Photos live in the `sapna-images` Storage bucket and the JSON
+// carries only their URLs — see uploadEmbeddedImages() below for
+// why embedding them as base64 broke saving.
 // ============================================================
 import { products as defaultProducts, categories as defaultCategories, themes as defaultThemes } from './products'
 import { galleryItems as defaultGallery } from './gallery'
@@ -16,9 +21,10 @@ import { workshops as defaultWorkshops } from './workshops'
 import { blogPosts as defaultBlog } from './blog'
 import { recycleProducts as defaultRecycle } from './recycle'
 import { customOrdersContent as defaultCustomOrders } from './customOrders'
+import { videos as defaultVideos } from './videos'
 import { SITE_IMAGE_DEFAULTS } from './siteImages'
 import { SITE_TEXT_DEFAULTS } from './siteText'
-import { sbGet, sbRpc } from './supabase'
+import { sbGet, sbRpc, sbUpload } from './supabase'
 
 const KEYS = {
   products:   'sapna_admin_products',
@@ -33,20 +39,46 @@ const KEYS = {
   blog:       'sapna_admin_blog',
   recycle:    'sapna_admin_recycle',
   customOrders: 'sapna_admin_custom_orders',
+  videos:     'sapna_admin_videos',
   passcode:   'sapna_admin_passcode', // per-session, so saves can pass it
   auth:       'sapna_admin_auth',
 }
 
 // ── Local cache helpers ───────────────────────────────────
+// `mem` is the real source of truth once hydrate() has run. localStorage is
+// only a best-effort cache so the first paint after a reload has content
+// before Supabase answers.
+//
+// It must not be the source of truth: localStorage is capped (~5 MB) and
+// setItem throws once that is reached. Writing straight through to it meant a
+// full cache silently dropped later sections — the admin would save a photo,
+// the write would fail, the getter would fall back to the code defaults and
+// the edit looked like it never happened. Different browsers (and incognito)
+// filled up at different points, so pages disagreed about which photo was
+// current. Keeping the truth in memory makes a storage failure cosmetic.
+const mem = {}
+
 function cacheGet(key) {
+  if (key in mem) return mem[key]
   try {
     const stored = localStorage.getItem(key)
-    if (stored) return JSON.parse(stored)
+    if (stored) {
+      const val = JSON.parse(stored)
+      mem[key] = val
+      return val
+    }
   } catch (_) {}
   return null
 }
 function cacheSet(key, val) {
-  try { localStorage.setItem(key, JSON.stringify(val)) } catch (_) {}
+  mem[key] = val // always wins, and cannot fail
+  try {
+    localStorage.setItem(key, JSON.stringify(val))
+  } catch (_) {
+    // Out of quota or storage disabled. Drop any older copy so a later read
+    // cannot resurrect stale content, then carry on from memory.
+    try { localStorage.removeItem(key) } catch (_) {}
+  }
 }
 
 // ── Hydration: pull latest published content from Supabase ─
@@ -69,6 +101,7 @@ export async function hydrate() {
     if (map.blog)       cacheSet(KEYS.blog,       map.blog)
     if (map.recycle)    cacheSet(KEYS.recycle,    map.recycle)
     if (map.customOrders) cacheSet(KEYS.customOrders, map.customOrders)
+    if (map.videos)     cacheSet(KEYS.videos,     map.videos)
     return true
   } catch (_) {
     // Offline / first run: keep whatever is cached (or code defaults).
@@ -106,12 +139,69 @@ export async function changeAdminPassword(current, next) {
   return true
 }
 
+// ── Publishing images ─────────────────────────────────────
+// The editors hold a freshly picked photo as a base64 data URL so the preview
+// is instant. Published content must not: base64 bloated the content JSON to
+// ~7.7 MB, which blew the localStorage quota above and made every visitor
+// download megabytes before the first image appeared.
+//
+// So before saving, walk the payload and swap each embedded image for the
+// Storage URL it uploads to. `cache` maps a data URL to the URL it became, so
+// the same photo is only sent once. Object *keys* are remapped through the
+// same cache too: crop rectangles are stored keyed by the photo's URL, and if
+// the key and the value resolved to different uploads the crop would be
+// orphaned and the site would silently fall back to a centred crop.
+async function uploadEmbeddedImages(value, label, cache = {}) {
+  if (typeof value === 'string') {
+    if (!value.startsWith('data:image/')) return value
+    if (cache[value]) return cache[value]
+    const url = await sbUpload(currentPasscode(), label, value)
+    cache[value] = url
+    return url
+  }
+  if (Array.isArray(value)) {
+    const out = []
+    for (const item of value) out.push(await uploadEmbeddedImages(item, label, cache))
+    return out
+  }
+  if (value && typeof value === 'object') {
+    const out = {}
+    for (const k of Object.keys(value)) {
+      const nv = await uploadEmbeddedImages(value[k], `${label}-${k}`, cache)
+      const nk = k.startsWith('data:image/')
+        ? await uploadEmbeddedImages(k, `${label}-key`, cache)
+        : k
+      out[nk] = nv
+    }
+    return out
+  }
+  return value
+}
+
+// Count embedded images without uploading, so the UI can say what it is doing.
+export function countEmbeddedImages(value, seen = new Set()) {
+  if (typeof value === 'string') {
+    if (value.startsWith('data:image/') && !seen.has(value)) { seen.add(value); return 1 }
+    return 0
+  }
+  if (Array.isArray(value)) return value.reduce((n, v) => n + countEmbeddedImages(v, seen), 0)
+  if (value && typeof value === 'object') {
+    return Object.keys(value).reduce(
+      (n, k) => n + countEmbeddedImages(k, seen) + countEmbeddedImages(value[k], seen), 0)
+  }
+  return 0
+}
+
 // ── Generic save to a content section ─────────────────────
+// Returns the published payload (images now Storage URLs) so callers can put
+// it back into their editor state and avoid re-uploading on the next save.
 async function saveSection(key, data) {
+  const payload = await uploadEmbeddedImages(data, `sapna-${key}`)
   await sbRpc('sapna_save_content', {
-    p_passcode: currentPasscode(), p_key: key, p_data: data,
+    p_passcode: currentPasscode(), p_key: key, p_data: payload,
   })
-  cacheSet(KEYS[key], data)
+  cacheSet(KEYS[key], payload)
+  return payload
 }
 
 // ── Products ──────────────────────────────────────────────
@@ -119,10 +209,10 @@ export function getProducts() {
   return cacheGet(KEYS.products) || defaultProducts
 }
 export async function saveProducts(products) {
-  await saveSection('products', products)
+  return await saveSection('products', products)
 }
 export async function resetProducts() {
-  await saveProducts(JSON.parse(JSON.stringify(defaultProducts)))
+  return await saveProducts(JSON.parse(JSON.stringify(defaultProducts)))
 }
 
 // ── Profile ───────────────────────────────────────────────
@@ -144,10 +234,10 @@ export function getProfile() {
   return stored ? { ...DEFAULT_PROFILE, ...stored } : DEFAULT_PROFILE
 }
 export async function saveProfile(profile) {
-  await saveSection('profile', profile)
+  return await saveSection('profile', profile)
 }
 export async function resetProfile() {
-  await saveProfile({ ...DEFAULT_PROFILE })
+  return await saveProfile({ ...DEFAULT_PROFILE })
 }
 
 // ── Gallery ───────────────────────────────────────────────
@@ -155,10 +245,10 @@ export function getGallery() {
   return cacheGet(KEYS.gallery) || defaultGallery
 }
 export async function saveGallery(gallery) {
-  await saveSection('gallery', gallery)
+  return await saveSection('gallery', gallery)
 }
 export async function resetGallery() {
-  await saveGallery(JSON.parse(JSON.stringify(defaultGallery)))
+  return await saveGallery(JSON.parse(JSON.stringify(defaultGallery)))
 }
 
 // ── Projects ──────────────────────────────────────────────
@@ -166,10 +256,10 @@ export function getProjects() {
   return cacheGet(KEYS.projects) || defaultProjects
 }
 export async function saveProjects(projects) {
-  await saveSection('projects', projects)
+  return await saveSection('projects', projects)
 }
 export async function resetProjects() {
-  await saveProjects(JSON.parse(JSON.stringify(defaultProjects)))
+  return await saveProjects(JSON.parse(JSON.stringify(defaultProjects)))
 }
 
 // ── Site images (fixed section photos) ────────────────────
@@ -179,7 +269,7 @@ export function getSiteImages() {
   return cacheGet(KEYS.siteImages) || {}
 }
 export async function saveSiteImages(map) {
-  await saveSection('siteImages', map)
+  return await saveSection('siteImages', map)
 }
 // Resolve a single slot to its current URL (override or default).
 export function getSiteImage(key) {
@@ -192,7 +282,7 @@ export function getSiteTexts() {
   return cacheGet(KEYS.siteText) || {}
 }
 export async function saveSiteTexts(map) {
-  await saveSection('siteText', map)
+  return await saveSection('siteText', map)
 }
 // Resolve one text slot: override, else built-in default.
 export function getSiteText(key) {
@@ -206,10 +296,10 @@ export function getWorkshops() {
   return cacheGet(KEYS.workshops) || defaultWorkshops
 }
 export async function saveWorkshops(items) {
-  await saveSection('workshops', items)
+  return await saveSection('workshops', items)
 }
 export async function resetWorkshops() {
-  await saveWorkshops(JSON.parse(JSON.stringify(defaultWorkshops)))
+  return await saveWorkshops(JSON.parse(JSON.stringify(defaultWorkshops)))
 }
 
 // ── Shop categories ───────────────────────────────────────
@@ -217,10 +307,10 @@ export function getCategories() {
   return cacheGet(KEYS.categories) || defaultCategories
 }
 export async function saveCategories(items) {
-  await saveSection('categories', items)
+  return await saveSection('categories', items)
 }
 export async function resetCategories() {
-  await saveCategories(JSON.parse(JSON.stringify(defaultCategories)))
+  return await saveCategories(JSON.parse(JSON.stringify(defaultCategories)))
 }
 
 // ── Shop themes ───────────────────────────────────────────
@@ -228,10 +318,10 @@ export function getThemes() {
   return cacheGet(KEYS.themes) || defaultThemes
 }
 export async function saveThemes(items) {
-  await saveSection('themes', items)
+  return await saveSection('themes', items)
 }
 export async function resetThemes() {
-  await saveThemes(JSON.parse(JSON.stringify(defaultThemes)))
+  return await saveThemes(JSON.parse(JSON.stringify(defaultThemes)))
 }
 
 // ── Journal (blog) ────────────────────────────────────────
@@ -239,10 +329,10 @@ export function getBlog() {
   return cacheGet(KEYS.blog) || defaultBlog
 }
 export async function saveBlog(items) {
-  await saveSection('blog', items)
+  return await saveSection('blog', items)
 }
 export async function resetBlog() {
-  await saveBlog(JSON.parse(JSON.stringify(defaultBlog)))
+  return await saveBlog(JSON.parse(JSON.stringify(defaultBlog)))
 }
 
 // ── Recycle products ──────────────────────────────────────
@@ -250,10 +340,10 @@ export function getRecycle() {
   return cacheGet(KEYS.recycle) || defaultRecycle
 }
 export async function saveRecycle(items) {
-  await saveSection('recycle', items)
+  return await saveSection('recycle', items)
 }
 export async function resetRecycle() {
-  await saveRecycle(JSON.parse(JSON.stringify(defaultRecycle)))
+  return await saveRecycle(JSON.parse(JSON.stringify(defaultRecycle)))
 }
 
 // ── Custom Orders page (intro + process text) ─────────────
@@ -262,8 +352,19 @@ export function getCustomOrders() {
   return stored ? { ...defaultCustomOrders, ...stored } : defaultCustomOrders
 }
 export async function saveCustomOrders(data) {
-  await saveSection('customOrders', data)
+  return await saveSection('customOrders', data)
 }
 export async function resetCustomOrders() {
-  await saveCustomOrders(JSON.parse(JSON.stringify(defaultCustomOrders)))
+  return await saveCustomOrders(JSON.parse(JSON.stringify(defaultCustomOrders)))
+}
+
+// ── Videos (YouTube links) ────────────────────────────────
+export function getVideos() {
+  return cacheGet(KEYS.videos) || defaultVideos
+}
+export async function saveVideos(items) {
+  return await saveSection('videos', items)
+}
+export async function resetVideos() {
+  return await saveVideos(JSON.parse(JSON.stringify(defaultVideos)))
 }

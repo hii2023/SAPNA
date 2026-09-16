@@ -664,3 +664,9 @@
   .hero-actions  { flex-direction: column; align-items: flex-start; }
   .testimonial-card { padding: 2rem 1.5rem; }
 }
+
+/* ── Videos ("See the Craft in Motion") ───────────────────── */
+/* Hidden entirely unless the admin has added at least one video. */
+.home-videos {
+  background: var(--beige-light);
+}

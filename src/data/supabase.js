@@ -18,6 +18,20 @@ export async function sbGet(path) {
   return r.json()
 }
 
+// Upload one base64 data URL to the `sapna-images` bucket and get back its
+// public URL. The edge function re-checks the admin passcode server-side, so
+// the shipped publishable key grants nothing on its own.
+export async function sbUpload(passcode, name, dataUrl) {
+  const r = await fetch(`${SB.url}/functions/v1/sapna-upload`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ passcode, name, dataUrl }),
+  })
+  const out = await r.json().catch(() => ({}))
+  if (!r.ok || !out.url) throw new Error(out.error || `Image upload failed (HTTP ${r.status})`)
+  return out.url
+}
+
 // Write / verify via SECURITY DEFINER RPC (passcode-checked server-side)
 export async function sbRpc(fn, body) {
   const r = await fetch(`${SB.url}/rest/v1/rpc/${fn}`, {

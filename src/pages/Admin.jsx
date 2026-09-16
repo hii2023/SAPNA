@@ -14,11 +14,13 @@ import {
   getBlog, saveBlog, resetBlog,
   getRecycle, saveRecycle, resetRecycle,
   getCustomOrders, saveCustomOrders, resetCustomOrders,
-  changeAdminPassword,
+  getVideos, saveVideos, resetVideos,
+  changeAdminPassword, countEmbeddedImages,
 } from '../data/adminData'
 import { categories, themes, products as defaultProducts } from '../data/products'
 import { galleryCategories, galleryItems as defaultGallery } from '../data/gallery'
 import { projectCategories, projects as defaultProjects } from '../data/projects'
+import { youtubeId, youtubePoster } from '../data/videos'
 import { SITE_IMAGE_GROUPS } from '../data/siteImages'
 import { SITE_TEXT_GROUPS } from '../data/siteText'
 import { compressImage, fileToDataUrl, loadImage } from '../utils/image'
@@ -27,6 +29,25 @@ import ImageCropModal from './ImageCropModal'
 import './Admin.css'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
+
+// Newly picked photos are uploaded to storage as part of saving, which on a
+// phone connection is the slow part. Say so, otherwise the button just sits
+// there and it looks like nothing happened.
+function announceUpload(payload, onToast) {
+  const n = countEmbeddedImages(payload)
+  if (n > 0) onToast(`Uploading ${n} photo${n === 1 ? '' : 's'}…`, 'success')
+}
+
+// Turn a save failure into something the admin can act on.
+function saveErrorMessage(err) {
+  const msg = String((err && err.message) || '')
+  if (/passcode/i.test(msg)) return 'Your session expired. Log out, log back in, then save again.'
+  if (/too large/i.test(msg)) return 'One photo is too large (max 10 MB). Try a smaller one.'
+  if (/Unsupported image type/i.test(msg)) return 'That image format is not supported. Use a JPG or PNG.'
+  if (/upload/i.test(msg)) return 'A photo could not be uploaded. Check your connection and try again.'
+  return 'Could not save. Check your connection and try again.'
+}
+
 // Profile and Inquiries now live inside the Settings tab as sub-pages, so
 // they are intentionally left out of the main sidebar nav below.
 const TABS = [
@@ -40,6 +61,7 @@ const TABS = [
   { id: 'siteText',  label: 'Website Text', icon: 'fas fa-heading' },
   { id: 'siteImages',label: 'Website Photos', icon: 'fas fa-image' },
   { id: 'gallery',   label: 'Gallery',    icon: 'fas fa-images' },
+  { id: 'videos',    label: 'Videos',     icon: 'fab fa-youtube' },
   { id: 'blog',      label: 'Journal',    icon: 'fas fa-feather-alt' },
   { id: 'settings',  label: 'Settings',   icon: 'fas fa-cog' },
 ]
@@ -363,12 +385,16 @@ function ProductsTab({ products, onSave, onToast }) {
 
   const handleSave = async () => {
     try {
-      await saveProducts(items)
-      onSave(items)
+      announceUpload(items, onToast)
+      // saveProducts returns the published copy, with any newly added photo
+      // now a Storage URL. Adopt it so the next save does not re-upload.
+      const published = await saveProducts(items)
+      setItems(published)
+      onSave(published)
       setDirty(false)
       onToast('Products saved and now live on your website!', 'success')
     } catch (err) {
-      onToast('Could not save. Check your connection and try again.', 'error')
+      onToast(saveErrorMessage(err), 'error')
     }
   }
 
@@ -740,11 +766,13 @@ function ProfileTab({ onToast }) {
 
   const handleSave = async () => {
     try {
-      await saveProfile(form)
+      announceUpload(form, onToast)
+      const published = await saveProfile(form)
+      setForm(published)
       setDirty(false)
       onToast('Profile saved and now live on your website!', 'success')
     } catch (err) {
-      onToast('Could not save. Check your connection and try again.', 'error')
+      onToast(saveErrorMessage(err), 'error')
     }
   }
 
@@ -911,11 +939,13 @@ function GalleryTab({ onToast }) {
 
   const handleSave = async () => {
     try {
-      await saveGallery(items)
+      announceUpload(items, onToast)
+      const published = await saveGallery(items)
+      setItems(published)
       setDirty(false)
       onToast('Gallery saved and now live on your website!', 'success')
     } catch (err) {
-      onToast('Could not save. Check your connection and try again.', 'error')
+      onToast(saveErrorMessage(err), 'error')
     }
   }
 
@@ -1220,12 +1250,14 @@ function ProjectsTab({ projects, onSave, onToast }) {
 
   const handleSave = async () => {
     try {
-      await saveProjects(items)
-      onSave(items)
+      announceUpload(items, onToast)
+      const published = await saveProjects(items)
+      setItems(published)
+      onSave(published)
       setDirty(false)
       onToast('Projects saved and now live on your website!', 'success')
     } catch (err) {
-      onToast('Could not save. Check your connection and try again.', 'error')
+      onToast(saveErrorMessage(err), 'error')
     }
   }
 
@@ -1559,11 +1591,13 @@ function SiteImagesTab({ onToast }) {
   const handleSave = async () => {
     setSaving(true)
     try {
-      await saveSiteImages(overrides)
+      announceUpload(overrides, onToast)
+      const published = await saveSiteImages(overrides)
+      setOverrides(published)
       setDirty(false)
       onToast('Website photos saved and now live on your website!', 'success')
     } catch (err) {
-      onToast('Could not save. The photos may be too large, or check your connection, then try again.', 'error')
+      onToast(saveErrorMessage(err), 'error')
     }
     setSaving(false)
   }
@@ -1803,8 +1837,12 @@ function RecycleTab({ onToast }) {
   const del = (id) => { if (!window.confirm('Delete this piece? This cannot be undone after you save.')) return; setItems(p => p.filter(it => it.id !== id)); setDirty(true) }
 
   const handleSave = async () => {
-    try { await saveRecycle(items); setDirty(false); onToast('Second Life saved and now live on your website!', 'success') }
-    catch (e) { onToast('Could not save. Check your connection and try again.', 'error') }
+    try {
+      announceUpload(items, onToast)
+      setItems(await saveRecycle(items)); setDirty(false)
+      onToast('Second Life saved and now live on your website!', 'success')
+    }
+    catch (e) { onToast(saveErrorMessage(e), 'error') }
   }
   const doReset = async () => {
     try { await resetRecycle(); setItems(getRecycle().map(x => ({ ...x }))); setDirty(false); setConfirm(false); onToast('Second Life reset to defaults.', 'success') }
@@ -1894,8 +1932,12 @@ function WorkshopsTab({ onToast }) {
   const delSession = (id, i) => { const w = items.find(x => x.id === id); upd(id, 'upcoming', (w.upcoming || []).filter((_, idx) => idx !== i)) }
 
   const handleSave = async () => {
-    try { await saveWorkshops(items); setDirty(false); onToast('Workshops saved and now live on your website!', 'success') }
-    catch (e) { onToast('Could not save. Check your connection and try again.', 'error') }
+    try {
+      announceUpload(items, onToast)
+      setItems(await saveWorkshops(items)); setDirty(false)
+      onToast('Workshops saved and now live on your website!', 'success')
+    }
+    catch (e) { onToast(saveErrorMessage(e), 'error') }
   }
   const doReset = async () => {
     try { await resetWorkshops(); setItems(getWorkshops().map(x => ({ ...x }))); setDirty(false); setConfirm(false); onToast('Workshops reset to defaults.', 'success') }
@@ -1941,7 +1983,7 @@ function WorkshopsTab({ onToast }) {
                 <textarea rows="3" value={arrToLines(w.includes)} onChange={e => upd(w.id, 'includes', linesToArr(e.target.value))} /></label>
             </div>
             <div className="admin-field"><span>Photo</span>
-              <ImageRowEditor images={w.image ? [w.image] : []} onChange={imgs => upd(w.id, 'image', imgs[imgs.length - 1] || '')} onToast={onToast} aspect={16 / 7} outW={1200} outH={525} />
+              <ImageRowEditor images={w.image ? [w.image] : []} onChange={imgs => upd(w.id, 'image', imgs[imgs.length - 1] || '')} onToast={onToast} aspect={16 / 9} outW={1200} outH={675} />
             </div>
             <div className="admin-subsection">
               <div className="admin-subsection-head">
@@ -1972,6 +2014,130 @@ function WorkshopsTab({ onToast }) {
   )
 }
 
+// ── Videos Tab ────────────────────────────────────────────────────────────────
+// YouTube links, not uploaded files: a phone video is tens of megabytes and
+// YouTube already handles streaming and playback everywhere.
+function VideosTab({ onToast }) {
+  const [items, setItems] = useState(() => getVideos().map(x => ({ ...x })))
+  const [dirty, setDirty] = useState(false)
+  const [confirm, setConfirm] = useState(false)
+
+  const upd = (id, f, v) => { setItems(p => p.map(it => it.id === id ? { ...it, [f]: v } : it)); setDirty(true) }
+  const addItem = () => {
+    setItems(p => [{ id: Date.now(), title: '', description: '', video: '', photo: '' }, ...p])
+    setDirty(true)
+  }
+  const del = (id) => { if (!window.confirm('Remove this video?')) return; setItems(p => p.filter(it => it.id !== id)); setDirty(true) }
+  const move = (i, to) => {
+    if (to < 0 || to >= items.length) return
+    const next = [...items]; const [it] = next.splice(i, 1); next.splice(to, 0, it)
+    setItems(next); setDirty(true)
+  }
+
+  const handleSave = async () => {
+    // Drop blank rows so an accidental "Add video" never publishes an empty card.
+    const cleaned = items.filter(v => (v.video || '').trim() || (v.title || '').trim())
+    try {
+      announceUpload(cleaned, onToast)
+      setItems(await saveVideos(cleaned)); setDirty(false)
+      onToast('Videos saved and now live on your website!', 'success')
+    }
+    catch (e) { onToast(saveErrorMessage(e), 'error') }
+  }
+  const doReset = async () => {
+    try { await resetVideos(); setItems(getVideos().map(x => ({ ...x }))); setDirty(false); setConfirm(false); onToast('Videos cleared.', 'success') }
+    catch (e) { setConfirm(false); onToast('Could not reset. Try again.', 'error') }
+  }
+
+  return (
+    <div className="admin-tab-content">
+      {confirm && <ConfirmModal msg="Remove all videos from the website?" onConfirm={doReset} onCancel={() => setConfirm(false)} />}
+      <div className="admin-section-header">
+        <div>
+          <h2>Videos</h2>
+          <p>Paste a YouTube link to show it on your home page. The thumbnail loads automatically.</p>
+        </div>
+        <div className="admin-header-actions">
+          <button className="admin-btn admin-btn-ghost" onClick={() => setConfirm(true)}><i className="fas fa-undo" /> Clear all</button>
+          <button className="admin-btn admin-btn-primary" onClick={addItem}><i className="fas fa-plus" /> Add video</button>
+        </div>
+      </div>
+
+      {!items.length && (
+        <div className="admin-empty-note">
+          <i className="fab fa-youtube" />
+          <div>
+            <strong>No videos yet</strong>
+            <span>The video section stays hidden on your website until you add one.</span>
+          </div>
+        </div>
+      )}
+
+      <div className="admin-edit-list">
+        {items.map((v, i) => {
+          const id = youtubeId(v.video)
+          return (
+            <div key={v.id} className="admin-edit-card">
+              <div className="admin-video-row">
+                <div className="admin-video-thumb">
+                  {id ? (
+                    <img src={youtubePoster(v.video, v.photo)} alt="" />
+                  ) : (
+                    <span className="admin-video-thumb-empty"><i className="fab fa-youtube" /></span>
+                  )}
+                </div>
+                <div className="admin-video-fields">
+                  <label className="admin-field"><span>YouTube link</span>
+                    <input
+                      type="text"
+                      value={v.video || ''}
+                      onChange={e => upd(v.id, 'video', e.target.value)}
+                      placeholder="https://youtu.be/..."
+                    />
+                  </label>
+                  {v.video && !id && (
+                    <p className="admin-field-err"><i className="fas fa-times-circle" /> That does not look like a YouTube link yet.</p>
+                  )}
+                  <label className="admin-field"><span>Title</span>
+                    <input type="text" value={v.title || ''} onChange={e => upd(v.id, 'title', e.target.value)} placeholder="Macrame knot tutorial" />
+                  </label>
+                  <label className="admin-field"><span>Short description <small>(optional)</small></span>
+                    <textarea rows="2" value={v.description || ''} onChange={e => upd(v.id, 'description', e.target.value)} />
+                  </label>
+                </div>
+              </div>
+
+              <div className="admin-field">
+                <span>Custom thumbnail <small>(optional, otherwise YouTube's is used)</small></span>
+                <ImageRowEditor
+                  images={v.photo ? [v.photo] : []}
+                  onChange={imgs => upd(v.id, 'photo', imgs[imgs.length - 1] || '')}
+                  onToast={onToast}
+                  aspect={16 / 9}
+                  outW={1200}
+                  outH={675}
+                />
+              </div>
+
+              <div className="admin-edit-card-footer">
+                <div className="admin-header-actions">
+                  <button className="admin-image-action-btn" onClick={() => move(i, i - 1)} disabled={i === 0} title="Move up"><i className="fas fa-arrow-up" /></button>
+                  <button className="admin-image-action-btn" onClick={() => move(i, i + 1)} disabled={i === items.length - 1} title="Move down"><i className="fas fa-arrow-down" /></button>
+                </div>
+                <button className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => del(v.id)}><i className="fas fa-trash" /> Remove video</button>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="siteimg-savebar">
+        <button className="admin-btn admin-btn-primary" onClick={handleSave} disabled={!dirty}><i className="fas fa-save" /> Save changes</button>
+      </div>
+    </div>
+  )
+}
+
 // ── Journal (Blog) Tab ────────────────────────────────────────────────────────
 function BlogTab({ onToast }) {
   const [items, setItems] = useState(() => getBlog().map(x => ({ ...x })))
@@ -1989,8 +2155,12 @@ function BlogTab({ onToast }) {
 
   const handleSave = async () => {
     const cleaned = items.map(it => ({ ...it, slug: it.slug || slugify(it.title) }))
-    try { await saveBlog(cleaned); setItems(cleaned); setDirty(false); onToast('Journal saved and now live on your website!', 'success') }
-    catch (e) { onToast('Could not save. Check your connection and try again.', 'error') }
+    try {
+      announceUpload(cleaned, onToast)
+      setItems(await saveBlog(cleaned)); setDirty(false)
+      onToast('Journal saved and now live on your website!', 'success')
+    }
+    catch (e) { onToast(saveErrorMessage(e), 'error') }
   }
   const doReset = async () => {
     try { await resetBlog(); setItems(getBlog().map(x => ({ ...x }))); setDirty(false); setConfirm(false); onToast('Journal reset to defaults.', 'success') }
@@ -2061,8 +2231,12 @@ function CustomOrdersTab({ onToast }) {
   const updStep = (i, f, v) => { setData(d => ({ ...d, steps: d.steps.map((s, idx) => idx === i ? { ...s, [f]: v } : s) })); setDirty(true) }
 
   const handleSave = async () => {
-    try { await saveCustomOrders(data); setDirty(false); onToast('Custom Orders page saved and now live on your website!', 'success') }
-    catch (e) { onToast('Could not save. Check your connection and try again.', 'error') }
+    try {
+      announceUpload(data, onToast)
+      setData(await saveCustomOrders(data)); setDirty(false)
+      onToast('Custom Orders page saved and now live on your website!', 'success')
+    }
+    catch (e) { onToast(saveErrorMessage(e), 'error') }
   }
   const doReset = async () => {
     try {
@@ -2502,6 +2676,9 @@ export default function Admin() {
           )}
           {activeTab === 'workshops' && (
             <WorkshopsTab onToast={showToast} />
+          )}
+          {activeTab === 'videos' && (
+            <VideosTab onToast={showToast} />
           )}
           {activeTab === 'blog' && (
             <BlogTab onToast={showToast} />
