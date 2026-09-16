@@ -38,6 +38,12 @@ export async function submitLead(lead) {
   return true
 }
 
+// A workshop booking request. Saved first so the booking exists even if the
+// person never gets as far as opening WhatsApp.
+export async function submitBooking(booking) {
+  return submitLead({ type: 'booking', ...booking })
+}
+
 export async function subscribeNewsletter(email, source = 'site') {
   const rec = { type: 'newsletter', email, meta: { source } }
   try { await sbRpc('sapna_add_lead', { p: rec }) } catch (_) {}

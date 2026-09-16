@@ -2373,7 +2373,7 @@ function InquiriesTab({ onToast }) {
     try { await updateLeadStatus(id, status) } catch (e) { onToast('Could not update. Try again.', 'error') }
   }
 
-  const typeLabel = { commission: 'Custom order', inquiry: 'Inquiry', newsletter: 'Newsletter', workshop: 'Workshop' }
+  const typeLabel = { commission: 'Custom order', inquiry: 'Inquiry', newsletter: 'Newsletter', workshop: 'Workshop', booking: 'Workshop booking' }
   const shown = (leads || []).filter(l => filter === 'all' ? true : l.status === filter)
   const fmtDate = (d) => { try { return new Date(d).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) } catch (_) { return d } }
 
@@ -2414,6 +2414,15 @@ function InquiriesTab({ onToast }) {
                 {l.city && <span><i className="fas fa-map-marker-alt" /> {l.city}</span>}
               </div>
               {(l.budget || l.timeline) && <div className="admin-lead-meta2">{l.budget && <span>Budget: {l.budget}</span>}{l.timeline && <span>Timeline: {l.timeline}</span>}</div>}
+              {/* Workshop bookings carry their details in meta. */}
+              {l.meta && (l.meta.workshop || l.meta.preferredDate || l.meta.mode || l.meta.people) && (
+                <div className="admin-lead-meta2">
+                  {l.meta.workshop && <span>Workshop: {l.meta.workshop}</span>}
+                  {l.meta.preferredDate && <span>Date: {l.meta.preferredDate}</span>}
+                  {l.meta.mode && <span>Format: {l.meta.mode}</span>}
+                  {l.meta.people && <span>People: {l.meta.people}</span>}
+                </div>
+              )}
               {l.message && <p className="admin-lead-msg">{l.message}</p>}
               <div className="admin-lead-actions">
                 {['new', 'contacted', 'done'].map(s => (
