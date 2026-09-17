@@ -172,13 +172,9 @@ export default function Footer() {
         <div className="container">
           <div className="footer-bottom-inner">
             <p>© {year} Sapna's Art Studio. All rights reserved. Made with 🧡 in Ahmedabad.</p>
-            <div className="footer-bottom-links">
-              <a href="#">Privacy Policy</a>
-              <span>·</span>
-              <a href="#">Shipping & Returns</a>
-              <span>·</span>
-              <a href="#">Terms</a>
-            </div>
+            {/* Privacy Policy / Shipping & Returns / Terms removed for now:
+                they pointed at "#" and went nowhere. Add them back here once
+                the pages exist. */}
           </div>
         </div>
       </div>

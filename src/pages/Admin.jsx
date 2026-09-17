@@ -7,7 +7,7 @@ import {
   getGallery, saveGallery, resetGallery,
   getProjects, saveProjects, resetProjects,
   getSiteImages, saveSiteImages,
-  getSiteTexts, saveSiteTexts,
+  getSiteTexts, saveSiteTexts, getSiteText,
   getWorkshops, saveWorkshops, resetWorkshops,
   getCategories, saveCategories, resetCategories,
   getThemes, saveThemes, resetThemes,
@@ -1573,6 +1573,9 @@ function SiteTextTab({ onToast }) {
 
 function SiteImagesTab({ onToast }) {
   const [overrides, setOverrides] = useState(() => ({ ...getSiteImages() }))
+  // Some slots also own a caption (the home category cards), so this tab edits
+  // a slice of Website Text too and saves both together.
+  const [texts, setTexts] = useState(() => ({ ...getSiteTexts() }))
   const [dirty, setDirty] = useState(false)
   const [saving, setSaving] = useState(false)
   const [cropTarget, setCropTarget] = useState(null) // { item, src }
@@ -1612,6 +1615,16 @@ function SiteImagesTab({ onToast }) {
     onToast('Photo positioned. Click "Save changes" to publish.', 'success')
   }
 
+  const setText = (key, value) => {
+    setTexts(prev => {
+      const next = { ...prev }
+      if (value) next[key] = value
+      else delete next[key] // blank falls back to the built-in wording
+      return next
+    })
+    setDirty(true)
+  }
+
   const resetSlot = (key) => { setUrl(key, '') }
 
   const handleSave = async () => {
@@ -1620,6 +1633,7 @@ function SiteImagesTab({ onToast }) {
       announceUpload(overrides, onToast)
       const published = await saveSiteImages(overrides)
       setOverrides(published)
+      setTexts(await saveSiteTexts(texts))
       setDirty(false)
       onToast('Website photos saved and now live on your website!', 'success')
     } catch (err) {
@@ -1653,6 +1667,17 @@ function SiteImagesTab({ onToast }) {
                 <div className="siteimg-body">
                   <strong className="siteimg-label">{item.label}</strong>
                   <span className="siteimg-desc">{item.desc}</span>
+                  {item.textKey && (
+                    <label className="siteimg-name">
+                      <span>Name shown on the card</span>
+                      <input
+                        type="text"
+                        value={texts[item.textKey] ?? ''}
+                        placeholder={getSiteText(item.textKey)}
+                        onChange={e => setText(item.textKey, e.target.value)}
+                      />
+                    </label>
+                  )}
                   <span className="siteimg-guide"><i className="fas fa-ruler-combined" /> Best size: {item.w} × {item.h} px</span>
                   <div className="siteimg-actions">
                     <label className="admin-btn admin-btn-ghost admin-btn-sm siteimg-upload">
