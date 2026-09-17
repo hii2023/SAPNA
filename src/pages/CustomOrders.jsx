@@ -139,7 +139,6 @@ export default function CustomOrders() {
           <div className={`process-steps fade-up ${isVisible['process'] ? 'visible' : ''}`}>
             {(content.steps || []).map((step, i) => (
               <div key={i} className="process-step" style={{ transitionDelay: `${i * .1}s` }}>
-                <div className="process-num">{String(i + 1).padStart(2, '0')}</div>
                 <div className="process-icon">{step.icon}</div>
                 <h3>{step.title}</h3>
                 <p>{step.desc}</p>
