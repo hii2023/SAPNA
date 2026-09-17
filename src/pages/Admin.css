@@ -1985,18 +1985,30 @@
   font-weight: 700;
   color: #3D2B1F;
 }
-.siteimg-name input {
+.siteimg-name input,
+.siteimg-name textarea {
   width: 100%;
   padding: 0.5rem 0.7rem;
   border: 1px solid #e8ddd4;
   border-radius: 8px;
   font-family: 'Nunito', sans-serif;
   font-size: 0.88rem;
+  line-height: 1.6;
   color: #3D2B1F;
   background: #fff;
+  resize: vertical;
 }
-.siteimg-name input:focus {
+.siteimg-name input:focus,
+.siteimg-name textarea:focus {
   outline: none;
   border-color: #C4714A;
   box-shadow: 0 0 0 3px rgba(196,113,74,.12);
+}
+/* The placeholder shows the wording that is currently live, not a throwaway
+   hint, so it has to clear 4.5:1 against the white field. #a08f80 was 3.1:1. */
+.siteimg-name input::placeholder,
+.siteimg-name textarea::placeholder { color: #7A6050; opacity: 1; }
+.siteimg-name small {
+  font-size: 0.72rem;
+  color: #8a7a6e;
 }

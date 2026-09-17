@@ -1678,6 +1678,18 @@ function SiteImagesTab({ onToast }) {
                       />
                     </label>
                   )}
+                  {item.descKey && (
+                    <label className="siteimg-name">
+                      <span>Description under the name</span>
+                      <textarea
+                        rows="2"
+                        value={texts[item.descKey] ?? ''}
+                        placeholder={getSiteText(item.descKey)}
+                        onChange={e => setText(item.descKey, e.target.value)}
+                      />
+                      <small>Leave blank to keep the wording above.</small>
+                    </label>
+                  )}
                   <span className="siteimg-guide"><i className="fas fa-ruler-combined" /> Best size: {item.w} × {item.h} px</span>
                   <div className="siteimg-actions">
                     <label className="admin-btn admin-btn-ghost admin-btn-sm siteimg-upload">

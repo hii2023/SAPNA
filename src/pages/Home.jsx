@@ -46,25 +46,25 @@ const heroCrafts = [
 // ── Categories ────────────────────────────────────────────
 const cats = [
   {
-    id: "macrame", label: "Macrame", nameKey: "home_cat_macrame_name", icon: "🪢",
+    id: "macrame", label: "Macrame", nameKey: "home_cat_macrame_name", descKey: "home_cat_macrame_desc", icon: "🪢",
     desc: "Handknotted wall hangings in natural cotton",
     imgKey: "home_cat_macrame",
     color: "#C4714A",
   },
   {
-    id: "painting", label: "Paintings", nameKey: "home_cat_painting_name", icon: "🖌️",
+    id: "painting", label: "Paintings", nameKey: "home_cat_painting_name", descKey: "home_cat_painting_desc", icon: "🖌️",
     desc: "Travel watercolours & textured acrylics",
     imgKey: "home_cat_painting",
     color: "#8A9E7B",
   },
   {
-    id: "stitching", label: "Stitching", nameKey: "home_cat_stitching_name", icon: "🧵",
+    id: "stitching", label: "Stitching", nameKey: "home_cat_stitching_name", descKey: "home_cat_stitching_desc", icon: "🧵",
     desc: "Botanical embroidery & stitched hoop art",
     imgKey: "home_cat_stitching",
     color: "#D4A843",
   },
   {
-    id: "diy", label: "DIY Kits", nameKey: "home_cat_diy_name", icon: "🎁",
+    id: "diy", label: "DIY Kits", nameKey: "home_cat_diy_name", descKey: "home_cat_diy_desc", icon: "🎁",
     desc: "Make your own, complete craft kits",
     imgKey: "home_cat_diy",
     color: "#D4845A",
@@ -74,6 +74,7 @@ const cats = [
 // The category card name is editable from the Website Photos tab (and the
 // Website Text tab), so read the override and fall back to the built-in label.
 const catName = (cat) => getSiteText(cat.nameKey) || cat.label
+const catDesc = (cat) => getSiteText(cat.descKey) || cat.desc
 
 // ── Testimonials ───────────────────────────────────────────
 const testimonials = [
@@ -253,7 +254,7 @@ export default function Home() {
                 <div className="cat-body">
                   <span className="cat-icon">{cat.icon}</span>
                   <h3 className="cat-name">{catName(cat)}</h3>
-                  <p className="cat-desc">{cat.desc}</p>
+                  <p className="cat-desc">{catDesc(cat)}</p>
                   <span className="cat-link">Shop Now <i className="fas fa-arrow-right" /></span>
                 </div>
               </Link>
