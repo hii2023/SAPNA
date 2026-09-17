@@ -101,10 +101,10 @@ export default function Footer() {
                 <li><Link to="/">Home</Link></li>
                 <li><Link to="/about">About Sapna</Link></li>
                 <li><Link to="/shop">Shop Art</Link></li>
-                <li><Link to="/second-life">Second Life</Link></li>
                 <li><Link to="/workshops">Workshops</Link></li>
                 <li><Link to="/projects">Projects</Link></li>
                 <li><Link to="/custom-orders">Custom Orders</Link></li>
+                <li><Link to="/second-life">Second Life</Link></li>
                 <li><Link to="/blog">Journal</Link></li>
               </ul>
             </div>
