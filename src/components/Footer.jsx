@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { getYoutubeUrl } from '../data/adminData'
 import './Footer.css'
 
 export default function Footer() {
   const [email, setEmail] = useState('')
+  const youtube = getYoutubeUrl()
   const [subscribed, setSubscribed] = useState(false)
 
   const handleSubscribe = (e) => {
@@ -82,6 +84,11 @@ export default function Footer() {
                 <a href="mailto:sapnakm71@gmail.com" aria-label="Email" className="social-link">
                   <i className="fas fa-envelope" />
                 </a>
+                {youtube && (
+                  <a href={youtube} target="_blank" rel="noreferrer" aria-label="YouTube" className="social-link youtube">
+                    <i className="fab fa-youtube" />
+                  </a>
+                )}
                 <a href="https://pinterest.com" target="_blank" rel="noreferrer" aria-label="Pinterest" className="social-link">
                   <i className="fab fa-pinterest-p" />
                 </a>

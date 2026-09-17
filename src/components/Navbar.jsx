@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
+import { getYoutubeUrl } from '../data/adminData'
 import './Navbar.css'
 
 const navLinks = [
@@ -127,6 +128,11 @@ export default function Navbar() {
               <a href="https://instagram.com/art_wt_sapna" target="_blank" rel="noreferrer" aria-label="Instagram">
                 <i className="fab fa-instagram" />
               </a>
+              {getYoutubeUrl() && (
+                <a href={getYoutubeUrl()} target="_blank" rel="noreferrer" aria-label="YouTube">
+                  <i className="fab fa-youtube" />
+                </a>
+              )}
               <a href="mailto:sapnakm71@gmail.com" aria-label="Email">
                 <i className="fas fa-envelope" />
               </a>

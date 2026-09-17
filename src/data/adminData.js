@@ -224,6 +224,9 @@ export const DEFAULT_PROFILE = {
   email:      'sapnakm71@gmail.com',
   whatsapp:   '918511341910',
   instagram:  'art_wt_sapna',
+  // Full channel URL, or a @handle. Empty until Sapna has a channel;
+  // every YouTube link on the site hides itself while it is blank.
+  youtube:    '',
   photo:      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&q=80',
   bio:        'I\'m Sapna, an artist, painter, and wanderer based in Ahmedabad, Gujarat. I pour my travel memories and love for craft into every macrame wall hanging, painting, embroidery piece, and DIY kit I create.',
   longBio:    'Every journey I take becomes a piece of art. From the sand dunes of Rajasthan to the misty peaks of the Himalayas, I bring those textures, colours, and stories home, and weave them into pieces that carry a little magic for you. I started Sapna\'s Art Studio from a small corner of my home in Ahmedabad, and it has grown into a beautiful community of art lovers across India.',
@@ -367,4 +370,14 @@ export async function saveVideos(items) {
 }
 export async function resetVideos() {
   return await saveVideos(JSON.parse(JSON.stringify(defaultVideos)))
+}
+
+// Sapna may paste a full channel URL, a @handle or a bare name. Normalise all
+// three to a usable URL; empty means "no channel", and callers hide the link.
+export function getYoutubeUrl() {
+  const raw = (getProfile().youtube || '').trim()
+  if (!raw) return ''
+  if (/^https?:\/\//i.test(raw)) return raw
+  if (raw.startsWith('@')) return `https://youtube.com/${raw}`
+  return `https://youtube.com/@${raw.replace(/^\/+/, '')}`
 }

@@ -8,3 +8,16 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <App />
   </React.StrictMode>,
 )
+
+// Retire the first-paint loader from index.html once React has actually
+// painted. Two frames: the first commits the tree, the second is the browser
+// having drawn it, so the cross-fade never reveals a blank page.
+const boot = document.getElementById('boot')
+if (boot) {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      boot.classList.add('is-done')
+      setTimeout(() => boot.remove(), 600)
+    })
+  })
+}

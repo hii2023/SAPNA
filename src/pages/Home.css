@@ -96,16 +96,66 @@
 .hero-tagline {
   display: flex;
   align-items: center;
-  gap: .75rem;
+  gap: .6rem;
   flex-wrap: wrap;
   margin-bottom: 2rem;
-  font-size: .82rem;
-  font-weight: 600;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.75);
 }
-.hero-tagline .dot { color: var(--terracotta-light); }
+
+/* Each craft is its own frosted chip. The dark translucent base is what makes
+   the word readable no matter what the photo behind it is doing; the tinted
+   ring and dot are what make each craft distinct. */
+.hero-craft {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .4rem .9rem;
+  border-radius: var(--radius-pill);
+  background: rgba(30, 18, 11, .38);
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, .22);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, .18);
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  transition: background var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+/* The accent dot carries each craft's colour. */
+.hero-craft i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+.hero-craft-terracotta i { color: var(--terracotta-light); }
+.hero-craft-sage i       { color: var(--sage-light); }
+.hero-craft-gold i       { color: var(--gold-light); }
+.hero-craft-blush i      { color: var(--blush); }
+
+.hero-craft-terracotta { border-color: rgba(212, 132, 90, .55); }
+.hero-craft-sage       { border-color: rgba(168, 188, 154, .55); }
+.hero-craft-gold       { border-color: rgba(224, 176, 80, .55); }
+.hero-craft-blush      { border-color: rgba(232, 196, 184, .55); }
+
+.hero-craft:hover {
+  background: rgba(30, 18, 11, .52);
+  transform: translateY(-2px);
+}
+
+/* Fallback for browsers without backdrop-filter: lean on a solid-enough base. */
+@supports not (backdrop-filter: blur(10px)) {
+  .hero-craft { background: rgba(30, 18, 11, .62); }
+}
+
+@media (max-width: 480px) {
+  .hero-craft { font-size: .7rem; padding: .34rem .7rem; letter-spacing: .06em; }
+  .hero-tagline { gap: .45rem; }
+}
 
 .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
 .hero-btn-ghost {

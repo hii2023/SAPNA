@@ -899,6 +899,15 @@ function ProfileTab({ onToast }) {
               <label>Instagram Handle <small>(without @)</small></label>
               <input type="text" value={form.instagram} onChange={e => handleChange('instagram', e.target.value)} placeholder="art_wt_sapna" />
             </div>
+            <div className="admin-field-group">
+              <label>YouTube Channel <small>(link or @handle, leave blank to hide)</small></label>
+              <input
+                type="text"
+                value={form.youtube || ''}
+                onChange={e => handleChange('youtube', e.target.value)}
+                placeholder="https://youtube.com/@sapnasartstudio"
+              />
+            </div>
           </div>
 
           {dirty && (
@@ -2446,7 +2455,7 @@ const SETTINGS_SUBTABS = [
   { id: 'inquiries', label: 'Inquiries', icon: 'fas fa-inbox' },
 ]
 
-function SettingsTab({ onToast, onLogout }) {
+function SettingsTab({ onToast }) {
   const [sub, setSub]               = useState('general')
   const [currentPw, setCurrentPw]   = useState('')
   const [newPw, setNewPw]           = useState('')
@@ -2490,7 +2499,7 @@ function SettingsTab({ onToast, onLogout }) {
       <div className="admin-section-header">
         <div>
           <h2>Settings</h2>
-          <p>Profile, inquiries, password and account</p>
+          <p>Profile, inquiries and admin password</p>
         </div>
       </div>
 
@@ -2564,17 +2573,6 @@ function SettingsTab({ onToast, onLogout }) {
         </div>
       </div>
       )}
-
-      {/* Logout — always at the very end of the Settings tab */}
-      <div className="admin-settings-grid">
-        <div className="admin-settings-card">
-          <h3><i className="fas fa-sign-out-alt" /> Session</h3>
-          <p>You are currently logged in as admin. Your session lasts until you close the browser tab.</p>
-          <button className="admin-btn admin-btn-ghost" onClick={onLogout}>
-            <i className="fas fa-sign-out-alt" /> Log Out
-          </button>
-        </div>
-      </div>
     </div>
   )
 }
@@ -2633,6 +2631,10 @@ export default function Admin() {
             <i className="fas fa-external-link-alt" />
             <span>View Website</span>
           </Link>
+          <button className="admin-nav-item logout" onClick={handleLogout}>
+            <i className="fas fa-sign-out-alt" />
+            <span>Log Out</span>
+          </button>
         </div>
       </aside>
 
@@ -2705,7 +2707,7 @@ export default function Admin() {
             <SiteImagesTab onToast={showToast} />
           )}
           {activeTab === 'settings' && (
-            <SettingsTab onToast={showToast} onLogout={handleLogout} />
+            <SettingsTab onToast={showToast} />
           )}
         </div>
       </div>

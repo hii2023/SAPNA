@@ -148,6 +148,7 @@
 }
 .social-link:hover { background: var(--terracotta); color: #fff; }
 .social-link.whatsapp:hover { background: #25D366; }
+.social-link.youtube:hover { background: #FF0000; }
 
 /* Footer columns */
 .footer-col-title {

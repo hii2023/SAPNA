@@ -1,0 +1,69 @@
+.studio-loader {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  color: var(--text-light);
+}
+
+.studio-loader-mark {
+  width: 96px;
+  height: 96px;
+  overflow: visible;
+}
+
+/* Ring of thread: dashed, turning slowly, never quite still. */
+.sl-ring {
+  fill: none;
+  stroke: var(--beige-dark);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+  transform-origin: 50% 50%;
+  animation: sl-turn 14s linear infinite;
+}
+
+/* The knot draws itself, rests, then releases. pathLength="100" lets the dash
+   values be plain percentages regardless of the path's real length. */
+.sl-knot {
+  fill: none;
+  stroke: var(--terracotta);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  animation: sl-tie 3.4s cubic-bezier(.45, 0, .25, 1) infinite;
+}
+
+@keyframes sl-turn {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes sl-tie {
+  0%   { stroke-dashoffset: 100; opacity: .35; }
+  45%  { stroke-dashoffset: 0;   opacity: 1; }
+  65%  { stroke-dashoffset: 0;   opacity: 1; }
+  100% { stroke-dashoffset: -100; opacity: .35; }
+}
+
+.studio-loader-label {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  letter-spacing: .02em;
+  animation: sl-breathe 3.4s ease-in-out infinite;
+}
+
+@keyframes sl-breathe {
+  0%, 100% { opacity: .5; }
+  50%      { opacity: 1; }
+}
+
+/* Reduced motion: keep the mark, drop the movement. */
+@media (prefers-reduced-motion: reduce) {
+  .sl-ring,
+  .sl-knot,
+  .studio-loader-label {
+    animation: none;
+  }
+  .sl-knot { stroke-dashoffset: 0; }
+}

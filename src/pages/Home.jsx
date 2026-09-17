@@ -33,6 +33,17 @@ const heroSlides = [
   },
 ]
 
+// ── Hero craft chips ──────────────────────────────────────
+// Each craft gets its own frosted chip. The hero photos are busy, and plain
+// text over them was barely readable; a tinted glass pill per craft keeps the
+// words legible on any slide and gives each craft its own colour.
+const heroCrafts = [
+  { label: 'Macrame',   tone: 'terracotta' },
+  { label: 'Paintings', tone: 'sage' },
+  { label: 'Stitching', tone: 'gold' },
+  { label: 'DIY Kits',  tone: 'blush' },
+]
+
 // ── Categories ────────────────────────────────────────────
 const cats = [
   {
@@ -186,13 +197,11 @@ export default function Home() {
             {slideSub}
           </p>
           <div className="hero-tagline fade-in-up" style={{ animationDelay: '.3s' }}>
-            <span>Macrame</span>
-            <span className="dot">✦</span>
-            <span>Paintings</span>
-            <span className="dot">✦</span>
-            <span>Stitching</span>
-            <span className="dot">✦</span>
-            <span>DIY Kits</span>
+            {heroCrafts.map(c => (
+              <span key={c.label} className={`hero-craft hero-craft-${c.tone}`}>
+                <i aria-hidden="true" />{c.label}
+              </span>
+            ))}
           </div>
           <div className="hero-actions fade-in-up" style={{ animationDelay: '.4s' }}>
             <Link to={slide.cta.to} className="btn btn-primary btn-lg">

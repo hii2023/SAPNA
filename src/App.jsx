@@ -1,6 +1,8 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { hydrate } from './data/adminData'
+import { useScrollReveal } from './hooks/useScrollReveal'
+import StudioLoader from './components/StudioLoader'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
@@ -32,7 +34,7 @@ const BlogPost = lazyWithRetry(() => import('./pages/BlogPost'))
 const Admin = lazyWithRetry(() => import('./pages/Admin'))
 
 function RouteFallback() {
-  return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8a8178' }}>Loading…</div>
+  return <StudioLoader />
 }
 
 function ScrollToTop() {
@@ -46,6 +48,7 @@ function ScrollToTop() {
 function SiteLayout() {
   const { pathname } = useLocation()
   const isAdmin = pathname === '/admin'
+  useScrollReveal()
 
   return (
     <div className="app">

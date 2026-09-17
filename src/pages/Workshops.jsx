@@ -94,20 +94,101 @@ export default function Workshops() {
           <span className="section-label">{getSiteText('workshops_hero_label')}</span>
           <h1>{getSiteText('workshops_hero_title')}</h1>
           <p>{getSiteText('workshops_hero_sub')}</p>
-          <a
-            href={`https://wa.me/918511341910?text=${encodeURIComponent("Hi Sapna! I'd like to book a workshop. Could you share the available dates? 🙏")}`}
-            target="_blank"
-            rel="noreferrer"
-            className="btn btn-whatsapp btn-lg"
-            style={{ marginTop: '1.5rem' }}
-          >
-            <i className="fab fa-whatsapp" /> Book Your Spot on WhatsApp
+          <a href="#booking" className="btn btn-primary btn-lg" style={{ marginTop: '1.5rem' }}>
+            Book Your Spot <i className="fas fa-arrow-down" />
           </a>
         </div>
       </div>
 
+      {/* ── Workshop Cards ── */}
+      <section className="section" style={{ background: 'var(--beige-light)' }} data-id="workshop-cards">
+        <div className="container">
+          <div className={`section-header fade-up ${isVisible['workshop-cards'] ? 'visible' : ''}`}>
+            <span className="section-label">{getSiteText('workshops_cards_label')}</span>
+            <h2 className="section-title">{getSiteText('workshops_cards_title')}</h2>
+          </div>
+          <div className="workshops-grid">
+            {workshops.map((w, i) => (
+              <div
+                key={w.id}
+                className={`workshop-card fade-up ${isVisible['workshop-cards'] ? 'visible' : ''}`}
+                style={{ transitionDelay: `${i * .1}s` }}
+              >
+                <div className="workshop-img img-overlay">
+                  <img src={w.image} alt={w.title} loading="lazy" />
+                  {w.tag && <span className="workshop-tag">{w.tag}</span>}
+                </div>
+                <div className="workshop-body">
+                  <div className="workshop-header">
+                    <span className="workshop-icon">{w.icon}</span>
+                    <div>
+                      <span className="workshop-level" style={{ background: w.color + '22', color: w.color }}>{w.level}</span>
+                    </div>
+                  </div>
+                  <h3 className="workshop-title">{w.title}</h3>
+                  <p className="workshop-subtitle">{w.subtitle}</p>
+                  <div className="workshop-meta">
+                    <span><i className="fas fa-clock" /> {w.duration}</span>
+                    <span><i className="fas fa-users" /> {w.groupSize}</span>
+                    <span><i className="fas fa-laptop" /> {w.mode.length > 1 ? 'Online & In-person' : w.mode[0]}</span>
+                  </div>
+                  <div className="workshop-price-row">
+                    <span className="workshop-price">₹{w.price.toLocaleString('en-IN')}</span>
+                    <span className="workshop-price-note">per person</span>
+                  </div>
+                  <div className="workshop-upcoming">
+                    <strong>Upcoming Dates:</strong>
+                    {w.upcoming.slice(0, 2).map((u, j) => (
+                      <div key={j} className="upcoming-date">
+                        <i className="fas fa-calendar-day" />
+                        <span>{u.date} · {u.time}</span>
+                        <span className={`seats-badge ${u.seats <= 3 ? 'low' : ''}`}>{u.seats} seats left</span>
+                        <span className="mode-badge">{u.mode}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <button className="workshop-expand-btn" onClick={() => setActiveWorkshop(activeWorkshop === w.id ? null : w.id)}>
+                    {activeWorkshop === w.id ? 'Hide Details ▲' : 'What You\'ll Learn ▼'}
+                  </button>
+                  {activeWorkshop === w.id && (
+                    <div className="workshop-details">
+                      <div className="workshop-learn">
+                        <strong>You'll Learn:</strong>
+                        <ul>
+                          {w.whatYouLearn.map((item, k) => (
+                            <li key={k}><i className="fas fa-check" /> {item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="workshop-includes">
+                        <strong>Includes:</strong>
+                        <ul>
+                          {w.includes.map((item, k) => (
+                            <li key={k}><i className="fas fa-gift" /> {item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                  <div className="workshop-actions">
+                    <a
+                      href={`https://wa.me/918511341910?text=${encodeURIComponent(`Hi Sapna! I'd like to book the "${w.title}" workshop. Can you share available dates? 🙏`)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="btn btn-whatsapp"
+                    >
+                      <i className="fab fa-whatsapp" /> Book Your Spot on WhatsApp
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── Booking ── */}
-      <section className="section workshops-booking-section" data-id="booking">
+      <section id="booking" className="section workshops-booking-section" data-id="booking">
         <div className="container">
           <div className={`section-header fade-up ${isVisible['booking'] ? 'visible' : ''}`}>
             <span className="section-label">Reserve Your Spot</span>
@@ -199,93 +280,6 @@ export default function Workshops() {
                 </div>
               </form>
             )}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Workshop Cards ── */}
-      <section className="section" style={{ background: 'var(--beige-light)' }} data-id="workshop-cards">
-        <div className="container">
-          <div className={`section-header fade-up ${isVisible['workshop-cards'] ? 'visible' : ''}`}>
-            <span className="section-label">{getSiteText('workshops_cards_label')}</span>
-            <h2 className="section-title">{getSiteText('workshops_cards_title')}</h2>
-          </div>
-          <div className="workshops-grid">
-            {workshops.map((w, i) => (
-              <div
-                key={w.id}
-                className={`workshop-card fade-up ${isVisible['workshop-cards'] ? 'visible' : ''}`}
-                style={{ transitionDelay: `${i * .1}s` }}
-              >
-                <div className="workshop-img img-overlay">
-                  <img src={w.image} alt={w.title} loading="lazy" />
-                  {w.tag && <span className="workshop-tag">{w.tag}</span>}
-                </div>
-                <div className="workshop-body">
-                  <div className="workshop-header">
-                    <span className="workshop-icon">{w.icon}</span>
-                    <div>
-                      <span className="workshop-level" style={{ background: w.color + '22', color: w.color }}>{w.level}</span>
-                    </div>
-                  </div>
-                  <h3 className="workshop-title">{w.title}</h3>
-                  <p className="workshop-subtitle">{w.subtitle}</p>
-                  <div className="workshop-meta">
-                    <span><i className="fas fa-clock" /> {w.duration}</span>
-                    <span><i className="fas fa-users" /> {w.groupSize}</span>
-                    <span><i className="fas fa-laptop" /> {w.mode.length > 1 ? 'Online & In-person' : w.mode[0]}</span>
-                  </div>
-                  <div className="workshop-price-row">
-                    <span className="workshop-price">₹{w.price.toLocaleString('en-IN')}</span>
-                    <span className="workshop-price-note">per person</span>
-                  </div>
-                  <div className="workshop-upcoming">
-                    <strong>Upcoming Dates:</strong>
-                    {w.upcoming.slice(0, 2).map((u, j) => (
-                      <div key={j} className="upcoming-date">
-                        <i className="fas fa-calendar-day" />
-                        <span>{u.date} · {u.time}</span>
-                        <span className={`seats-badge ${u.seats <= 3 ? 'low' : ''}`}>{u.seats} seats left</span>
-                        <span className="mode-badge">{u.mode}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <button className="workshop-expand-btn" onClick={() => setActiveWorkshop(activeWorkshop === w.id ? null : w.id)}>
-                    {activeWorkshop === w.id ? 'Hide Details ▲' : 'What You\'ll Learn ▼'}
-                  </button>
-                  {activeWorkshop === w.id && (
-                    <div className="workshop-details">
-                      <div className="workshop-learn">
-                        <strong>You'll Learn:</strong>
-                        <ul>
-                          {w.whatYouLearn.map((item, k) => (
-                            <li key={k}><i className="fas fa-check" /> {item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="workshop-includes">
-                        <strong>Includes:</strong>
-                        <ul>
-                          {w.includes.map((item, k) => (
-                            <li key={k}><i className="fas fa-gift" /> {item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  )}
-                  <div className="workshop-actions">
-                    <a
-                      href={`https://wa.me/918511341910?text=${encodeURIComponent(`Hi Sapna! I'd like to book the "${w.title}" workshop. Can you share available dates? 🙏`)}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="btn btn-whatsapp"
-                    >
-                      <i className="fab fa-whatsapp" /> Book Your Spot on WhatsApp
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
