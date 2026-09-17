@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { getWhatsAppLink } from '../data/products'
-import { getProducts, getSiteImage, getSiteText, getVideos } from '../data/adminData'
+import { getProducts, getSiteImage, getSiteText, getVideos, getProductWhatsAppLink, waLink, getSocialLinks, getInstagramHandle } from '../data/adminData'
 import { youtubeId } from '../data/videos'
 import VideoGrid from '../components/VideoGrid'
 import { useSeo } from '../hooks/useSeo'
@@ -124,6 +123,7 @@ export default function Home() {
   // Only videos with a readable YouTube link count, so a half-filled row in
   // the admin never leaves an empty section on the home page.
   const homeVideos = getVideos().filter(v => youtubeId(v.video))
+  const instagramUrl = getSocialLinks().find(s => s.key === 'instagram')?.url || ''
 
   // Auto-advance hero slides
   useEffect(() => {
@@ -280,7 +280,7 @@ export default function Home() {
                   {!p.available && <div className="product-sold-out">Sold Out</div>}
                   <div className="product-hover-actions">
                     <a
-                      href={getWhatsAppLink(p)}
+                      href={getProductWhatsAppLink(p)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn btn-whatsapp btn-sm"
@@ -458,17 +458,19 @@ export default function Home() {
       <section className="home-instagram" data-id="insta">
         <div className={`insta-header fade-up ${isVisible['insta'] ? 'visible' : ''}`}>
           <span className="section-label">Follow the Journey</span>
-          <h2 className="section-title">@art_wt_sapna</h2>
-          <a href="https://instagram.com/art_wt_sapna" target="_blank" rel="noreferrer" className="btn btn-outline">
-            <i className="fab fa-instagram" /> Follow on Instagram
-          </a>
+          <h2 className="section-title">{getInstagramHandle()}</h2>
+          {instagramUrl && (
+            <a href={instagramUrl} target="_blank" rel="noreferrer" className="btn btn-outline">
+              <i className="fab fa-instagram" /> Follow on Instagram
+            </a>
+          )}
         </div>
         <div className="insta-grid">
           {[
             'home_insta_1', 'home_insta_2', 'home_insta_3',
             'home_insta_4', 'home_insta_5', 'home_insta_6',
           ].map((imgKey, i) => (
-            <a key={i} href="https://instagram.com/art_wt_sapna" target="_blank" rel="noreferrer" className="insta-item img-overlay">
+            <a key={i} href={instagramUrl} target="_blank" rel="noreferrer" className="insta-item img-overlay">
               <img src={getSiteImage(imgKey)} alt={`Instagram ${i + 1}`} loading="lazy" />
               <div className="insta-overlay">
                 <i className="fab fa-instagram" />
@@ -488,7 +490,7 @@ export default function Home() {
               <p>{getSiteText('home_cta_sub')}</p>
             </div>
             <div className="cta-banner-actions">
-              <a href="https://wa.me/918511341910" target="_blank" rel="noreferrer" className="btn btn-whatsapp btn-lg">
+              <a href={waLink()} target="_blank" rel="noreferrer" className="btn btn-whatsapp btn-lg">
                 <i className="fab fa-whatsapp" /> Chat on WhatsApp
               </a>
               <Link to="/custom-orders" className="btn btn-light btn-lg">

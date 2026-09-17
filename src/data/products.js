@@ -1,9 +1,8 @@
 // ============================================================
 // PRODUCTS DATA, Edit prices, descriptions, availability here
-// WhatsApp: Replace WHATSAPP_NUMBER with your actual number
-// e.g., "918511341910" (country code + number, no + or spaces)
 // ============================================================
-export const WHATSAPP_NUMBER = "918511341910"
+// The studio WhatsApp number is part of the editable profile now; see
+// getProductWhatsAppLink() / waLink() in adminData.js.
 
 export const categories = [
   { id: "all",      label: "All Art",     icon: "🎨" },
@@ -267,13 +266,3 @@ export const products = [
   },
 ]
 
-export function getWhatsAppLink(product, selectedSize) {
-  const msg = encodeURIComponent(
-    `Hi Sapna! 🌸 I'm interested in purchasing:\n\n` +
-    `*${product.name}*\n` +
-    `Size: ${selectedSize || product.size}\n` +
-    `Price: ₹${(product.price).toLocaleString('en-IN')}\n\n` +
-    `Could you please confirm availability and share payment details? Thank you! 🙏`
-  )
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`
-}

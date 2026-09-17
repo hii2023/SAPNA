@@ -5,8 +5,11 @@
 // The admin "Inquiries" tab reads them back.
 // ============================================================
 import { sbRpc } from './supabase'
+import { getEmail } from './adminData'
 
-const NOTIFY_EMAIL = 'sapnakm71@gmail.com'
+// Notifications follow the email on the profile, so changing it in the admin
+// actually redirects the alerts instead of leaving them at a stale address.
+const FALLBACK_EMAIL = 'sapnakm71@gmail.com'
 
 function pass() {
   try { return sessionStorage.getItem('sapna_admin_passcode') || '' } catch (_) { return '' }
@@ -16,7 +19,8 @@ function pass() {
 // activation click from Sapna's inbox; after that it just works.
 async function notifyByEmail(rec) {
   try {
-    await fetch(`https://formsubmit.co/ajax/${NOTIFY_EMAIL}`, {
+    const to = getEmail() || FALLBACK_EMAIL
+    await fetch(`https://formsubmit.co/ajax/${to}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({

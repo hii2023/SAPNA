@@ -224,9 +224,13 @@ export const DEFAULT_PROFILE = {
   email:      'sapnakm71@gmail.com',
   whatsapp:   '918511341910',
   instagram:  'art_wt_sapna',
-  // Full channel URL, or a @handle. Empty until Sapna has a channel;
-  // every YouTube link on the site hides itself while it is blank.
+  // Social handles. Each accepts a full URL, an @handle or a bare username.
+  // Anything left blank is hidden everywhere on the site rather than linking
+  // somewhere useless: Pinterest used to be hardcoded to pinterest.com, which
+  // sent visitors to Pinterest's home page instead of Sapna.
   youtube:    '',
+  pinterest:  '',
+  facebook:   '',
   photo:      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&q=80',
   bio:        'I\'m Sapna, an artist, painter, and wanderer based in Ahmedabad, Gujarat. I pour my travel memories and love for craft into every macrame wall hanging, painting, embroidery piece, and DIY kit I create.',
   longBio:    'Every journey I take becomes a piece of art. From the sand dunes of Rajasthan to the misty peaks of the Himalayas, I bring those textures, colours, and stories home, and weave them into pieces that carry a little magic for you. I started Sapna\'s Art Studio from a small corner of my home in Ahmedabad, and it has grown into a beautiful community of art lovers across India.',
@@ -372,12 +376,98 @@ export async function resetVideos() {
   return await saveVideos(JSON.parse(JSON.stringify(defaultVideos)))
 }
 
-// Sapna may paste a full channel URL, a @handle or a bare name. Normalise all
-// three to a usable URL; empty means "no channel", and callers hide the link.
-export function getYoutubeUrl() {
-  const raw = (getProfile().youtube || '').trim()
+// ── Contact + social links ────────────────────────────────
+// One source of truth for every "message Sapna" / "follow Sapna" link on the
+// site. Everything below reads the live profile, so editing a handle in the
+// admin actually changes the site; these used to be hardcoded in a dozen
+// files, which meant the Profile fields were mostly decorative.
+
+// Normalise whatever was pasted into a real profile URL: a full URL, an
+// address with the scheme missing, an @handle, or a bare username. Empty in,
+// empty out, and callers hide the link.
+export function socialUrl(raw, base, { at = false } = {}) {
+  const v = String(raw || '').trim().replace(/\/+$/, '')
+  if (!v) return ''
+  if (/^https?:\/\//i.test(v)) return v
+
+  // An address pasted without the scheme, e.g. "www.youtube.com/@artmagic".
+  // Treating those as handles produced links like
+  // youtube.com/@www.youtube.com/@artmagic, which went nowhere. A path or a
+  // recognised social domain is what distinguishes an address from a handle,
+  // so a username that merely contains a dot still works.
+  if (/^(www\.)?[a-z0-9-]+(\.[a-z]{2,})+\//i.test(v)) return 'https://' + v
+  if (/^(www\.)?(instagram|youtube|youtu\.be|pinterest|facebook|fb)\.[a-z.]+/i.test(v)) return 'https://' + v
+
+  const handle = v.replace(/^@/, '').replace(/^\/+/, '')
+  if (!handle) return ''
+  return base + (at ? '@' : '') + handle
+}
+
+// Resolve a raw value against a network definition. Exported so the admin can
+// preview exactly what the site will link to, from the same code path.
+export function resolveSocial(raw, net) {
+  if (!net) return ''
+  return socialUrl(raw, net.base, { at: net.at })
+}
+
+// The networks Sapna can fill in, in the order they appear on the site.
+// `at` marks platforms whose profile URLs carry an @ (YouTube handles).
+export const SOCIAL_NETWORKS = [
+  { key: 'instagram', label: 'Instagram', icon: 'fab fa-instagram',   base: 'https://instagram.com/', at: false, hint: 'art_wt_sapna' },
+  { key: 'youtube',   label: 'YouTube',   icon: 'fab fa-youtube',     base: 'https://youtube.com/',   at: true,  hint: '@sapnasartstudio' },
+  { key: 'pinterest', label: 'Pinterest', icon: 'fab fa-pinterest-p', base: 'https://pinterest.com/', at: false, hint: 'sapnasartstudio' },
+  { key: 'facebook',  label: 'Facebook',  icon: 'fab fa-facebook-f',  base: 'https://facebook.com/',  at: false, hint: 'sapnasartstudio' },
+]
+
+// Resolve one network to a URL ('' when the admin has not filled it in).
+export function getSocialUrl(key) {
+  const net = SOCIAL_NETWORKS.find(n => n.key === key)
+  return net ? resolveSocial(getProfile()[key], net) : ''
+}
+
+// Only the networks that are actually set, ready to render.
+export function getSocialLinks() {
+  return SOCIAL_NETWORKS
+    .map(n => ({ ...n, url: getSocialUrl(n.key) }))
+    .filter(n => n.url)
+}
+
+// Instagram handle for display (e.g. the "@art_wt_sapna" heading).
+export function getInstagramHandle() {
+  const raw = String(getProfile().instagram || '').trim()
   if (!raw) return ''
-  if (/^https?:\/\//i.test(raw)) return raw
-  if (raw.startsWith('@')) return `https://youtube.com/${raw}`
-  return `https://youtube.com/@${raw.replace(/^\/+/, '')}`
+  const m = raw.match(/instagram\.com\/([^/?#]+)/i)
+  return '@' + (m ? m[1] : raw.replace(/^@/, ''))
+}
+
+// wa.me link for the studio number, optionally with a prefilled message.
+export function waLink(text) {
+  const n = String(getProfile().whatsapp || '').replace(/[^0-9]/g, '')
+  if (!n) return ''
+  return text ? `https://wa.me/${n}?text=${encodeURIComponent(text)}` : `https://wa.me/${n}`
+}
+
+export function getEmail() {
+  return String(getProfile().email || '').trim()
+}
+export function mailtoLink(subject) {
+  const e = getEmail()
+  if (!e) return ''
+  return subject ? `mailto:${e}?subject=${encodeURIComponent(subject)}` : `mailto:${e}`
+}
+export function getPhone() {
+  return String(getProfile().phone || '').trim()
+}
+
+// Product enquiry on WhatsApp. Lives here rather than in products.js so it can
+// read the live number (products.js is imported BY this file, so it cannot
+// import back).
+export function getProductWhatsAppLink(product, selectedSize) {
+  return waLink(
+    `Hi Sapna! 🌸 I'm interested in purchasing:\n\n` +
+    `*${product.name}*\n` +
+    `Size: ${selectedSize || product.size}\n` +
+    `Price: ₹${Number(product.price || 0).toLocaleString('en-IN')}\n\n` +
+    `Could you please confirm availability and share payment details? Thank you! 🙏`
+  )
 }

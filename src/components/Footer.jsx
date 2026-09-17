@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getYoutubeUrl } from '../data/adminData'
+import { waLink, mailtoLink, getEmail, getPhone, getSocialLinks, getInstagramHandle, getProfile } from '../data/adminData'
 import './Footer.css'
 
 export default function Footer() {
   const [email, setEmail] = useState('')
-  const youtube = getYoutubeUrl()
+  const socials = getSocialLinks()
+  const profile = getProfile()
   const [subscribed, setSubscribed] = useState(false)
 
   const handleSubscribe = (e) => {
@@ -75,23 +76,21 @@ export default function Footer() {
                 Every piece I create carries a little piece of a journey, a memory, and a whole lot of love.
               </p>
               <div className="footer-social">
-                <a href="https://instagram.com/art_wt_sapna" target="_blank" rel="noreferrer" aria-label="Instagram" className="social-link">
-                  <i className="fab fa-instagram" />
-                </a>
-                <a href="https://wa.me/918511341910" target="_blank" rel="noreferrer" aria-label="WhatsApp" className="social-link whatsapp">
-                  <i className="fab fa-whatsapp" />
-                </a>
-                <a href="mailto:sapnakm71@gmail.com" aria-label="Email" className="social-link">
-                  <i className="fas fa-envelope" />
-                </a>
-                {youtube && (
-                  <a href={youtube} target="_blank" rel="noreferrer" aria-label="YouTube" className="social-link youtube">
-                    <i className="fab fa-youtube" />
+                {waLink() && (
+                  <a href={waLink()} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="social-link whatsapp">
+                    <i className="fab fa-whatsapp" />
                   </a>
                 )}
-                <a href="https://pinterest.com" target="_blank" rel="noreferrer" aria-label="Pinterest" className="social-link">
-                  <i className="fab fa-pinterest-p" />
-                </a>
+                {mailtoLink() && (
+                  <a href={mailtoLink()} aria-label="Email" className="social-link">
+                    <i className="fas fa-envelope" />
+                  </a>
+                )}
+                {socials.map(s => (
+                  <a key={s.key} href={s.url} target="_blank" rel="noreferrer" aria-label={s.label} className={`social-link ${s.key}`}>
+                    <i className={s.icon} />
+                  </a>
+                ))}
               </div>
             </div>
 
@@ -127,34 +126,40 @@ export default function Footer() {
             <div className="footer-col">
               <h4 className="footer-col-title">Get in Touch</h4>
               <ul className="footer-contact">
-                <li>
-                  <i className="fab fa-whatsapp" />
-                  <div>
-                    <a href="https://wa.me/918511341910" target="_blank" rel="noreferrer">+91 85113 41910</a>
-                    <span>Mon–Sat, 10am–7pm IST</span>
-                  </div>
-                </li>
-                <li>
-                  <i className="fas fa-envelope" />
-                  <div>
-                    <a href="mailto:sapnakm71@gmail.com">sapnakm71@gmail.com</a>
-                    <span>Reply within 24 hours</span>
-                  </div>
-                </li>
+                {waLink() && (
+                  <li>
+                    <i className="fab fa-whatsapp" />
+                    <div>
+                      <a href={waLink()} target="_blank" rel="noreferrer">{getPhone() || 'Message on WhatsApp'}</a>
+                      <span>Mon–Sat, 10am–7pm IST</span>
+                    </div>
+                  </li>
+                )}
+                {getEmail() && (
+                  <li>
+                    <i className="fas fa-envelope" />
+                    <div>
+                      <a href={mailtoLink()}>{getEmail()}</a>
+                      <span>Reply within 24 hours</span>
+                    </div>
+                  </li>
+                )}
                 <li>
                   <i className="fas fa-map-marker-alt" />
                   <div>
-                    <span>Ahmedabad, Gujarat, India</span>
+                    <span>{profile.location}</span>
                     <span>Shipping across India 🇮🇳</span>
                   </div>
                 </li>
-                <li>
-                  <i className="fab fa-instagram" />
-                  <div>
-                    <a href="https://instagram.com/art_wt_sapna" target="_blank" rel="noreferrer">@art_wt_sapna</a>
-                    <span>Follow for daily art & travel</span>
-                  </div>
-                </li>
+                {getInstagramHandle() && (
+                  <li>
+                    <i className="fab fa-instagram" />
+                    <div>
+                      <a href={getSocialLinks().find(s => s.key === 'instagram')?.url} target="_blank" rel="noreferrer">{getInstagramHandle()}</a>
+                      <span>Follow for daily art & travel</span>
+                    </div>
+                  </li>
+                )}
               </ul>
             </div>
 

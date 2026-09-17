@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { getSiteImage, getCustomOrders } from '../data/adminData'
+import { getSiteImage, getCustomOrders, waLink } from '../data/adminData'
 import { useSeo } from '../hooks/useSeo'
 import { submitLead } from '../data/leads'
 import './CustomOrders.css'
@@ -105,7 +105,7 @@ export default function CustomOrders() {
       budget: form.budget, timeline: form.timeline, message: form.description,
       meta: { artType: form.type, size: form.size, reference: form.reference },
     })
-    const msg = encodeURIComponent(
+    const msg = (
       `Hi Sapna! 🌸 I'd like to place a custom order.\n\n` +
       `*Name:* ${form.name}\n` +
       `*Type:* ${form.type}\n` +
@@ -114,7 +114,7 @@ export default function CustomOrders() {
       `*Details:* ${form.description}\n\n` +
       `Please let me know the next steps! 🙏`
     )
-    window.open(`https://wa.me/918511341910?text=${msg}`, '_blank')
+    window.open(waLink(msg), '_blank')
     setSubmitted(true)
   }
 
@@ -243,7 +243,7 @@ export default function CustomOrders() {
                   <i className="fab fa-whatsapp" />
                   <div>
                     <strong>Prefer WhatsApp?</strong>
-                    <a href="https://wa.me/918511341910" target="_blank" rel="noreferrer">Message Sapna directly →</a>
+                    <a href={waLink()} target="_blank" rel="noreferrer">Message Sapna directly →</a>
                   </div>
                 </div>
               </div>

@@ -15,7 +15,7 @@ import {
   getRecycle, saveRecycle, resetRecycle,
   getCustomOrders, saveCustomOrders, resetCustomOrders,
   getVideos, saveVideos, resetVideos,
-  changeAdminPassword, countEmbeddedImages,
+  changeAdminPassword, countEmbeddedImages, waLink, SOCIAL_NETWORKS, resolveSocial,
 } from '../data/adminData'
 import { categories, themes, products as defaultProducts } from '../data/products'
 import { galleryCategories, galleryItems as defaultGallery } from '../data/gallery'
@@ -895,19 +895,36 @@ function ProfileTab({ onToast }) {
               <label>WhatsApp Number <small>(country code, no + or spaces)</small></label>
               <input type="text" value={form.whatsapp} onChange={e => handleChange('whatsapp', e.target.value)} placeholder="918511341910" />
             </div>
-            <div className="admin-field-group">
-              <label>Instagram Handle <small>(without @)</small></label>
-              <input type="text" value={form.instagram} onChange={e => handleChange('instagram', e.target.value)} placeholder="art_wt_sapna" />
-            </div>
-            <div className="admin-field-group">
-              <label>YouTube Channel <small>(link or @handle, leave blank to hide)</small></label>
-              <input
-                type="text"
-                value={form.youtube || ''}
-                onChange={e => handleChange('youtube', e.target.value)}
-                placeholder="https://youtube.com/@sapnasartstudio"
-              />
-            </div>
+          </div>
+
+          <h3>Links &amp; Social</h3>
+          <p className="admin-hint">
+            Paste a full link, an @handle or just the username, whichever you have.
+            Anything you leave blank is hidden across the whole site, so there are
+            never links that go nowhere. These feed every follow button, the footer
+            and the mobile menu.
+          </p>
+          <div className="admin-edit-grid">
+            {SOCIAL_NETWORKS.map(net => {
+              const value = form[net.key] || ''
+              const preview = resolveSocial(value, net)
+              return (
+                <div className="admin-field-group" key={net.key}>
+                  <label><i className={net.icon} /> {net.label}</label>
+                  <input
+                    type="text"
+                    value={value}
+                    onChange={e => handleChange(net.key, e.target.value)}
+                    placeholder={net.hint}
+                  />
+                  {preview
+                    ? <a className="admin-link-preview" href={preview} target="_blank" rel="noreferrer">
+                        <i className="fas fa-external-link-alt" /> {preview}
+                      </a>
+                    : <span className="admin-link-preview muted">Not shown on the site</span>}
+                </div>
+              )
+            })}
           </div>
 
           {dirty && (
@@ -2652,7 +2669,7 @@ export default function Admin() {
             <span className="admin-topbar-user">
               <i className="fas fa-user-circle" /> Admin
             </span>
-            <a href="https://wa.me/918511341910" target="_blank" rel="noreferrer" className="admin-btn admin-btn-whatsapp">
+            <a href={waLink()} target="_blank" rel="noreferrer" className="admin-btn admin-btn-whatsapp">
               <i className="fab fa-whatsapp" />
             </a>
           </div>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { getWhatsAppLink } from '../data/products'
-import { getRecycle, getSiteText } from '../data/adminData'
+import { getRecycle, getSiteText, waLink, getProductWhatsAppLink } from '../data/adminData'
 import { useSeo } from '../hooks/useSeo'
 import './Shop.css'
 import './Recycle.css'
@@ -69,12 +68,12 @@ function RecycleModal({ product, onClose }) {
               <div className="modal-sold-out">
                 <i className="fas fa-clock" /> Currently Unavailable
                 <p>This is a one-of-a-kind piece and may be gone. Message Sapna to check!</p>
-                <a href={`https://wa.me/918511341910?text=${encodeURIComponent(`Hi Sapna! Is "${product.name}" from the Second Life collection still available? 🙏`)}`} target="_blank" rel="noreferrer" className="btn btn-whatsapp">
+                <a href={waLink(`Hi Sapna! Is "${product.name}" from the Second Life collection still available? 🙏`)} target="_blank" rel="noreferrer" className="btn btn-whatsapp">
                   <i className="fab fa-whatsapp" /> Ask Sapna
                 </a>
               </div>
             ) : (
-              <a href={getWhatsAppLink(product)} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp btn-lg modal-buy-btn">
+              <a href={getProductWhatsAppLink(product)} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp btn-lg modal-buy-btn">
                 <i className="fab fa-whatsapp" /> Buy via WhatsApp
               </a>
             )}

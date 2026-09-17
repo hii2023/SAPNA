@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { galleryCategories } from '../data/gallery'
-import { getGallery } from '../data/adminData'
+import { getGallery, waLink } from '../data/adminData'
 import './Gallery.css'
 
 function Lightbox({ item, items, onClose, onPrev, onNext }) {
@@ -29,7 +29,7 @@ function Lightbox({ item, items, onClose, onPrev, onNext }) {
             <p className="lightbox-size"><i className="fas fa-ruler-combined" /> {item.size}</p>
           </div>
           <a
-            href={`https://wa.me/918511341910?text=${encodeURIComponent(`Hi Sapna! I love the piece "${item.title}" in your gallery. Is it available or can I commission something similar? 🌸`)}`}
+            href={waLink(`Hi Sapna! I love the piece "${item.title}" in your gallery. Is it available or can I commission something similar? 🌸`)}
             target="_blank"
             rel="noreferrer"
             className="btn btn-whatsapp"
@@ -141,7 +141,7 @@ export default function Gallery() {
             <div className="commission-actions">
               <a href="/custom-orders" className="btn btn-primary btn-lg">Request Custom Order</a>
               <a
-                href="https://wa.me/918511341910"
+                href={waLink()}
                 target="_blank"
                 rel="noreferrer"
                 className="btn btn-whatsapp btn-lg"

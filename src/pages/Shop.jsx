@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { getWhatsAppLink } from '../data/products'
-import { getProducts, getCategories, getThemes, getSiteText } from '../data/adminData'
+import { getProducts, getCategories, getThemes, getSiteText, waLink, getProductWhatsAppLink } from '../data/adminData'
 import { useSeo } from '../hooks/useSeo'
 import './Shop.css'
 
@@ -92,13 +91,13 @@ function ProductModal({ product, onClose }) {
               <div className="modal-sold-out">
                 <i className="fas fa-clock" /> Currently Sold Out
                 <p>Want to be notified when it's back? Message Sapna on WhatsApp!</p>
-                <a href={`https://wa.me/918511341910?text=${encodeURIComponent(`Hi Sapna! I'm interested in "${product.name}" but it shows sold out. Please notify me when it's available again! 🙏`)}`} target="_blank" rel="noreferrer" className="btn btn-whatsapp">
+                <a href={waLink(`Hi Sapna! I'm interested in "${product.name}" but it shows sold out. Please notify me when it's available again! 🙏`)} target="_blank" rel="noreferrer" className="btn btn-whatsapp">
                   <i className="fab fa-whatsapp" /> Notify Me
                 </a>
               </div>
             ) : (
               <a
-                href={getWhatsAppLink(product, selectedSize)}
+                href={getProductWhatsAppLink(product, selectedSize)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-whatsapp btn-lg modal-buy-btn"
@@ -261,7 +260,7 @@ export default function Shop() {
                       </div>
                       {product.available ? (
                         <a
-                          href={getWhatsAppLink(product)}
+                          href={getProductWhatsAppLink(product)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="btn btn-whatsapp btn-sm"

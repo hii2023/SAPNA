@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getSiteImage, getSiteText } from '../data/adminData'
+import { getSiteImage, getSiteText, waLink } from '../data/adminData'
 import { useSeo } from '../hooks/useSeo'
 import './About.css'
 
@@ -125,7 +125,7 @@ export default function About() {
               perspective, she is open to travelling and exploring the possibility of working together.
             </p>
             <a
-              href={`https://wa.me/918511341910?text=${encodeURIComponent("Hi Sapna! I'd love to discuss an art project / collaboration with you. 🙏")}`}
+              href={waLink("Hi Sapna! I'd love to discuss an art project / collaboration with you. 🙏")}
               target="_blank"
               rel="noreferrer"
               className="btn btn-primary"
@@ -251,7 +251,7 @@ export default function About() {
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link to="/shop" className="btn btn-primary btn-lg">Explore the Shop</Link>
             <Link to="/workshops" className="btn btn-sage btn-lg">Book a Workshop</Link>
-            <a href="https://wa.me/918511341910" target="_blank" rel="noreferrer" className="btn btn-whatsapp btn-lg">
+            <a href={waLink()} target="_blank" rel="noreferrer" className="btn btn-whatsapp btn-lg">
               <i className="fab fa-whatsapp" /> Say Hello
             </a>
           </div>

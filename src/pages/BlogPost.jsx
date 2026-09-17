@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { getSocialUrl } from '../data/adminData'
 import { getBlog } from '../data/adminData'
 import { useSeo } from '../hooks/useSeo'
 import './Blog.css'
@@ -76,9 +77,11 @@ export default function BlogPost() {
                 <a href={`https://wa.me/?text=${encodeURIComponent(post.title + ' https://sapna.space/blog/' + post.slug)}`} target="_blank" rel="noreferrer" className="btn btn-whatsapp btn-sm">
                   <i className="fab fa-whatsapp" /> Share
                 </a>
-                <a href="https://instagram.com/art_wt_sapna" target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
-                  <i className="fab fa-instagram" /> Instagram
-                </a>
+                {getSocialUrl('instagram') && (
+                  <a href={getSocialUrl('instagram')} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
+                    <i className="fab fa-instagram" /> Instagram
+                  </a>
+                )}
               </div>
             </div>
             <div className="blog-post-cta">

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { getSiteImage, getWorkshops, getSiteText } from '../data/adminData'
+import { getSiteImage, getWorkshops, getSiteText, waLink } from '../data/adminData'
 import { submitBooking } from '../data/leads'
 import { useSeo } from '../hooks/useSeo'
 import './Workshops.css'
 
 // The booking details as a WhatsApp message, so one tap after booking sends
-// Sapna everything she needs instead of a bare "hi".
+// Sapna everything she needs instead of a bare "hi". Returns plain text;
+// waLink() does the encoding.
 function bookingMessage(b) {
   const lines = [
     "Hi Sapna! 🌸 I'd like to book a workshop.",
@@ -21,7 +22,7 @@ function bookingMessage(b) {
     '',
     'Could you confirm availability? 🙏',
   ].filter(Boolean)
-  return encodeURIComponent(lines.join('\n'))
+  return lines.join('\n')
 }
 
 const faqs = [
@@ -172,7 +173,7 @@ export default function Workshops() {
                   )}
                   <div className="workshop-actions">
                     <a
-                      href={`https://wa.me/918511341910?text=${encodeURIComponent(`Hi Sapna! I'd like to book the "${w.title}" workshop. Can you share available dates? 🙏`)}`}
+                      href={waLink(`Hi Sapna! I'd like to book the "${w.title}" workshop. Can you share available dates? 🙏`)}
                       target="_blank"
                       rel="noreferrer"
                       className="btn btn-whatsapp"
@@ -210,7 +211,7 @@ export default function Workshops() {
                 </p>
                 <div className="booking-success-actions">
                   <a
-                    href={`https://wa.me/918511341910?text=${bookingMessage(booked)}`}
+                    href={waLink(bookingMessage(booked))}
                     target="_blank"
                     rel="noreferrer"
                     className="btn btn-whatsapp btn-lg"
@@ -300,7 +301,7 @@ export default function Workshops() {
                 <li><i className="fas fa-check" /> Corporate invoice available</li>
               </ul>
               <a
-                href={`https://wa.me/918511341910?text=${encodeURIComponent("Hi Sapna! I'm interested in booking a private workshop for a group. Can we chat about the details? 🙏")}`}
+                href={waLink("Hi Sapna! I'm interested in booking a private workshop for a group. Can we chat about the details? 🙏")}
                 target="_blank"
                 rel="noreferrer"
                 className="btn btn-whatsapp btn-lg"
@@ -335,7 +336,7 @@ export default function Workshops() {
           </div>
           <div className="faq-cta">
             <p>Still have a question? Just ask Sapna directly!</p>
-            <a href="https://wa.me/918511341910" target="_blank" rel="noreferrer" className="btn btn-whatsapp">
+            <a href={waLink()} target="_blank" rel="noreferrer" className="btn btn-whatsapp">
               <i className="fab fa-whatsapp" /> Message on WhatsApp
             </a>
           </div>

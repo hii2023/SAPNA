@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { getYoutubeUrl } from '../data/adminData'
+import { waLink, mailtoLink, getSocialLinks } from '../data/adminData'
 import './Navbar.css'
 
 const navLinks = [
@@ -75,7 +75,7 @@ export default function Navbar() {
           {/* CTA */}
           <div className="navbar-cta">
             <a
-              href="https://wa.me/918511341910"
+              href={waLink()}
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-whatsapp btn-sm navbar-whatsapp"
@@ -117,7 +117,7 @@ export default function Navbar() {
           </nav>
           <div className="mobile-cta">
             <a
-              href="https://wa.me/918511341910"
+              href={waLink()}
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-whatsapp"
@@ -125,17 +125,16 @@ export default function Navbar() {
               <i className="fab fa-whatsapp" /> Chat with Sapna on WhatsApp
             </a>
             <div className="mobile-social">
-              <a href="https://instagram.com/art_wt_sapna" target="_blank" rel="noreferrer" aria-label="Instagram">
-                <i className="fab fa-instagram" />
-              </a>
-              {getYoutubeUrl() && (
-                <a href={getYoutubeUrl()} target="_blank" rel="noreferrer" aria-label="YouTube">
-                  <i className="fab fa-youtube" />
+              {getSocialLinks().map(s => (
+                <a key={s.key} href={s.url} target="_blank" rel="noreferrer" aria-label={s.label}>
+                  <i className={s.icon} />
+                </a>
+              ))}
+              {mailtoLink() && (
+                <a href={mailtoLink()} aria-label="Email">
+                  <i className="fas fa-envelope" />
                 </a>
               )}
-              <a href="mailto:sapnakm71@gmail.com" aria-label="Email">
-                <i className="fas fa-envelope" />
-              </a>
             </div>
           </div>
         </div>
