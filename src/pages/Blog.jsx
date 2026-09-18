@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import ArtImage from '../components/ArtImage'
 import { getBlog, getSiteText } from '../data/adminData'
 import { useSeo } from '../hooks/useSeo'
 import { subscribeNewsletter } from '../data/leads'
@@ -67,7 +68,7 @@ export default function Blog() {
             <div className="blog-featured" data-id="blog-featured">
               <div className={`blog-featured-inner fade-up ${isVisible['blog-featured'] ? 'visible' : ''}`} onClick={() => openPost(featured)}>
                 <div className="blog-featured-img img-overlay">
-                  <img src={featured.image} alt={featured.title} loading="lazy" />
+                  <ArtImage src={featured.image} alt={featured.title} />
                   <span className="blog-featured-badge">✨ Featured Story</span>
                 </div>
                 <div className="blog-featured-content">
@@ -111,7 +112,7 @@ export default function Blog() {
                 onClick={() => openPost(post)}
               >
                 <div className="blog-card-img img-overlay">
-                  <img src={post.image} alt={post.title} loading="lazy" />
+                  <ArtImage src={post.image} alt={post.title} />
                   <div className="blog-card-img-overlay" />
                 </div>
                 <div className="blog-card-body">

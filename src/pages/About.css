@@ -252,6 +252,9 @@
   .stats-inner  { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
+  /* Shorter hero so the landscape photo is not cropped down to a sliver.
+     svh keeps the height steady as mobile browser chrome hides. */
+  .about-hero        { height: 58svh; min-height: 400px; padding-bottom: 2.5rem; }
   .about-story-inner  { grid-template-columns: 1fr; gap: 2rem; }
   .story-img-small    { display: none; }
   .travel-grid        { grid-template-columns: 1fr; }

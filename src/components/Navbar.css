@@ -266,3 +266,13 @@
   .mobile-menu, .mobile-overlay { display: none; }
   .hamburger { display: none; }
 }
+
+/* On very narrow phones the studio name (white-space: nowrap) grew past its
+   container and ran underneath the hamburger. Shrink the wordmark and drop
+   the script tagline so the header stays legible down to 320px. */
+@media (max-width: 380px) {
+  .logo-name    { font-size: .82rem; }
+  .logo-tagline { display: none; }
+  .logo-mark    { width: 34px; height: 34px; font-size: 1.05rem; }
+  .navbar-logo  { gap: .5rem; }
+}

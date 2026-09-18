@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import ArtImage from '../components/ArtImage'
 import { getSiteImage, getSiteText, waLink } from '../data/adminData'
 import { useSeo } from '../hooks/useSeo'
 import './About.css'
@@ -148,7 +149,7 @@ export default function About() {
           <div className={`travel-grid fade-up ${isVisible['travel'] ? 'visible' : ''}`}>
             <div className="travel-card">
               <div className="travel-img img-overlay">
-                <img src={getSiteImage('about_travel_rajasthan')} alt="Rajasthan" loading="lazy" />
+                <ArtImage src={getSiteImage('about_travel_rajasthan')} alt="Rajasthan" />
                 <div className="travel-label">Rajasthan</div>
               </div>
               <div className="travel-info">
@@ -158,7 +159,7 @@ export default function About() {
             </div>
             <div className="travel-card">
               <div className="travel-img img-overlay">
-                <img src={getSiteImage('about_travel_kerala')} alt="Kerala" loading="lazy" />
+                <ArtImage src={getSiteImage('about_travel_kerala')} alt="Kerala" />
                 <div className="travel-label">Kerala</div>
               </div>
               <div className="travel-info">
@@ -168,7 +169,7 @@ export default function About() {
             </div>
             <div className="travel-card">
               <div className="travel-img img-overlay">
-                <img src={getSiteImage('about_travel_himalayas')} alt="Himalayas" loading="lazy" />
+                <ArtImage src={getSiteImage('about_travel_himalayas')} alt="Himalayas" />
                 <div className="travel-label">Himalayas</div>
               </div>
               <div className="travel-info">

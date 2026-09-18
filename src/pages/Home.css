@@ -157,6 +157,14 @@
   .hero-tagline { gap: .45rem; }
 }
 
+@media (max-width: 380px) {
+  /* Everything wraps onto more lines down here, so the hero content grows.
+     Trimming it keeps the photo from being squeezed out. */
+  .hero-title { font-size: 1.8rem; }
+  .hero-sub   { font-size: .88rem; margin-bottom: .9rem; }
+  .hero-tagline { margin-bottom: 1rem; }
+}
+
 .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
 .hero-btn-ghost {
   background: rgba(255,255,255,.12);
@@ -698,8 +706,31 @@
   .insta-grid          { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 768px) {
-  .hero { max-height: 700px; }
-  .hero-title { font-size: 2.4rem; }
+  /* A 16:9 photo inside a tall portrait box gets cropped to a sliver: at
+     375x700 only about 30% of the picture's width survived object-fit:cover,
+     so the subject was usually off-frame. Shortening the hero brings the box
+     closer to the photo's own shape and shows noticeably more of it. svh is
+     used so the height does not jump as mobile browser chrome hides. */
+  .hero {
+    height: 56svh;
+    min-height: 480px;
+    max-height: 520px;
+    /* The navbar is transparent and sits over the hero. On a tall desktop hero
+       there is enough slack for centred content to clear it; once the hero was
+       shortened there was not, and the badge ended up behind the logo. This
+       pads the centring down past the header. */
+    padding-top: 58px;
+  }
+  /* "Scroll to explore" is desktop affordance; on a phone it only costs the
+     photo vertical space, and it collided with the buttons once the hero
+     was shortened. */
+  .hero-scroll-hint { display: none; }
+  .hero-dots { bottom: 1.1rem; right: 1.25rem; }
+  /* The text is tightened to suit, so the shorter hero is not cramped. */
+  .hero-title { font-size: 2.05rem; line-height: 1.15; margin-bottom: 1rem; }
+  .hero-sub { font-size: .95rem; line-height: 1.55; margin-bottom: 1.1rem; }
+  .hero-badge { margin-bottom: .65rem; }
+  .hero-tagline { margin-bottom: 1.25rem; }
   .home-about-inner { grid-template-columns: 1fr; }
   .about-img-secondary { display: none; }
   .about-badge-float { display: none; }
@@ -709,9 +740,15 @@
 @media (max-width: 640px) {
   .cats-grid     { grid-template-columns: 1fr 1fr; gap: 1rem; }
   .products-grid { grid-template-columns: 1fr; }
+  /* One card per row is already wide, so a squarer frame shows much more of
+     a landscape product photo than the 3:4 portrait crop did. */
+  .product-img-wrap { aspect-ratio: 1 / 1; }
   .services-grid { grid-template-columns: 1fr; }
   .insta-grid    { grid-template-columns: repeat(2, 1fr); }
-  .hero-actions  { flex-direction: column; align-items: flex-start; }
+  /* Side by side rather than stacked: this alone gave the photo back about
+     60px of height. They wrap to two rows only if the labels are long. */
+  .hero-actions  { flex-wrap: wrap; gap: .6rem; }
+  .hero-actions .btn { padding: .8rem 1.3rem; font-size: .9rem; }
   .testimonial-card { padding: 2rem 1.5rem; }
 }
 

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import ArtImage from '../components/ArtImage'
 import { getSocialUrl } from '../data/adminData'
 import { getBlog } from '../data/adminData'
 import { useSeo } from '../hooks/useSeo'
@@ -51,7 +52,7 @@ export default function BlogPost() {
     <div className="blog-page">
       <article className="blog-post-view">
         <div className="blog-post-hero">
-          <img src={post.image} alt={post.title} />
+          <ArtImage src={post.image} alt={post.title} />
           <div className="blog-post-hero-overlay" />
           <div className="blog-post-hero-content container">
             <span className="tag tag-terracotta">{post.category}</span>
