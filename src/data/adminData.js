@@ -14,7 +14,7 @@
 // carries only their URLs — see uploadEmbeddedImages() below for
 // why embedding them as base64 broke saving.
 // ============================================================
-import { products as defaultProducts, categories as defaultCategories, themes as defaultThemes } from './products'
+import { products as defaultProducts, categories as defaultCategories } from './products'
 import { galleryItems as defaultGallery } from './gallery'
 import { projects as defaultProjects } from './projects'
 import { workshops as defaultWorkshops } from './workshops'
@@ -35,7 +35,6 @@ const KEYS = {
   siteText:   'sapna_admin_site_text',
   workshops:  'sapna_admin_workshops',
   categories: 'sapna_admin_categories',
-  themes:     'sapna_admin_themes',
   blog:       'sapna_admin_blog',
   recycle:    'sapna_admin_recycle',
   customOrders: 'sapna_admin_custom_orders',
@@ -97,7 +96,6 @@ export async function hydrate() {
     if (map.siteText)   cacheSet(KEYS.siteText,   map.siteText)
     if (map.workshops)  cacheSet(KEYS.workshops,  map.workshops)
     if (map.categories) cacheSet(KEYS.categories, map.categories)
-    if (map.themes)     cacheSet(KEYS.themes,     map.themes)
     if (map.blog)       cacheSet(KEYS.blog,       map.blog)
     if (map.recycle)    cacheSet(KEYS.recycle,    map.recycle)
     if (map.customOrders) cacheSet(KEYS.customOrders, map.customOrders)
@@ -320,16 +318,6 @@ export async function resetCategories() {
   return await saveCategories(JSON.parse(JSON.stringify(defaultCategories)))
 }
 
-// ── Shop themes ───────────────────────────────────────────
-export function getThemes() {
-  return cacheGet(KEYS.themes) || defaultThemes
-}
-export async function saveThemes(items) {
-  return await saveSection('themes', items)
-}
-export async function resetThemes() {
-  return await saveThemes(JSON.parse(JSON.stringify(defaultThemes)))
-}
 
 // ── Journal (blog) ────────────────────────────────────────
 export function getBlog() {

@@ -2012,3 +2012,11 @@
   font-size: 0.72rem;
   color: #8a7a6e;
 }
+
+/* Product count beside each Shop category */
+.admin-taxo-count {
+  font-size: .78rem;
+  color: #8a7a6e;
+  white-space: nowrap;
+  padding: 0 .25rem;
+}

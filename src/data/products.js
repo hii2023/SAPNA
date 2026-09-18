@@ -12,21 +12,11 @@ export const categories = [
   { id: "diy",      label: "DIY Kits",    icon: "🎁" },
 ]
 
-export const themes = [
-  { id: "all",        label: "All Themes" },
-  { id: "travel",     label: "Travel & Wanderlust" },
-  { id: "homedecor",  label: "Home Decor" },
-  { id: "nature",     label: "Nature & Botanical" },
-  { id: "abstract",   label: "Abstract & Modern" },
-  { id: "spiritual",  label: "Spiritual & Mandala" },
-]
-
 export const products = [
   {
     id: 1,
     name: "Desert Dunes Macrame Wall Hanging",
     category: "macrame",
-    theme: "travel",
     price: 2800,
     originalPrice: null,
     images: [
@@ -47,7 +37,6 @@ export const products = [
     id: 2,
     name: "Himalayan Sunrise Painting",
     category: "painting",
-    theme: "travel",
     price: 4500,
     originalPrice: 5500,
     images: [
@@ -68,7 +57,6 @@ export const products = [
     id: 3,
     name: "Bohemian Dream Macrame",
     category: "macrame",
-    theme: "homedecor",
     price: 1800,
     originalPrice: null,
     images: [
@@ -88,7 +76,6 @@ export const products = [
     id: 4,
     name: "Floral Hoop Embroidery: Botanical Garden",
     category: "stitching",
-    theme: "nature",
     price: 1500,
     originalPrice: null,
     images: [
@@ -108,7 +95,6 @@ export const products = [
     id: 5,
     name: "Macrame DIY Kit: Beginner Friendly",
     category: "diy",
-    theme: "homedecor",
     price: 899,
     originalPrice: 1200,
     images: [
@@ -128,7 +114,6 @@ export const products = [
     id: 6,
     name: "Wanderlust World Map Painting",
     category: "painting",
-    theme: "travel",
     price: 6800,
     originalPrice: null,
     images: [
@@ -148,7 +133,6 @@ export const products = [
     id: 7,
     name: "Sage & Terracotta Tapestry Macrame",
     category: "macrame",
-    theme: "homedecor",
     price: 3400,
     originalPrice: null,
     images: [
@@ -168,7 +152,6 @@ export const products = [
     id: 8,
     name: "Abstract Monsoon Painting",
     category: "painting",
-    theme: "abstract",
     price: 3200,
     originalPrice: null,
     images: [
@@ -188,7 +171,6 @@ export const products = [
     id: 9,
     name: "Embroidery Starter Kit: Wildflowers",
     category: "diy",
-    theme: "nature",
     price: 650,
     originalPrice: 850,
     images: [
@@ -208,7 +190,6 @@ export const products = [
     id: 10,
     name: "Ganesha Mandala Stitching Art",
     category: "stitching",
-    theme: "spiritual",
     price: 2200,
     originalPrice: null,
     images: [
@@ -228,7 +209,6 @@ export const products = [
     id: 11,
     name: "Rajasthan Blue City Watercolour",
     category: "painting",
-    theme: "travel",
     price: 3800,
     originalPrice: null,
     images: [
@@ -248,7 +228,6 @@ export const products = [
     id: 12,
     name: "Complete Craft Subscription Box",
     category: "diy",
-    theme: "homedecor",
     price: 1499,
     originalPrice: 1999,
     images: [

@@ -10,14 +10,13 @@ import {
   getSiteTexts, saveSiteTexts, getSiteText,
   getWorkshops, saveWorkshops, resetWorkshops,
   getCategories, saveCategories, resetCategories,
-  getThemes, saveThemes, resetThemes,
   getBlog, saveBlog, resetBlog,
   getRecycle, saveRecycle, resetRecycle,
   getCustomOrders, saveCustomOrders, resetCustomOrders,
   getVideos, saveVideos, resetVideos,
   changeAdminPassword, countEmbeddedImages, waLink, SOCIAL_NETWORKS, resolveSocial,
 } from '../data/adminData'
-import { categories, themes, products as defaultProducts } from '../data/products'
+import { products as defaultProducts } from '../data/products'
 import { galleryCategories, galleryItems as defaultGallery } from '../data/gallery'
 import { projectCategories, projects as defaultProjects } from '../data/projects'
 import { youtubeId, youtubePoster } from '../data/videos'
@@ -332,6 +331,9 @@ function DashboardTab({ products, profile, gallery, projects, onTabChange }) {
 
 // ── Products Tab ──────────────────────────────────────────────────────────────
 function ProductsTab({ products, onSave, onToast }) {
+  // The categories Sapna has actually defined, so the dropdown and the filter
+  // below always reflect the live Shop Setup rather than the code defaults.
+  const liveCats = getCategories()
   const [items, setItems]         = useState(products)
   const [expandedId, setExpandedId] = useState(null)
   const [filterCat, setFilterCat] = useState('all')
@@ -446,7 +448,9 @@ function ProductsTab({ products, onSave, onToast }) {
   }
 
   const filtered = items.filter(p => {
-    const matchCat   = filterCat === 'all'   || p.category === filterCat
+    const matchCat   = filterCat === 'all' ? true
+      : filterCat === '__orphan' ? !liveCats.some(c => c.id === p.category)
+      : p.category === filterCat
     const matchAvail = filterAvail === 'all'
       ? true : filterAvail === 'available' ? p.available : !p.available
     const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase())
@@ -496,9 +500,10 @@ function ProductsTab({ products, onSave, onToast }) {
         </div>
         <select value={filterCat} onChange={e => setFilterCat(e.target.value)}>
           <option value="all">All Categories</option>
-          {categories.filter(c => c.id !== 'all').map(c => (
+          {liveCats.filter(c => c.id !== 'all').map(c => (
             <option key={c.id} value={c.id}>{c.label}</option>
           ))}
+          <option value="__orphan">⚠ Not in any category</option>
         </select>
         <select value={filterAvail} onChange={e => setFilterAvail(e.target.value)}>
           <option value="all">All Status</option>
@@ -560,19 +565,25 @@ function ProductsTab({ products, onSave, onToast }) {
                   </div>
                   <div className="admin-field-group">
                     <label>Category</label>
-                    <select value={product.category} onChange={e => update(product.id, 'category', e.target.value)}>
-                      {categories.filter(c => c.id !== 'all').map(c => (
+                    {/* Reads the live categories, not the built-in defaults: the old
+                        dropdown listed categories that no longer existed, so a product
+                        could not be moved to a newly created one. */}
+                    <select value={product.category || ''} onChange={e => update(product.id, 'category', e.target.value)}>
+                      {!liveCats.some(c => c.id === product.category) && (
+                        <option value={product.category || ''}>
+                          {product.category ? `${product.category} (no longer a category)` : 'Not set'}
+                        </option>
+                      )}
+                      {liveCats.filter(c => c.id !== 'all').map(c => (
                         <option key={c.id} value={c.id}>{c.label}</option>
                       ))}
                     </select>
-                  </div>
-                  <div className="admin-field-group">
-                    <label>Theme</label>
-                    <select value={product.theme} onChange={e => update(product.id, 'theme', e.target.value)}>
-                      {themes.filter(t => t.id !== 'all').map(t => (
-                        <option key={t.id} value={t.id}>{t.label}</option>
-                      ))}
-                    </select>
+                    {!liveCats.some(c => c.id === product.category) && (
+                      <p className="admin-field-err">
+                        <i className="fas fa-exclamation-triangle" /> This product is not in any
+                        current category, so it only shows under "All". Pick one above.
+                      </p>
+                    )}
                   </div>
                   <div className="admin-field-group">
                     <label>Price (₹)</label>
@@ -2357,60 +2368,68 @@ function CustomOrdersTab({ onToast }) {
 // ── Shop Setup Tab (categories + themes) ──────────────────────────────────────
 function ShopSetupTab({ onToast }) {
   const [cats, setCats] = useState(() => getCategories().map(x => ({ ...x })))
-  const [themes, setThemes] = useState(() => getThemes().map(x => ({ ...x })))
   const [dirty, setDirty] = useState(false)
+  const products = getProducts()
 
-  const idFrom = (label) => (label || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || ('c' + Date.now())
+  // A category's id is what every product points at, so it is generated once
+  // and never shown or edited. It used to be an editable field sitting next to
+  // the name, and typing the new name into it renamed the id too, which
+  // detached every product already filed under the old one.
+  const newId = () => 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
 
   const updCat = (i, f, v) => { setCats(p => p.map((c, idx) => idx === i ? { ...c, [f]: v } : c)); setDirty(true) }
-  const addCat = () => { setCats(p => [...p, { id: idFrom('new-' + Date.now()), label: 'New Category', icon: '🎨' }]); setDirty(true) }
+  const addCat = () => { setCats(p => [...p, { id: newId(), label: 'New Category', icon: '🎨' }]); setDirty(true) }
   const delCat = (i) => { setCats(p => p.filter((_, idx) => idx !== i)); setDirty(true) }
 
-  const updTheme = (i, f, v) => { setThemes(p => p.map((t, idx) => idx === i ? { ...t, [f]: v } : t)); setDirty(true) }
-  const addTheme = () => { setThemes(p => [...p, { id: idFrom('new-' + Date.now()), label: 'New Theme' }]); setDirty(true) }
-  const delTheme = (i) => { setThemes(p => p.filter((_, idx) => idx !== i)); setDirty(true) }
+  // How many products sit in each category, and how many are in none.
+  const countFor = (id) => products.filter(p => p.category === id).length
+  const orphanCount = products.filter(p => !cats.some(c => c.id === p.category)).length
 
   const handleSave = async () => {
     try {
-      await saveCategories(cats)
-      await saveThemes(themes)
+      // Trim so a stray space in a name can never produce a mismatched id.
+      await saveCategories(cats.map(c => ({ ...c, id: String(c.id).trim(), label: String(c.label || '').trim() })))
       setDirty(false)
-      onToast('Shop setup saved and now live on your website!', 'success')
+      onToast('Shop categories saved and now live on your website!', 'success')
     } catch (e) { onToast('Could not save. Check your connection and try again.', 'error') }
   }
 
   return (
     <div className="admin-tab-content">
       <div className="admin-section-header">
-        <div><h2>Shop Setup</h2><p>The categories and themes used to organise and filter products in the Shop.</p></div>
+        <div><h2>Shop Setup</h2><p>The categories used to organise and filter products in the Shop.</p></div>
         <button className="admin-btn admin-btn-primary" onClick={handleSave} disabled={!dirty}><i className="fas fa-save" /> Save changes</button>
       </div>
 
-      <div className="admin-settings-card">
-        <h3><i className="fas fa-tags" /> Shop Categories</h3>
-        <p className="admin-hint-note">The first one ("All Art") is the default filter and can't be removed. Renaming or deleting a category won't change products already assigned to it.</p>
-        {cats.map((c, i) => (
-          <div key={i} className="admin-taxo-row">
-            <input className="admin-taxo-icon" type="text" value={c.icon || ''} onChange={e => updCat(i, 'icon', e.target.value)} placeholder="🎨" title="Icon (emoji)" />
-            <input className="admin-taxo-label" type="text" value={c.label || ''} onChange={e => updCat(i, 'label', e.target.value)} placeholder="Category name" />
-            <input className="admin-taxo-id" type="text" value={c.id || ''} onChange={e => updCat(i, 'id', e.target.value)} placeholder="id" disabled={c.id === 'all'} title="Internal id (letters/numbers)" />
-            <button className="admin-image-action-btn danger" onClick={() => delCat(i)} disabled={c.id === 'all'} title="Remove"><i className="fas fa-trash" /></button>
+      {orphanCount > 0 && (
+        <div className="admin-empty-note">
+          <i className="fas fa-exclamation-triangle" />
+          <div>
+            <strong>{orphanCount} {orphanCount === 1 ? 'product is' : 'products are'} not in any category</strong>
+            <span>They only appear under "All Art" in the Shop. Open the Products tab and filter by "Not in any category" to assign them.</span>
           </div>
-        ))}
-        <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={addCat}><i className="fas fa-plus" /> Add category</button>
-      </div>
+        </div>
+      )}
 
       <div className="admin-settings-card">
-        <h3><i className="fas fa-palette" /> Shop Themes</h3>
-        <p className="admin-hint-note">The first one ("All Themes") is the default filter and can't be removed.</p>
-        {themes.map((t, i) => (
-          <div key={i} className="admin-taxo-row">
-            <input className="admin-taxo-label" type="text" value={t.label || ''} onChange={e => updTheme(i, 'label', e.target.value)} placeholder="Theme name" />
-            <input className="admin-taxo-id" type="text" value={t.id || ''} onChange={e => updTheme(i, 'id', e.target.value)} placeholder="id" disabled={t.id === 'all'} title="Internal id" />
-            <button className="admin-image-action-btn danger" onClick={() => delTheme(i)} disabled={t.id === 'all'} title="Remove"><i className="fas fa-trash" /></button>
-          </div>
-        ))}
-        <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={addTheme}><i className="fas fa-plus" /> Add theme</button>
+        <h3><i className="fas fa-tags" /> Shop Categories</h3>
+        <p className="admin-hint-note">
+          The first one ("All Art") is the default filter and can't be removed. Renaming a
+          category is safe: products stay with it. Deleting one leaves its products
+          uncategorised until you move them.
+        </p>
+        {cats.map((c, i) => {
+          const n = countFor(c.id)
+          return (
+            <div key={c.id} className="admin-taxo-row">
+              <input className="admin-taxo-icon" type="text" value={c.icon || ''} onChange={e => updCat(i, 'icon', e.target.value)} placeholder="🎨" title="Icon (emoji)" />
+              <input className="admin-taxo-label" type="text" value={c.label || ''} onChange={e => updCat(i, 'label', e.target.value)} placeholder="Category name" />
+              {c.id !== 'all' && <span className="admin-taxo-count">{n} {n === 1 ? 'product' : 'products'}</span>}
+              <button className="admin-image-action-btn danger" onClick={() => delCat(i)} disabled={c.id === 'all'} title="Remove"><i className="fas fa-trash" /></button>
+            </div>
+          )
+        })}
+        <button className="admin-btn admin-btn-ghost admin-btn-sm" onClick={addCat}><i className="fas fa-plus" /> Add category</button>
       </div>
 
       <div className="siteimg-savebar">

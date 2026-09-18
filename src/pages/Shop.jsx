@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { getProducts, getCategories, getThemes, getSiteText, waLink, getProductWhatsAppLink } from '../data/adminData'
+import { getProducts, getCategories, getSiteText, waLink, getProductWhatsAppLink } from '../data/adminData'
 import { useSeo } from '../hooks/useSeo'
 import './Shop.css'
 
@@ -50,7 +50,6 @@ function ProductModal({ product, onClose }) {
           <div className="modal-details">
             <div className="modal-tags">
               <span className="tag tag-terracotta">{product.category}</span>
-              <span className="tag tag-sage">{product.theme}</span>
               {product.isNew && <span className="tag tag-gold">New</span>}
               {product.isBestseller && <span className="tag" style={{ background: '#fff3cd', color: '#856404' }}>Bestseller ⭐</span>}
             </div>
@@ -125,11 +124,9 @@ export default function Shop() {
     path: '/shop',
   })
   const categories = getCategories()
-  const themes = getThemes()
   const [products] = useState(() => getProducts().filter(p => p.available))
   const [searchParams, setSearchParams] = useSearchParams()
   const [activeCat, setActiveCat] = useState(searchParams.get('cat') || 'all')
-  const [activeTheme, setActiveTheme] = useState('all')
   const [sortBy, setSortBy] = useState('default')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedProduct, setSelectedProduct] = useState(null)
@@ -148,10 +145,9 @@ export default function Shop() {
 
   let filtered = products.filter(p => {
     const matchCat   = activeCat === 'all'   || p.category === activeCat
-    const matchTheme = activeTheme === 'all' || p.theme === activeTheme
     const matchSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.description.toLowerCase().includes(searchQuery.toLowerCase())
     const matchAvail  = !showAvailableOnly || p.available
-    return matchCat && matchTheme && matchSearch && matchAvail
+    return matchCat && matchSearch && matchAvail
   })
 
   if (sortBy === 'price-asc')  filtered = [...filtered].sort((a, b) => a.price - b.price)
@@ -195,9 +191,6 @@ export default function Shop() {
               ))}
             </div>
             <div className="filter-right">
-              <select className="form-control filter-theme" value={activeTheme} onChange={e => setActiveTheme(e.target.value)}>
-                {themes.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
-              </select>
               <select className="form-control filter-sort" value={sortBy} onChange={e => setSortBy(e.target.value)}>
                 <option value="default">Sort: Default</option>
                 <option value="newest">Newest First</option>
@@ -214,8 +207,8 @@ export default function Shop() {
           {/* ── Results info ── */}
           <div className="shop-results-info">
             <span>{filtered.length} {filtered.length === 1 ? 'piece' : 'pieces'} found</span>
-            {(activeCat !== 'all' || activeTheme !== 'all' || searchQuery) && (
-              <button className="clear-filters" onClick={() => { setActiveCat('all'); setActiveTheme('all'); setSearchQuery(''); setSearchParams({}) }}>
+            {(activeCat !== 'all' || searchQuery) && (
+              <button className="clear-filters" onClick={() => { setActiveCat('all'); setSearchQuery(''); setSearchParams({}) }}>
                 <i className="fas fa-times" /> Clear Filters
               </button>
             )}
@@ -227,7 +220,7 @@ export default function Shop() {
               <span>🔍</span>
               <h3>No pieces found</h3>
               <p>Try a different filter or search term.</p>
-              <button className="btn btn-outline" onClick={() => { setActiveCat('all'); setActiveTheme('all'); setSearchQuery('') }}>
+              <button className="btn btn-outline" onClick={() => { setActiveCat('all'); setSearchQuery('') }}>
                 Show All Art
               </button>
             </div>
